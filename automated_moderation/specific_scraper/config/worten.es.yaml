@@ -1,0 +1,12 @@
+include: worten.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.worten.es/search?query={}
+    post_identifiers_retriever_module:
+      regex: worten.es\/productos\/(.+)
+  post_information_retriever_module:
+    post_url_template: https://www.worten.es/productos/{}
+  poster_information_retriever_module:
+    poster_url_template: 'https://www.worten.es/marketplace-seller?seller_id={}'

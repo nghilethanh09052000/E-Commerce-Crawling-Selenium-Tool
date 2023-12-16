@@ -1,0 +1,91 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+    load_images: true
+    cloudflare_bypass: true
+  search_pages_browsing_module:
+    name: search_only_browsing_module
+    max_posts_to_browse: 500
+    loading_delay: 10
+    listing_container_css_selector: '[role="grid"]>div>div'
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://rarible.com/explore/search/{}/items
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[href*="/token/"]
+      regex: rarible\.com/token\/(.+)
+    load_more_results_module:
+      name: load_more_by_scrolling_one_scroll_at_a_time
+      scroll_range: 3
+      scroll_pause_time: 2
+      loading_delay: 5
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-marker="title"]
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a[data-marker*="/token/"] span[data-marker*="x"]>div>a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[data-marker*="/token/"] span[data-marker*="x"]>div>a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: a[href*="/token/"] img, a[href*="/token/"] video
+      attribute_name: src
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://rarible.com/token/{}
+    take_screenshot: true
+    loading_delay: 10
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[data-marker="token-title"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-marker="description"]'
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-marker="Current owner"] [data-marker="name-link"]'
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-marker="token-collection"]>div>a'
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[data-marker="token-page-media"]
+      attribute_name: src
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: img[data-marker="token-page-media"]
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-marker="profile-page-full-filled"]>div>div>div>div>span[title*="x"]'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-marker="profile-page-full-filled"]>div>div>div>span'
+      attribute_name: data-marker
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[data-marker="avatar-box"] img'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: div.gOnHnq>div>div>span
+      value_css_selector: div.gOnHnq>div>div>div

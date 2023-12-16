@@ -1,0 +1,112 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+    - name: iproyal/us
+    - name: iproyal/lithuania
+    - name: 123proxy
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+    undetected_driver: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    loading_delay: 3
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.globalsources.com/searchList/products?keyWord={}&pageNum=1
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: ul.product-list>li.item>a:first-of-type
+      regex: globalsources.com\/(.+).htm
+    listing_container_css_selector: ul.product-list>li.item
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: title
+      css_selector: div.tit>span[title]
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: span.price
+      replace_old: US\$
+      replace_new: USD
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div.name a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div.name a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: a>div>img
+      attribute_name: data-src
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: ul.product-list>li>a:first-of-type
+      regex: globalsources.com\/(.+).htm
+      load_more_results_module:
+        name: click_on_next_page_module
+        css_selector: ul.nav-select-list>li>div>a[href*="/showroom_"] , ul>li.ant-pagination-item-active+li>a
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: ul>li.ant-pagination-item-active+li>a
+  post_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    post_url_template: https://www.globalsources.com/{}.htm
+    take_screenshot: true
+    loading_delay: 3
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: div.product-content h1.name
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '.product-details #content.info-content'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div.product-content div.price-info .price
+      attribute_name: textContent
+      replace_old: US\$
+      replace_new: USD
+      exclude_children: true
+      trim_text: true
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div.company-info>a>.name
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div.company-info>a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: div.swiper-list div.swiper-slide
+      picture_css_selector: div.swiper-view div.magnifier-box>img
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 2
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    loading_delay: 4
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.supplier-name
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.min-logo>img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      clickable_css_selector: ul.nav-select-list>li>div>a[href*="/company-profile"]
+      clickable_css_is_always_present: true
+      key_css_selector: '[id="Company Overview"]~div.company-card-box div.table-label'
+      value_css_selector: '[id="Company Overview"]~div.company-card-box div[class*="table-value"]'
+      loading_delay: 4

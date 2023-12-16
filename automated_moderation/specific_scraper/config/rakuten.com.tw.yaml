@@ -1,0 +1,119 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    max_posts_to_browse: 3000
+    loading_delay: 5
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.rakuten.com.tw/search/{}/
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .results-grid .product-grid a[href*="/product/"]
+      regex: (.+rakuten.com.tw.+)
+    listing_container_css_selector: .results-grid .product-grid
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: h3.product-title
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.product-price
+      replace_old: \$
+      replace_new: TWD
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a.merchant-icon>span
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a.merchant-icon
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.product-image__overlay img
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: .paginate-bar button:last-child
+      loading_delay: 8
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: '{}'
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '#item-purchase-section h1'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#item-detail, .desc-tab-content, #react-tabs-1'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: span.qa-product-actual-price, strong[class*="qa-product-actualPrice"]
+      replace_old: \$
+      replace_new: TWD
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a.v7gU2c0tJRHwNjPF9ZwQ
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a.v7gU2c0tJRHwNjPF9ZwQ
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: p[id="auto_shop_region"]
+      value_css_selector: p[id="auto_shop_region"]
+    ships_to_retriever_module:
+      name: get_key_value_list
+      clickable_css_selector: a[href*="internationalShipping"]
+      clickable_css_is_always_present: false
+      key_css_selector: '#internationalShipping .b-container-child, dt[class="qa-product-domesticShipping"]'
+      key_replace_old: (\xe6\xad\xa4\xe5\x95\x86\xe5\x93\x81\xe7\x9b\xae\xe5\x89\x8d\xe5\x8f\xaf\xe9\x85\x8d\xe9\x80\x81\xe8\x87\xb3\xe4\xb8\x8b\xe5\x88\x97\xe5\x9c\x8b\xe5\xae\xb6\xef\xbc\x9a)|(\xef\xbc\x9a)
+      key_replace_new: ''
+      value_css_selector: '#internationalShipping .b-container-child, dt[class="qa-product-domesticShipping"]'
+      value_replace_old: (\xe6\xad\xa4\xe5\x95\x86\xe5\x93\x81\xe7\x9b\xae\xe5\x89\x8d\xe5\x8f\xaf\xe9\x85\x8d\xe9\x80\x81\xe8\x87\xb3\xe4\xb8\x8b\xe5\x88\x97\xe5\x9c\x8b\xe5\xae\xb6\xef\xbc\x9a)|(\xef\xbc\x9a)
+      value_replace_new: ''
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: .swiper-wrapper>.swiper-slide>img[src*="tshop.r10s.com"][src*="?"],
+        img.magnifier-image[src*="tshop.r10s.com"][src*="?"]
+      attribute_name: src
+      replace_old_regex: (.+)\?.+
+      replace_new: \1
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '#item-detail button:last-child, #react-tabs-1'
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: 'div #auto_shop_info_name'
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img.b-shop-image
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: div#ShopOverview th
+      value_css_selector: div#ShopOverview td
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.b-mod-media
+      attribute_name: textContent
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        before_pause_time: 2
+        css_selector: a#auto_shop_information

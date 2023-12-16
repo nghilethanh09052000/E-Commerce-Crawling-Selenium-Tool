@@ -1,0 +1,138 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 7
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://youla.ru/all?q={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: 
+        div[data-test-component="ProductOrAdCard"]>div:not(div[data-test-component="html-ad"])
+        a
+      regex: youla.ru\/(.*)$
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[data-test-component="ProductOrAdCard"] a
+      regex: youla.ru\/(.*)$
+      load_more_results_module:
+        name: load_more_by_click
+        loading_delay: 4
+        css_selector: button[data-test-component="BoardLoadMoreButton"]
+    listing_container_css_selector: 
+      div[data-test-component="ProductOrAdCard"]>div:not(div[data-test-component="html-ad"])
+      a
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: span[data-test-block="ProductName"]
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-test-block="DeliveryIcon"]~span'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: p[data-test-block="ProductPrice"]
+      attribute_name: textContent
+      replace_old: \₽руб.
+      replace_new: ' RUB'
+      trim_text: true
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[data-test-component="ProductCard"]>div>div>svg>image'
+      attribute_name: xlink:href
+    load_more_results_module:
+      name: load_more_by_scrolling_one_scroll_at_a_time
+      scroll_pause_time: 3
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://youla.ru/{}
+    take_screenshot: true
+    loading_delay: 2
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h2[data-test-block="ProductCaption"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-test-block="Description"]'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-test-component="Price"]'
+      replace_old: \₽руб.
+      replace_new: ' RUB'
+      trim_text: true
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a[data-test-component="UserNameClick"]
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[data-test-component="UserNameClick"]
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace
+      css_selector: '[data-test-component="ProductGallery"]>div:last-child>div img'
+      attribute_name: src
+      replace_old: '160_160'
+      replace_new: '2000_2000'
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 6
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-test-block="UserName"]>p'
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[data-test-component="UserCell"]>div>img'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - '[data-test-action="RatingClick"] span'
+        - '[data-test-action="FollowersClick"] span'
+        - '[data-test-action="FollowingClick"] span'
+        - '[data-test-component="UserCell"] [data-test-component="Rating"]'
+        - '[data-test-component="UserCell"]'
+      value_css_selectors:
+        - '[data-test-action="RatingClick"] button'
+        - '[data-test-action="FollowersClick"] button'
+        - '[data-test-action="FollowingClick"] button'
+        - '[data-test-component="UserCell"]>div>div>span'
+        - '[data-test-component="UserCell"]'
+      key_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+?)\d+
+      value_regex:
+        - (\d+)
+        - (\d+)
+        - (\d+)
+        - (.+)
+        - (\d+.+\d{4})
+      key_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - data-test-component
+        - textContent
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+  archiving_options:
+    scroll_to_bottom: true

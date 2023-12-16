@@ -1,0 +1,99 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://bigl.ua/search?search_term={}
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button[data-qaid="button-yes"]
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[data-qaid="product-block"] a[data-qaid="product-name"]
+      regex: (?<=\/bigl.ua\/)(.*)
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[data-qaid="product-block"] a[data-qaid="product-name"]
+      regex: (?<=\/bigl.ua\/)(.*)
+    listing_container_css_selector: div[data-qaid="product-block"]
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: a[data-qaid="product-name"]
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div[class*="productPrice"] span[data-qaid*="product-price"][class*="Text__size"]
+      replace_old: \₴
+      replace_new: ' UAH'
+      trim_text: true
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: a[data-qaid="product-image-link"] img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: div[data-qaid="paginator"] .ek-grid__item:last-of-type
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://bigl.ua/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[data-qaid="title-h1"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-qaid="description"]
+      replace_old: \n
+      replace_new: ''
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[1]["offers"]["price"]} {jsons[1]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: span[data-qaid="company-name"]
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div[data-qaid="company-info-block"] a[data-qaid="more-info-link"]
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: div[data-qaid="gallery-item"] img
+      picture_css_selector: div[class*="ProductGallery__desktop"] > div:first-of-type
+        img
+      attribute_name: src
+      regex: (.+)
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button[data-qaid="button-yes"]
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: span[data-qaid="company-name"]:first-child
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-qaid="company-rating-block"]>div>div:last-child'
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[data-qaid="company-logo"]
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      clickable_css_selector: button[data-qaid="open-sla-popup"]
+      key_css_selector: div[class*="ProductSla__progressLabel"]
+      value_css_selector: svg[class*="ProductSla__svg"]

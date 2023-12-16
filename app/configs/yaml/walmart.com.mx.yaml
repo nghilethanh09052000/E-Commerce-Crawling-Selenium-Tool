@@ -1,0 +1,19 @@
+include: walmart.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.walmart.com.mx/search?q={}
+    price_retriever_module:
+      replace_old: precio actual \$
+      replace_new: 'MXN '
+  post_information_retriever_module:
+    post_url_template: https://www.walmart.com.mx/ip/{}
+    price_retriever_module:
+      replace_old: \$
+      replace_new: 'MXN '
+    ships_to_retriever_module:
+      key_css_selector: button[aria-label*="cambiar de tienda"]
+      value_css_selector: button[aria-label*="cambiar de tienda"]
+    pictures_retriever_module:
+      clickable_css_selector_2: button[aria-label="siguiente artículo multimedia"]

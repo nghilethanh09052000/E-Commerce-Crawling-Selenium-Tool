@@ -1,0 +1,66 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+      country: JP
+    - name: iproyal/us
+    - name: iproyal/lithuania
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    loading_delay: 6
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.trenbe.com/search?sort=latest&keyword={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .list-vertical>div>a
+      regex: trenbe.com\/product\/(.+)$
+    listing_container_css_selector: .list-vertical>div[class*="list-box"]
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: '[class*="ProductCard__ProductInfo"]>div[class*="ProductCard__ProductText"]:nth-child(2)'
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: '[class*="ProductCard__ProductPriceMain"]'
+      replace_old: \원
+      replace_new: KRW
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[class*="ProductCard__ProductCardImage"]>img'
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: .pagination-numbers>.active+li>a , .pagination-next-btn>a
+      loading_delay: 4
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.trenbe.com/product/{}
+    loading_delay: 6
+    title_retriever_module:
+      name: get_attribute_url
+      css_selector: .product-detail-page .product-detail-top__title
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      clickable_css_selector: '[class*="ProductDescriptionBtnAll"]>button'
+      css_selector: '[class*="ProductDescription__ProductDescriptionContent"]'
+      trim_text: true
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="ProductDetailTopPrice__ProductDetailTopPriceText-"]'
+      replace_old: \원
+      replace_new: KRW
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_2: '[class*="Carousel__AliceArrowBtn"]>i[class*="right"]'
+      picture_css_selector: '[class*="alice-carousel__stage-item __active"] img'
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 2

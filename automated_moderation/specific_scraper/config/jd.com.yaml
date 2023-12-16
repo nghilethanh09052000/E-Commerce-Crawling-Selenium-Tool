@@ -1,0 +1,25 @@
+include: jd.yaml
+framework:
+  search_pages_browsing_module:
+    max_posts_to_browse: 1000
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://search.jd.com/Search?keyword={}&psort=5
+    post_identifiers_retriever_module:
+      regex: item.jd.com\/(.+).html$
+    poster_post_identifiers_retriever_module:
+      css_selector: '#J_GoodsList>ul>li div.jDesc>a'
+      regex: item.jd.com\/(.+).html$
+      load_more_results_module:
+        name: click_on_next_page_module
+        css_selector: .jPage a:last-child
+    price_retriever_module:
+      css_selector: div[class*="price"]:not(.price)
+      replace_old: \￥
+      replace_new: CNY
+    pictures_retriever_module:
+      attribute_name: data-lazy-img
+  post_information_retriever_module:
+    post_url_template: https://item.jd.com/{}.html
+    price_retriever_module:
+      replace_old: \￥\n

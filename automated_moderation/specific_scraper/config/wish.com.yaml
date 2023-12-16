@@ -1,0 +1,92 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    chromeprofile_domain_name: wish.com
+    load_images: true
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 2000
+    loading_delay: 5
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.wish.com/search/{}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[class*="ProductGrid__ProductGridRow"]>div>a
+      regex: (?<=product\/)(.*)$
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[class*="ProductGrid__ProductGridRow"]>div>a
+    listing_container_css_selector: div[class*="ProductGrid__ProductGridRow"]>div>a
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div[class*="PriceText__PriceWrapper"]
+      exclude_children: true
+      replace_old: \$
+      replace_new: USD
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: 'div>img[class*="FeedTile__Image"]'
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_scrolling_module
+      scroll_pause_time: 4
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.wish.com/product/{}
+    take_screenshot: true
+    loading_delay: 3
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .PurchaseContainer__Name-sc-15kmsqg-3
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="ProductDescriptionContainer__DescriptionContainer"]'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="PurchaseContainer__ActualPrice"]
+      attribute_name: textContent
+      replace_old: \$
+      replace_new: USD
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a[class*="StoreName"][href*="/merchant/"]
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[class*="StoreReviewContainer__StoreNameLink"]
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_and_split_suffix
+      css_selector: .ProductImageContainer__StripImage-sc-1gow8tc-7
+      attribute_name: src
+      replace_old: -tiny
+      replace_new: -small
+      split_substring: small
+      suffix_substring: large?cozy=1
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="MerchantPage__MerchantName"]'
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[class*="MerchantPage__MerchantPicture"] img'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="MerchantPage__RatingOverviewWrapper"]'
+      attribute_name: textContent
+  archiving_options:
+    remove_elements:
+      - div.modal-root

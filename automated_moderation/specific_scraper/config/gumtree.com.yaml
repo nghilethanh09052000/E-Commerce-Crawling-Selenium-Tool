@@ -1,0 +1,103 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+    override_user_agent: true
+    cloudflare_bypass: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    max_posts_to_browse: 3000
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.gumtree.com/search?search_category=all&q={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a.listing-link
+      regex: gumtree.com\/p\/(.*)$
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a.listing-link
+      regex: gumtree.com\/p\/(.*)$
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .pagination-next a
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.gumtree.com/p/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.e1pt9h6u6
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[itemprop="description"]'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[itemprop="price"]'
+      replace_old: \xc2\xa3
+      replace_new: GBP
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: h2.seller-rating-block-name
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: '[href*="/profile/"]'
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: .image-carousel li:first-child img
+      clickable_css_selector_2: .dialog-content [data-q="carouselNext"] span
+      loading_delay: 2
+      picture_css_selector: .dialog-content li[class*="carousel-item active"] img
+      attribute_name: src
+      regex: (.+)
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '#onetrust-accept-btn-handler'
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: h2.profile-title
+      attribute_name: textContent
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - .seller-stats-item:nth-of-type(1) p
+        - .seller-stats-item:nth-of-type(2) p
+        - .seller-stats-item:nth-of-type(3) p
+        - .live-ads-profile>h2
+      value_css_selectors:
+        - .seller-stats-item:nth-of-type(1) p strong
+        - .seller-stats-item:nth-of-type(2) p strong
+        - .seller-stats-item:nth-of-type(3) p strong
+        - .live-ads-profile>h2
+      key_regex:
+        - Posting for
+        - Replies in about
+        - Response rate
+        - live ads
+      value_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+        - s.(\d+).live
+      key_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent

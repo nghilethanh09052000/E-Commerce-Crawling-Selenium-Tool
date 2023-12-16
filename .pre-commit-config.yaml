@@ -1,0 +1,17 @@
+repos:
+  - repo: https://github.com/ambv/black
+    rev: 22.3.0
+    hooks:
+    - id: black
+      language_version: python3
+  - repo: https://github.com/PyCQA/flake8
+    rev: 6.0.0
+    hooks:
+    - id: flake8
+  - repo: local
+    hooks:
+      - id: check-submodules
+        name: check-submodules
+        entry: ./deployment/check-submodules.sh
+        language: script
+        pass_filenames: false

@@ -1,0 +1,93 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    loading_delay: 2
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[data-qa-locator="general-products"]>[data-qa-locator="product-item"] [class*="info"]>div[class*="title"]>a'
+      action_before_poster_post_identifiers_module:
+        - name: click_action_module
+          css_selector: '.pi-layout-container:nth-of-type(2) div[style*="z-index: 3;"] div[aria-haspopup="true"]+div>div:nth-of-type(2)'
+          after_pause_time: 5
+          stop_css_selector: '[data-qa-locator="general-products"]>[data-qa-locator="product-item"]'
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[data-qa-locator="general-products"]>[data-qa-locator="product-item"] [class*="info"]>div[class*="title"]>a'
+    listing_container_css_selector: '[data-qa-locator="general-products"]>[data-qa-locator="product-item"]'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="info"]>div[class*="title"]>a'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="info"]>div[class*="price-"]>span'
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[class*="img"]>div>a>img'
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: li.ant-pagination-next
+      loading_delay: 5
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .pdp-product-title>div>span
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .detail-content
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .pdp-product-price>span
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .seller-name__detail>a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .seller-name__detail>a
+      attribute_name: href
+    ships_to_retriever_module:
+      name: get_key_value_list
+      clickable_css_selector: .location__link-change>a
+      key_css_selector: '.location-list>li'
+      value_css_selector: '.location-list>li'
+      loading_delay: 2
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: .pdp-block__gallery .next-slick>div .item-gallery__thumbnail>div
+      picture_css_selector: .pdp-block__gallery .gallery-preview-panel>div>img
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 1.5
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    take_screenshot: true
+    loading_delay: 2
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '.pi-layout-container:nth-of-type(2) div[style*="z-index: 3;"] div[aria-haspopup="true"]+div>div:last-child'
+        after_pause_time: 3
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .pi-layout-container h1
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '.pi-layout-container:nth-of-type(2) img[style*="background"]'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .rating-overview .scoreItem>label.starText
+      value_css_selector: .rating-overview .scoreItem>label.starCount

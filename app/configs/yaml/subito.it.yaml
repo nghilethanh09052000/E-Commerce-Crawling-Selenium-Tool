@@ -1,0 +1,163 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    load_images: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.subito.it/annunci-italia/vendita/usato/?q={}
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: li[class*="ad_item"] a , ul.items_listing>li h2>a
+      regex: (?<=www.subito.it\/)(.*)(\.htm)
+      load_more_results_module:
+        name: go_to_next_page_module
+        css_selector: .pagination_next>a , nav[class*="pagination"] a:last-of-type
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .items__item > a
+      regex: (?<=www.subito.it\/)(.*)(\.htm)
+    listing_container_css_selector: .items__item > a
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div>h2[class*="ItemTitle"]
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div>p[class*="module_price"]
+      regex: (.+\€)
+      trim_text: true
+      replace_old: \xe2\x82\xac
+      replace_new: ' EUR'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: span[class*="index-module_shop-name"]
+      attribute_name: textContent
+    location_retriever_module:
+      name: get_attribute_url
+      css_selector: div>span[class*="town"]
+      attribute_name: textContent
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: figure>img
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: nav[class*="pagination"]>button:last-child
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: '#didomi-notice-agree-button'
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.subito.it/{}.htm
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: section[class*="general-info"] h1
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: section[class*="description"]
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: span[class*="index-module_price"]
+      replace_old: \xe2\x82\xac
+      replace_new: EUR
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="PrivateUserProfileBadge-module"] h6 a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div[class*="sellerInfo"] a[class*="rounded_user_badge"]
+      attribute_name: href
+    date_retriever_module:
+      name: subito_date_retriever
+    location_retriever_module:
+      name: subito_location_retriever
+    ships_from_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - span[class*="location"]
+      value_css_selectors:
+        - span[class*="location"]
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: nav[class*="Thumbnails_thumbnail-wrapper"]>button>img
+      picture_css_selector: li[id*="gallery-cell"]>figure>img
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 1
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button#didomi-notice-agree-button
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      loading_delay: 8
+      css_selector: .UserData_name__0NNFF , div.shop_main_info_row>h1
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '#shop_logo img'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - p[class*="publish_from"]
+        - span[class*="UserRating"]
+        - button[aria-label="Vedi tutte le recensioni"]
+        - p[class*="reply_time"]
+        - p[class*="presence_status"]
+        - p[class*="ads_info"]
+        - p[class*="ads_info"] ~ p[class*="ads_info"]
+      value_css_selectors:
+        - p[class*="publish_from"]
+        - span[class*="UserRating"]
+        - button[aria-label="Vedi tutte le recensioni"] span
+        - p[class*="reply_time"]
+        - p[class*="presence_status"]
+        - p[class*="ads_info"] span
+        - p[class*="ads_info"] ~ p[class*="ads_info"] span
+      key_regex:
+        - publish_from
+        - UserRating
+        - recensioni
+        - risponde
+        - Ultimo accesso
+        - Annunci pubblicati
+        - Annunci online
+      value_regex:
+        - da(.+)
+        - (.+)
+        - (.+)
+        - risponde(.+)
+        - Ultimo accesso\:(.+)
+        - (.+)
+        - (.+)
+      key_attributes:
+        - class
+        - class
+        - aria-label
+        - textContent
+        - textContent
+        - innerHTML
+        - innerHTML
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent

@@ -1,0 +1,100 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    loading_delay: 2
+    take_screenshots: true
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.kaufland.de/item/search/?search_value={}
+    listing_container_css_selector: article[class*="product"]
+    hover_over_listing_elements: true
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a.product__wrapper
+      regex: (?<=kaufland.de\/product\/)(.*)
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a.product__wrapper
+      regex: (?<=kaufland.de\/product\/)(.*)$
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .product__title
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .price__container .price
+      replace_old: \€
+      replace_new: EUR
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img.product__image
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: .rd-pagination button:last-of-type>span
+      loading_delay: 6
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: 'div[id="onetrust-consent-sdk"] #onetrust-accept-btn-handler'
+  post_information_retriever_module:
+    name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+    take_screenshot: true
+    post_url_template: https://www.kaufland.de/product/{}
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .pdp-container h1
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#rd-product-description div[class*="content-description"]'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: span.rd-price-information__price
+      replace_old: \€
+      replace_new: EUR
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: span[data-pw="seller-name"]
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_value
+      clickable_css_selector: span[data-pw="seller-name"]
+      css_selector: .pdp-overlay .rd-seller-info__name
+      attribute_name: textContent
+      close_button_css_selector: .pdp-overlay .pdp-overlay__header-cross>span
+      replace_old: (.+)
+      replace_new: 'https://www.kaufland.de/shops/\g<1>'
+      loading_delay: 1
+    pictures_retriever_module:
+      name: get_pictures_from_popup
+      clickable_css_selector: picture.swiper-slide-active img
+      picture_css_selector: .rd-gallery .rd-gallery__container--hero source
+      attribute_name: srcset
+      loading_delay: 3
+      regex: (.+)
+      escape_popup_on_end: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: 'div[id="onetrust-consent-sdk"] #onetrust-accept-btn-handler'
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: 'https://www.kaufland.de/shops/{}/'
+    loading_delay: 1
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.title
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .product__image
+      attribute_name: src

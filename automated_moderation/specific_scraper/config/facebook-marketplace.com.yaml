@@ -1,0 +1,108 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+    - name: proxys.io/mobile/shared/us
+    - name: proxys.io/mobile/shared/ru
+    - name: proxys.io/mobile/shared/th
+    - name: proxys.io/mobile/dedicated/ru
+    - name: proxys.io/mobile/dedicated/th
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    headless: False
+    xvfb: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 3
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.facebook.com/marketplace/paris/search/?query={}&exact=true
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.x8gbvx8>div>div>div a[role="link"][tabindex]
+      regex: \/marketplace\/item\/(.+)
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: '[role="dialog"] [aria-label="Allow all cookies"]:not([aria-disabled])'
+        after_pause_time: 3
+    listing_container_css_selector: div.x8gbvx8>div>div>div
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: a[role="link"][tabindex]>div>div:last-of-type>div:nth-of-type(2)
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: a[role="link"][tabindex]>div>div:last-of-type>div:nth-of-type(3)
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: a[role="link"][tabindex]>div>div:last-of-type>div:nth-of-type(1)>span>div>span
+      replace_old: \€
+      replace_new: EUR
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: a[role="link"][tabindex]>div>div:first-of-type img
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_scrolling_module
+      scroll_range: 4
+      scroll_pause_time: 5
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.facebook.com/marketplace/item/{}
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '[role="dialog"] [aria-label="Allow all cookies"]:not([aria-disabled])'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .xyamay9 h1>span
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .x126k92a>div>span
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .xyamay9>.x1xmf6yo>div>span
+      replace_old: \€
+      replace_new: EUR
+      exclude_children: true
+    # vendor_retriever_module:
+    #   name: get_attribute_value
+    #   css_selector: span.x1lliihq>div>div>a[href*="marketplace/profile"]
+    #   attribute_name: textContent
+    # poster_link_retriever_module:
+    #   name: get_attribute_url
+    #   css_selector: span.x1lliihq>div>div>a[href*="marketplace/profile"]
+    #   attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_2: div[aria-label="View next image"]
+      picture_css_selector: .x1hyxz0u>div span>img
+      regex: (.+)
+      loading_delay: 1.5
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    loading_delay: 2
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: a[aria-label="View profile"]
+        after_pause_time: 5
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .x1e56ztr>span>h1.x1heor9g
+      attribute_name: content
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .x1yztbdb .x2b8uid>span.x193iq5w
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[class="x1jx94hy x14yjl9h xudhj91 x18nykt9 xww2gxu x1iorvi4 x150jy0e xjkvuk6 x1e558r4"]>a>div>svg image'
+      attribute_name: xlink:href
+

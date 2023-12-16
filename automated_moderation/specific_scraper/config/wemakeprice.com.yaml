@@ -1,0 +1,126 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    max_posts_to_browse: 3000
+    loading_delay: 3
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://search.wemakeprice.com/search?keyword={}&sort=open
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .search_box_listdeal .list_conts_wrap > a
+      regex: wemakeprice.com/(.+)
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .box_imagedeal .list_conts_wrap > a
+      regex: wemakeprice.com/(.+)
+      listing_container_css_selector: '.box_imagedeal .list_conts_wrap'
+      title_retriever_module:
+        name: get_attribute_value
+        css_selector: p.text
+      price_retriever_module:
+        name: get_attribute_value
+        css_selector: '[class="price_info"] strong'
+        replace_old: \xec\x9b\x90
+        replace_new: KRW
+      item_sold_retriever_module:
+        name: get_attribute_value
+        css_selector: span.purchase
+      pictures_retriever_module:
+        name: get_pictures_from_attribute_with_replace_regex
+        css_selector: .item_img img
+        attribute_name: src
+        replace_old_regex: _medium
+        replace_new: ''
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: a.btn_next
+    listing_container_css_selector: '.search_box_listdeal .list_conts_wrap'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class="info_text"]'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class="price_info"] strong'
+      replace_old: \xec\x9b\x90
+      replace_new: KRW
+    item_sold_retriever_module:
+      name: get_attribute_value
+      css_selector: span.purchase
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: .list_thum img
+      attribute_name: src
+      replace_old_regex: _small
+      replace_new: ''
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://front.wemakeprice.com/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class="deal_tit"]'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '.deal_detailinfo'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-container="salePrice"]'
+      replace_old: \xec\x9b\x90
+      replace_new: KRW
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a.store_info_wrap [class="store_name"]
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a.store_info_wrap
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - '#cancelrefund'
+      value_css_selectors:
+        - '#cancelrefund'
+      key_regex:
+        - '\xec\x82\xac\xec\x97\x85\xec\x9e\xa5 \xec\x86\x8c\xec\x9e\xac\xec\xa7\x80</th>[ ]+<td>[ ]+<span>([^<]+)'
+      value_regex:
+        - '\xec\x82\xac\xec\x97\x85\xec\x9e\xa5 \xec\x86\x8c\xec\x9e\xac\xec\xa7\x80</th>[ ]+<td>[ ]+<span>([^<]+)'
+      key_attributes:
+        - innerHTML
+      value_attributes:
+        - innerHTML
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[data-slide="bigImage"] img'
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: 'https://front.wemakeprice.com/partnermall/{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: meta[property="og:title"]
+      attribute_name: content
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .text_info_wrap img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - button.ico_store.heart span.txt
+      value_css_selectors:
+        - button.ico_store.heart span.num
+      key_regex:
+        - (.+)
+      value_regex:
+        - (.+)
+      key_attributes:
+        - textContent
+      value_attributes:
+        - textContent

@@ -1,0 +1,86 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 3
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.bazos.sk/search.php?hledat={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.inzeraty>div[class="inzeratynadpis"]>a
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.inzeratynadpis > a
+    listing_container_css_selector: div[class="inzeraty inzeratyflex"]
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: h2>a
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.inzeratycena
+      replace_old: \xe2\x82\xac
+      replace_new: EUR
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: div.inzeratylok
+      attribute_name: textContent
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: a img
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: body > div> div > div> div> a:last-child
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: .fucking-eu-cookies button
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: '{}'
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: div.inzeratydetnadpis
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.popisdetail
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: tbody > tr:nth-child(5) > td:nth-child(2) > b
+      replace_old: \xe2\x82\xac
+      replace_new: EUR
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: tbody > tr:nth-child(1) > td.listadvlevo span[onclick*="odeslatakci"]
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: tbody > tr:nth-child(1) > td.listadvlevo span[onclick*="odeslatakci"]
+      replace_old: .+\(.+?\'(\d+)[',]+(\d+)[',]+(.+)\'\).+
+      replace_new: https://www.bazos.sk/hodnotenie.php?idmail=\g<1>&idphone=\g<2>&jmeno=\g<3>
+      attribute_name: onclick
+      post_url_cleaning_module:
+        skip_query_string_cleaning: true
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: td[class="listadvlevo"] a[href*="/inzeraty/"]
+      value_css_selector: td[class="listadvlevo"] a[href*="/inzeraty/"]
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace
+      css_selector: .flinavigace img, img.carousel-cell-image
+      attribute_name: src
+      replace_old: t/
+      replace_new: /
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: .fucking-eu-cookies button

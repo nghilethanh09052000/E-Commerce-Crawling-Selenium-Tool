@@ -1,0 +1,15 @@
+include: jumia.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.jumia.co.ke/catalog/?q={}
+    poster_post_identifiers_retriever_module:
+      regex: jumia.co.ke\/(.+).html
+    post_identifiers_retriever_module:
+      regex: jumia.co.ke\/(.+).html
+    price_retriever_module:
+      replace_old: KSh
+      replace_new: KES
+  post_information_retriever_module:
+    post_url_template: https://www.jumia.co.ke/{}.html

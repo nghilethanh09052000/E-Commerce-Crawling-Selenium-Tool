@@ -1,0 +1,74 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    xvfb: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    loading_delay: 1
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.bedbathandbeyond.com/{},/k,/results.html
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#products>.productTile a[class*="productTile_link"]'
+      regex: bedbathandbeyond.com\/(.+)\/product.html
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector:
+          - button.cl-dialog-close
+          - div[class*="Banner_countrySelect"]>a
+          - div.mod.flag-select ul>li.US>a
+        after_pause_time: 2
+    listing_container_css_selector: '#products>.productTile a[class*="productTile_link"]'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: '[class*="title_wrapper"]'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '#currentPrice'
+      regex: (\$.+)
+      replace_old: \$
+      replace_new: USD
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div[class*="productTile_top"]>img
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: '[aria-label="pagination"]>button[aria-label="right arrow"]'
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.bedbathandbeyond.com/{}/product.html
+    take_screenshot: true
+    loading_delay: 2
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - button.cl-dialog-close
+          - div[class*="Banner_countrySelect"]>a
+          - div.mod.flag-select ul>li.US>a
+        after_pause_time: 2
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-test="product-title"]'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#description-height'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="current-price"]>div:last-of-type'
+      replace_old: \$
+      replace_new: USD
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_2: .container-pdp button[aria-label="next image arrow"]
+      picture_css_selector: '[data-testid="magnifier wrapper"]>div>img'
+      attribute_name: src
+      loading_delay: 1
+      regex: (.+)

@@ -1,0 +1,13 @@
+0	Label	f_label
+1	Categ	f_cat_organisation__name
+2	Num	f_num_image__logo_detected
+3	Text	f_text_post__hashtags
+4	Num	f_num_post__hashtags_number
+5	Text	f_text_post__original_text
+6	Text	f_text_post__text_without_organisation
+7	Num	f_num_post_organisation__organisation_in_post_original_text
+8	Num	f_num_post__organisations_number_in_post_original_text
+9	Num	f_num_post__organisations_number_in_post_hashtags
+10	Num	f_num_post_organisation__organisation_in_post_hashtags
+11	Num	f_num_post__email_in_post_text
+12	Num	f_num_post__phone_number_in_post_text

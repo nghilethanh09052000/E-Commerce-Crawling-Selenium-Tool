@@ -1,0 +1,59 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.gugus.co.kr/shopping/goodslist.asp?sm_keyword={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      post_url_cleaning_module:
+        query_string_to_keep:
+        - num
+      css_selector: .productListSec li .prod>a
+      regex: gugus.co.kr\/shopping\/goodsview.asp\?num=(.+)$
+    listing_container_css_selector: .productListSec li
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .txt>p>a
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .txt .price>strong
+      replace_old: (.+)
+      replace_new: \g<1>KRW
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .prod>a>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .pagination a.next
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.gugus.co.kr/shopping/goodsview.asp?num={}
+    title_retriever_module:
+      name: get_attribute_url
+      css_selector: .detailInfo h5[itemprop="name"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: p[itemprop="description"]
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .detailInfo [itemprop="price"]
+      replace_old: \원
+      replace_new: KRW
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: .detailInfo ul.thumb>li>input
+      picture_css_selector: .detailInfo .view>a>img
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 2

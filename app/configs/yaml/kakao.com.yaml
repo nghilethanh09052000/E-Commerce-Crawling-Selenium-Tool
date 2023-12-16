@@ -1,0 +1,101 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 4
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://story.kakao.com/hashtag/{}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .img_wrap>div.img_item
+      attribute_name: data-model
+      regex_substitute: \.
+      regex_substitute_string: /
+    listing_container_css_selector: .img_wrap>div.img_item
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img.img_thumb
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_scrolling_one_scroll_at_a_time
+      scroll_pause_time: 2
+      loading_delay: 1
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[data-part-name="feedList"]>div.section'
+      attribute_name: data-model
+      regex_substitute: \.
+      regex_substitute_string: /
+      action_before_poster_post_identifiers_module:
+        - name: click_action_module
+          css_selector: .list_story>li[data-resolver="myStory/feed"]
+          after_pause_time: 4
+      listing_container_css_selector: '[data-part-name="feedList"]>div.section'
+      vendor_retriever_module:
+        name: get_attribute_value
+        css_selector: .myid>a
+        attribute_name: textContent
+      poster_link_retriever_module:
+        name: get_attribute_url
+        css_selector: .myid>a
+        attribute_name: href
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: ._contentWrapper a._mediaImageContainer
+        attribute_name: data-url
+      videos_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: ._contentWrapper .movie_wrap .movie>._btnViewVideo
+        attribute_name: data-url
+      load_more_results_module:
+        name: load_more_by_scrolling_one_scroll_at_a_time
+        scroll_range: 7
+        scroll_pause_time: 0.3
+        loading_delay: 5
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://story.kakao.com/{}
+    take_screenshot: true
+    loading_delay: 3
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: ._contentWrapper>.txt_wrap>div
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .myid>a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .myid>a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: ._contentWrapper .img_wrap .img a img
+      attribute_name: src
+    videos_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: ._contentWrapper ._videoContainer ._btnViewVideo
+      attribute_name: data-url
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}/profile'
+    loading_delay: 2
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: span._profileName
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: ._profileImageContainer>img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: div.list_profile dl>dt
+      value_css_selector: div.list_profile dl>dd

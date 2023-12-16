@@ -1,0 +1,91 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 5
+    max_posts_to_browse: 2000
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://search.tmon.co.kr/search/?keyword={}&commonFilters=showOptionOnly:true&sortType=RECENT
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[class="item"]>a'
+      regex: tmon.co.kr\/deal\/(.*)$
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .item>a
+      regex: tmon.co.kr\/deal\/(.*)$
+      load_more_results_module:
+        name: load_more_by_scrolling_module
+    listing_container_css_selector: '[class="item"]>a'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .deal_info>p:first-of-type
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .price_area>span.price
+      replace_old: \xec\x9b\x90
+      replace_new: KRW
+      regex: \:(.+)
+      attribute_name: textContent
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector:  div.fig>div[data-src]
+      attribute_name: data-src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: .search_pagination_button.next
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: http://www.tmon.co.kr/deal/{}
+    take_screenshot: true
+    loading_delay: 5
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .deal_title_main
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#description'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .deal_price_sell>.number_unit
+      replace_old: \xec\x9b\x90
+      replace_new: KRW
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: click_then_get_attribute
+      button_css_selector: a.btn_more_info
+      css_selector: .store_tit
+      attribute_name: textContent
+      loading_delay: 3
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a.btn_more_info
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '#image-wrapper img'
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .store_tit
+      attribute_name: textContent
+    payload_retriever_module:
+      name: get_key_value_list
+      clickable_css_selector: .btn_seller_info
+      key_css_selector: .seller_cont dt
+      value_css_selector: .seller_cont dd

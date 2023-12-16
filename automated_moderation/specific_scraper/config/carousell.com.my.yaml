@@ -1,0 +1,21 @@
+include: carousell.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.carousell.com.my/search/{}?sort_by=3
+        - https://www.carousell.com.my/search/{}
+    post_identifiers_retriever_module:
+      regex: carousell\.com\.my\/p\/(.+)
+    poster_post_identifiers_retriever_module:
+      regex: carousell\.com\.my\/p\/(.+)
+    price_retriever_module:
+      replace_old: RM
+      replace_new: MYR
+  post_information_retriever_module:
+    post_url_template: https://www.carousell.com.my/p/{}
+    vendor_retriever_module:
+      regex: https://www\.carousell\.com\.my/u/(.+)/$
+    price_retriever_module:
+      replace_old: RM
+      replace_new: MYR

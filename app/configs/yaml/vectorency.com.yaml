@@ -1,0 +1,102 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://vectorency.com/?post_type=product&s={}&count=48&orderby=date
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: '#cookie-notice>button'
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: ul.products>li [class*="product__title"]>a
+      regex: vectorency.com\/item\/(.+)$
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: ul.products>li [class*="product__title"]>a
+      regex: vectorency.com\/item\/(.+)$
+    listing_container_css_selector: ul.products>li
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: '[class*="product__title"]'
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .price
+      replace_old: \$
+      replace_new: USD
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .sold-by-name
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .sold-by-name
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .product-media>a>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .pagination>a.next
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://vectorency.com/item/{}
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '#cookie-notice>button'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .product_title
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div#tab-description
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .summary .price
+      replace_old: \$
+      replace_new: USD
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: ul.sp-vendor-info>li>.details
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: '#tab-seller>div>div>a.btn-link'
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.images .slider-slide>a>img
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 2
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '#cookie-notice>button'
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .store-name
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .profile-img>img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .dokan-store-rating a[href*="/review"]
+      value_css_selector: .dokan-store-rating a[href*="/review"]
+      key_regex: rating
+      value_regex: '[\d\.]+'

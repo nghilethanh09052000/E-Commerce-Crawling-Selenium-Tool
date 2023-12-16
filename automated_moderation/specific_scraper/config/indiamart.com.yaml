@@ -1,0 +1,111 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    chromeprofile_domain_name: indiamart.com
+    headless: False
+    xvfb: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    scroll_down_after_get_new_page: true
+    loading_delay: 2
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://dir.indiamart.com/search.mp?ss={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: 'section.prd-card [data-click="^Prod0Name"]>a'
+      regex: indiamart.com\/proddetail\/(.+).html
+    listing_container_css_selector: 'section.prd-card'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: '[data-click="^Prod0Name"]'
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .slrPrd .prc
+      replace_old: \₹
+      replace_new: INR
+    vendor_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: '[data-click="^CompanyName"]>a:first-child'
+    poster_link_retriever_module:
+      name: get_attribute_url
+      attribute_name: href
+      css_selector: '[data-click="^CompanyName"]>a:first-child'
+    location_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: '[data-click="^CompanyName"]+div>div>span:first-child'
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .slrPrd>[data-click="^Prod0Img"]>img
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: div.prd-shmr>span
+      loading_delay: 3
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.indiamart.com/proddetail/{}.html
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '#first-heading>h1'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.pdpCtsr
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-ftype="PDP-MainProd-Price"]>span:first-child'
+      attribute_name: textContent
+      replace_old: \₹
+      replace_new: INR
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .cmpbox>div>div>a>h2
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .cmpbox>div>div>a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: div.pro-image-box>div img
+      clickable_css_selector_2: .enqPImg button.eqright
+      picture_css_selector: .enqPImg img#t0901_zoomimage
+      attribute_name: src
+      loading_delay: 3
+      skip_video: true
+      regex: (.+)
+      escape_popup_on_end: true
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: 'https://www.indiamart.com/{}/'
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: 'div#section+div  ul.FM_w1>li[onclick*="Profile"]>a'
+        after_pause_time: 2
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: 'div#section'
+      attribute_name: rcvname
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.clostag-p
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '#section+div a>span>img'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: div.FM_fShtCntnt>div tbody>tr>td:first-child
+      value_css_selector: div.FM_fShtCntnt>div tbody>tr>td:last-child

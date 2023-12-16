@@ -1,0 +1,16 @@
+include: aliexpress.yaml
+framework:
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.aliexpress.com/w/wholesale-{}.html
+    post_identifiers_retriever_module:
+      regex: aliexpress.com\/item\/(.*).html
+    price_retriever_module:
+      replace_old: €
+      replace_new: EUR
+    poster_post_identifiers_retriever_module:
+      regex: aliexpress.com\/item\/(.+).html
+    

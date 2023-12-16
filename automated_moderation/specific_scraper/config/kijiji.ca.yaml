@@ -1,0 +1,125 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 2000
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.kijiji.ca/b-canada/{}/k0l0
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.container-results>div.search-item div.title>a
+      regex: kijiji.ca\/(.+)
+    listing_container_css_selector: div.container-results>div.search-item
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.title>a
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.price
+      replace_old: \$
+      replace_new: CAD
+    location_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.location>span:first-child
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.image img
+      attribute_name: data-src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .pagination>a[title="Next"]
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[class*="listings"]>div>div[class*="wrapper"] a[class*="link"]
+      regex: kijiji.ca\/(.+)
+      post_url_cleaning_module:
+        skip_query_string_cleaning: true
+      listing_container_css_selector: div[class*="listings"]>div>div[class*="wrapper"]
+      title_retriever_module:
+        name: get_attribute_value
+        attribute_name: textContent
+        css_selector: h4[class*="title"]
+      price_retriever_module:
+        name: get_attribute_value
+        attribute_name: textContent
+        css_selector: div[class*="priceInformation"] span[class*="price"]
+        replace_old: \$
+        replace_new: CAD
+      location_retriever_module:
+        name: get_attribute_value
+        attribute_name: textContent
+        css_selector: div[class*="dateLocation-"]>div
+        exclude_children: true
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: div[class*="imageContainer"]>img
+        attribute_name: src
+      load_more_results_module:
+        name: go_to_next_page_module
+        css_selector: a[class*="nextButton"]
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.kijiji.ca/{}
+    take_screenshot: true
+    loading_delay: 2
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[itemprop="name"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[itemprop="description"]
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '#ViewItemPage span[itemprop="price"]'
+      attribute_name: textContent
+      replace_old: \$
+      replace_new: CAD
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="itemInfoSidebar"] div[class*="header"] [class*="link"]
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div[class*="itemInfoSidebar"] [data-qa-id="active-listings-stat-line"]>a
+      attribute_name: href
+    location_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: span[itemprop="address"]
+    pictures_retriever_module:
+      name: get_pictures_from_popup
+      clickable_css_selector: 'div[class*="heroImageContainer"] #mainHeroImage div[class*="generalOverlay"]'
+      picture_css_selector: div[class*="carousel"]>ul>li source
+      attribute_name: srcset
+      regex: (.+)
+      loading_delay: 2
+      escape_popup_on_end: true
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-fes-id="profile"] [class*="name"] , [data-fes-id="profile"] [class*="header"] [class*="title"]'
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[data-fes-id="profile"] [class*="avatar"]>div>picture>img'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: '[data-fes-id="profile"] [class*="sidebar"]>div>div:last-of-type div[class*="label"]'
+      value_css_selector: '[data-fes-id="profile"] [class*="sidebar"]>div>div:last-of-type div[class*="text"]'

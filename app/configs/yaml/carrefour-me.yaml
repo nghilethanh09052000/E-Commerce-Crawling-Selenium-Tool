@@ -1,0 +1,66 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    loading_delay: 3
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[data-testid="scrollable-list-view"] ul[elevation] a[data-testid="product_name"]'
+    listing_container_css_selector: '[data-testid="scrollable-list-view"] ul[elevation]'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: title
+      css_selector: a[data-testid="product_name"]
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: '[data-testid="product_price"]>div'
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[data-testid="product_image_main"]
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_click
+      css_selector: button[data-testid="trolly-button"]
+      loading_delay: 3
+      scroll_pause_time: 0
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    take_screenshot: true
+    loading_delay: 1
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="description-box"] h1'
+    description_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["description"]}'
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["price"]} {jsons[0]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: span.css-cn4wrh
+      regex: by(.+)
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.swiper-container-free-mode a.swiper-slide img
+      attribute_name: src
+    action_before_retrieving_post_information_module:
+      - name: refresh_page
+        stop_css_selector: '[data-testid="description-box"] h1'
+        after_pause_time: 1
+        loading_timeout: 3
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler

@@ -1,0 +1,116 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+    - name: 123proxy
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+    load_images: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    take_screenshots: true
+    scroll_down_after_get_new_page: true
+    loading_delay: 4
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://search.kaola.com/search.html?key={}&searchRefer=searchbutton&zn=top&pageSize=100
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#result>li.goods a.title'
+      regex: goods.kaola.com\/product\/(.+).html
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a.product-anchor
+      regex: goods.kaola.com\/product\/(.+).html
+      action_before_poster_post_identifiers_module:
+        - name: click_action_module
+          css_selector: a[href*="mall.kaola.com/search.html?shopId="]
+          after_pause_time: 2
+    listing_container_css_selector: '#result>li.goods'
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: a.nextPage
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: a.title
+      attribute_name: title
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: p.price:not(:has(.grayPrice))
+      attribute_name: textContent
+      replace_old: \￥
+      replace_new: CNY
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: p.selfflag
+    poster_link_retriever_module:
+      name: get_attribute_value
+      css_selector: p.selfflag>a
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .img>img
+      attribute_name: src
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://goods.kaola.com/product/{}.html
+    loading_delay: 5
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: slider_bypass
+        draggable_css_selector: '#nc_1_n1z'
+        attempts_count: 20
+        slider_box_size: 300
+        slider_bar_size: 40
+        restart_button_css_selector: div[id="`nc_1_refresh1`"]
+        loading_delay: 3
+      - name: click_action_module
+        css_selector: div.baxia-dialog-close
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .PInfo .product-title
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-ref="description-card"]
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .PInfo span.currentPrice
+      attribute_name: textContent
+      replace_old: \￥
+      replace_new: CNY
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .shopname
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a.shopname
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: .PImgBox ul#litimgUl>li>a
+      picture_css_selector: '.PImgBox #showImgBox>img'
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 2
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 1
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: div.baxia-dialog-close
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .m-shopsign .shopname
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .m-shopsign .sign-bg
+      attribute_name: src
+      regex: (http.+)\?

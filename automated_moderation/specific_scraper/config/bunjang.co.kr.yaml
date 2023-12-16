@@ -1,0 +1,141 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: iproyal/us
+    - name: iproyal/lithuania
+    - name: horcon
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+    load_images: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 2000
+    scroll_down_after_get_new_page: true
+    loading_delay: 3
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://m.bunjang.co.kr/search/products?q={}
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[href*="/products/"][data-pid]
+      regex: m\.bunjang\.co\.kr\/products\/(.*)$
+      load_more_results_module:
+        name: load_more_by_click
+        css_selector: button.sc-cCbXAZ.iXnZly
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[href*="/products/"][data-pid]
+      regex: m\.bunjang\.co\.kr\/products\/(.*)$
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: div>a.hXbHvL+a , div>a.jDGKjH+a
+      loading_delay: 3
+    listing_container_css_selector: a[href*="/products/"][data-pid]
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: div:nth-of-type(2)>div
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div:nth-of-type(2) div:nth-of-type(2)>div
+      replace_old: (.+)
+      replace_new: \g<1> KRW
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: img[src*="_w"][src*="product"]
+      attribute_name: src
+      replace_old_regex: _w\d+\.
+      replace_new: _w1200.
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://m.bunjang.co.kr/products/{}
+    loading_delay: 5
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: title
+      regex: '[^|]+'
+    description_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: p[style*="width"]
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class^="ProductSummarystyle__Price"]:not(div[class^="ProductSummarystyle__PriceWrapper"])
+      attribute_name: textContent
+      replace_old: \xec\x9b\x90
+      replace_new: ' KRW'
+    vendor_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div a[href*="/shop"] ~ div a[href*="/shop"]
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div a[href*="/shop"] ~ div a[href*="/shop"]
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: img[src*="/product/"][src*="w1100"]
+      attribute_name: src
+      replace_old_regex: \_w\d+
+      replace_new: _w1200
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 10
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .eevVWc , .hgrllz
+    description_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .dmNjqT , .sc-keVrkP
+    picture_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: .sc-esExBO>img , .sc-eXNvrr>img
+      attribute_name: src
+      replace_old_regex: \_w\d+
+      replace_new: _w1200
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - img[alt*="상점오픈일"]
+        - img[alt*="상점방문수"]
+        - img[alt*="상품판매"]
+        - img[alt*="상퓸발송"]
+        - a[href*="/shop/"][href*="followers"]
+      value_css_selectors:
+        - img[alt*="상점오픈일"] ~ div
+        - img[alt*="상점방문수"] ~ div
+        - img[alt*="상품판매"] ~ div
+        - img[alt*="상퓸발송"] ~ div
+        - a[href*="/shop/"][href*="followers"]
+      key_regex:
+        - 상점오픈일
+        - 상점방문수
+        - 상품판매
+        - 상퓸발송
+        - 팔로워
+      value_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - 팔로워(\d+)
+      key_attributes:
+        - alt
+        - alt
+        - alt
+        - alt
+        - textContent
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent

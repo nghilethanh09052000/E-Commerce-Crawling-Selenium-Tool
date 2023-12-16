@@ -1,0 +1,109 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    cloudflare_bypass: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.olx.com.ec/items/q-{}?sorting=desc-creation
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: li.EIR5N > a
+      regex: (?<=\/item\/)(.*)
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: li.EIR5N > a
+      regex: (?<=\/item\/)(.*)
+    load_more_results_module:
+      name: load_more_by_click
+      css_selector: .JbJAl > button:nth-child(1)
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.olx.com.ec/item/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: ._3rJ6e[data-aut-id="itemTitle"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-aut-id="itemDescriptionContent"]'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: ._2xKfz[data-aut-id="itemPrice"]
+      replace_old: \$
+      replace_new: USD
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: ._3oOe9
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[href*="/profile/"]
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: div[data-aut-id="itemLocation"]
+      value_css_selector: div[data-aut-id="itemLocation"]
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_one_picture_only_case
+      css_selector_1: ._2TeTt > div:nth-child(1) > div:nth-child(1) > div > div:nth-child(1)
+        > div:nth-child(1) > button
+      attribute_name_1: style
+      regex_1: '(?<=background-image: url\(")(.*)("\))'
+      replace_old_1: s=82x0
+      replace_new_1: s=500x0
+      css_selector_2: '[data-aut-id="itemComponent"] figure img'
+      attribute_name_2: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: title
+      regex: '([^\|]+) '
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      picture_css_selector: figure[class="rui-1gV1x"]
+      attribute_name: style
+      regex: (http[^\;]+)
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - div[data-aut-id="followersButton"] span:nth-of-type(1)
+        - div[data-aut-id="followingButton"] span:nth-of-type(1)
+        - div[data-aut-id="memberSince"] span
+      value_css_selectors:
+        - div[data-aut-id="followersButton"] span:nth-of-type(2)
+        - div[data-aut-id="followingButton"] span:nth-of-type(2)
+        - div[data-aut-id="memberSince"] span
+      key_regex:
+        - (.+)
+        - (.+)
+        - ([^<]+)
+      value_regex:
+        - (.+)
+        - (.+)
+        - <span>([^<]+)
+      key_attributes:
+        - textContent
+        - textContent
+        - innerHTML
+      value_attributes:
+        - textContent
+        - textContent
+        - innerHTML
+  archiving_options:
+    click_on_elements:
+      - button#onetrust-accept-btn-handler
+    height: 2000
+    width: 1924

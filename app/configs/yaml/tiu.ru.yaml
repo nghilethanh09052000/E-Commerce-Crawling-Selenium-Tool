@@ -1,0 +1,92 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://tiu.ru/search?search_term={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[data-qaid="product_link"]'
+      regex: tiu.ru\/(.*)$
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: '[data-qaid="next_page"]'
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://tiu.ru/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-qaid="product_name"]'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-qaid="attribute_block"]
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-qaid="product_price"]'
+      replace_old: \xd1\x80\xd1\x83\xd0\xb1
+      replace_new: RUB
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-qaid="company_name"]'
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[data-qaid="company_name"]
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: span[data-qaid="region"]
+      key_replace_old: ',.+'
+      key_replace_new: ''
+      value_css_selector: span[data-qaid="region"]
+      value_replace_old: ',.+'
+      value_replace_new: ''
+    ships_to_retriever_module:
+      name: get_key_value_list
+      clickable_css_selector: div[data-qaid="region_delivery"] button
+      key_css_selector: div[data-qaid="region_delivery_popup"] ul li[class="frO8v"]
+      value_css_selector: div[data-qaid="region_delivery_popup"] ul li[class="frO8v"]
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[data-qaid="image_block"] img'
+      attribute_name: src
+      remove_if_match_regex: \bmore-dots-aBrjv\b
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button[data-qaid="all_attributes"]
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      loading_delay: 8
+      css_selector: a[data-qaid="company_name"]>span
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[data-qaid="company_logo"]
+      attribute_name: src
+    payload_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-qaid="rating_block"]'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      clickable_css_selector: '[data-qaid="about_company_btn"]'
+      css_selector: '[data-qaid="about_company_msg"]'
+      attribute_name: textContent
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: .w2KJ2 a.ggtwi
+        before_pause_time: 3

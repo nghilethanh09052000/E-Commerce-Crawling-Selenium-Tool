@@ -1,0 +1,69 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    max_posts_to_browse: 3000
+    loading_delay: 3
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.carrefour.pl/szukaj?q={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[class="jss85"]>div>div>div div.MuiBox-root>a'
+      regex: carrefour.pl\/(.+)
+    listing_container_css_selector: '[class="jss85"]>div>div>div'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.MuiBox-root>a
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .MuiBox-root+div>div>div:not(.undefined):has(div)
+      replace_old: '(\d+)(\d{2}) z\ł'
+      replace_new: '\g<1>.\g<2> PLN'
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: button.MuiButtonBase-root img
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: '.MuiTypography-body1+button.MuiButtonBase-root'
+      undetected_click: true
+      loading_delay: 4
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.carrefour.pl/{}
+    take_screenshot: true
+    loading_delay: 2
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .jss148 .MuiTypography-h1
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[aria-hidden="false"]>.jss236'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: 'div[itemprop="offers"]>[itemprop="price"]'
+      replace_old: (.+)
+      replace_new: \g<1> PLN
+      attribute_name: content
+    pictures_retriever_module:
+      name: get_pictures_from_popup
+      clickable_css_selector: .jss176 div.react-swipeable-view-container>div[aria-hidden="false"]>img
+      picture_css_selector: .MuiDialogContent-root .react-swipeable-view-container>div>img
+      attribute_name: src
+      regex: (.+)
+      escape_popup_on_end: true
+      loading_delay: 2
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler

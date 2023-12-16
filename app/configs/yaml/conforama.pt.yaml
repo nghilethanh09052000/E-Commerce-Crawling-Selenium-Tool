@@ -1,0 +1,97 @@
+framework:
+  name: api_selenium_framework
+  driver_initialization_module:
+    name: classic_api_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://api.empathy.co/search/v1/query/conforama/search?internal=true&query={SEARCH_QUERY}&origin=search_box%3Anone&rows=24&instance=conforama&lang=pt&store=pt&scope=desktop
+    api_request_params:
+      method_type: GET
+    load_more_results_module:
+      name: load_more_by_adding_page
+      value: '&start={PAGE_NUMBER}'
+      page_multiplier: 24
+    listing_retriever_module:
+      name: get_json_obj
+      attribute_names:
+        - 'catalog.content'
+    post_identifiers_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - url
+    title_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - name
+    price_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - price
+      append_text: EUR
+    pictures_retriever_module:
+      name: get_json_pictures
+      attribute_names:
+        - image
+      return_list: true
+  post_information_retriever_module:
+    name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+    post_url_template: '{}'
+    take_screenshot: true
+    loading_delay: 1
+    driver_initialization_module:
+      name: classic_selenium_initialization_module
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .details .name
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-type="info"]>.show'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .details .price-after
+      replace_old: '\€'
+      replace_new: 'EUR'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .sold-by>.seller
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .sold-by>a.seller
+      attribute_name: href
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: .details .image
+      clickable_css_selector_2: '.lg-outer div.lg-next'
+      picture_css_selector: '.lg-outer div.lg-item.lg-current img'
+      attribute_name: src
+      regex: (.+)
+      escape_popup_on_end: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - '[role="dialog"] button[mode="primary"]'
+          - 'button.modal__close'
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 3
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - '[role="dialog"] button[mode="primary"]'
+          - 'button.modal__close'
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '#page-seller h1'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '.seller-information__container>.contents>section>dl>span'
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: '.seller-information__container>.contents>section>dl>dt'
+      value_css_selector: '.seller-information__container>.contents>section>dl>dd'

@@ -1,0 +1,66 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    loading_delay: 2
+    take_screenshots: true
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.kaufland.pl/wyszukiwarka.html?q={}
+    listing_container_css_selector: div[data-t-name="OfferTile"]
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a.m-offer-tile__link
+      regex: (?<=kaufland.pl\/)(.*)$
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h4.m-offer-tile__title
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div.a-pricetag__price
+      replace_old: .+
+      replace_new: '\g<0> PLN'
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.m-offer-tile__image > figure > img
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: div.t-search-result__pagination:first-of-type ul li:last-of-type
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: '#CybotCookiebotDialog .cookie-alert-extended-controls button:first-of-type'
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    take_screenshot: true
+    post_url_template: https://www.kaufland.pl/{}
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.t-offer-detail__title
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.t-offer-detail__description > p
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .a-pricetag__price
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: h2.t-offer-detail__subtitle
+      attribute_name: textContent
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.o-product-gallery__preview img
+      attribute_name: srcset
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '#CybotCookiebotDialog .cookie-alert-extended-controls button:first-of-type'

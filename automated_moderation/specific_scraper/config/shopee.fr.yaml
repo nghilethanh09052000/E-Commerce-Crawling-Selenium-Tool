@@ -1,0 +1,15 @@
+# Domain not available anymore
+include: shopee.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://shopee.fr/search?keyword={}
+    poster_post_identifiers_retriever_module:
+      regex: shopee.fr\/(.*)$
+    post_identifiers_retriever_module:
+      regex: shopee.fr\/(.*)$
+  post_information_retriever_module:
+    post_url_template: https://shopee.fr/{}
+    vendor_retriever_module:
+      regex: .+fr/(.+)\?.+

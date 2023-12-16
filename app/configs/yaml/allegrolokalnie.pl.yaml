@@ -1,0 +1,100 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 5
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://allegrolokalnie.pl/oferty/q/{}
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .opbox-listing article div>h2>a
+      regex: allegrolokalnie.pl\/oferta\/(.*)$
+      load_more_results_module:
+        name: go_to_next_page_module
+        css_selector: nav a.ml-pagination__link[aria-disabled="false"]
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .listing__items a.mlc-itembox
+      regex: allegrolokalnie.pl\/oferta\/(.*)$
+    listing_container_css_selector: .listing__items a.mlc-itembox
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: h3.mlc-itembox__title
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: span.ml-offer-price
+      replace_old: z\ł
+      replace_new: PLN
+      trim_text: true
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: div.mlc-itembox__location
+      attribute_name: textContent
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.mlc-itembox__image img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: a.ml-pagination__link:last-child
+    action_before_search_pages_browsing_module:
+      - name: click_action_module_and_scroll
+        css_selector: '.ReactModalPortal #cookies_confirm , button[data-role="accept-consent"]'
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.allegrolokalnie.pl/oferta/{}
+    take_screenshot: true
+    loading_delay: 2
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .mlc-offer__sidebar .ml-heading-large
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .mlc-offer__offer-details
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .mlc-offer__sidebar .ml-offer-price
+      replace_old: z\ł
+      replace_new: ' PLN'
+      trim_text: true
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: h2#mlc-seller-details-info-heading
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a.mlc-seller-offers__show-all-button
+      attribute_name: href
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: address.mlc-seller-details-location
+      attribute_name: textContent
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img.photo-carousel__thumbnail-img , div.slick-current img
+      attribute_name: src
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '.ReactModalPortal #cookies_confirm , button[data-role="accept-consent"]'
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 2
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.ml-heading-title
+      attribute_name: textContent
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '.ReactModalPortal #cookies_confirm , button[data-role="accept-consent"]'

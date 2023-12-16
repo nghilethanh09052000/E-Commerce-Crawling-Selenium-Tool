@@ -1,0 +1,11 @@
+include: mercadolibre.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://lista.mercadolivre.com.br/{}
+    price_retriever_module:
+      replace_old: R\$
+      replace_new: BRL
+  archiving_options:
+    scroll_to_bottom: true

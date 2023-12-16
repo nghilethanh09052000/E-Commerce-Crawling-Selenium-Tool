@@ -1,0 +1,106 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.skroutz.gr/search?keyphrase={}
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: ol#sku-list li[data-testid="sku-card"] h2 a.js-sku-link
+      regex: skroutz.gr/(.+)
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: ol#sku-list li[data-testid="sku-card"] h2 a.js-sku-link
+      regex: skroutz.gr/(.+)
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: .list-controls ol.paginator li:last-of-type
+    listing_container_css_selector: ol#sku-list li[data-testid="sku-card"]
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h2 a.js-sku-link
+      attribute_name: title
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: a[data-e2e-testid="sku-price-link"]
+      replace_old: \€
+      replace_new: EUR
+      exclude_children: true
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .shop-count
+      regex: (?:στο|from)\s+(.*)
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[data-testid="sku-pic-img"]
+      attribute_name: src
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: ul.country-list li[data-country-code="GR"]
+        after_pause_time: 2
+      - name: click_action_module
+        css_selector: button#accept-all
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.skroutz.gr/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.page-title
+      exclude_children: true
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .sku-description
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: section#sku-offerings .price
+      replace_old: \€
+      replace_new: EUR
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .shop-info .shop-name
+    poster_link_retriever_module:
+      name: get_attribute_url
+      clickable_css_selector: .shop-info .shop-name
+      css_selector: '#modal-inner .storefront-link a'
+      attribute_name: href
+      close_button_css_selector: '#modal-inner a[class*="close"]'
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: '#sku-details div[class="section content"] > div:not(.details)
+        :is(.slide-container .slide:first-of-type, a.sku-image) img'
+      clickable_css_selector_2: .arrow-right
+      picture_css_selector: '#modal-inner :is(div.gallery-modal-image img, #lightbox_inner
+        li > img)'
+      attribute_name: src
+      regex: (.+)
+      escape_popup_on_end: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: ul.country-list li[data-country-code="GR"]
+        after_pause_time: 2
+      - name: click_action_module
+        css_selector: button#accept-all
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.page-title
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.shop-logo img
+      attribute_name: src
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: ul.country-list li[data-country-code="GR"]
+        after_pause_time: 2
+      - name: click_action_module
+        css_selector: button#accept-all

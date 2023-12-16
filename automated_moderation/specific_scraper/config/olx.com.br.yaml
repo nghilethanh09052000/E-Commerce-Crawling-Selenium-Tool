@@ -1,0 +1,161 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.olx.com.br/brasil?q={}&sf=1
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[class*="sc-1fcmfeb-2"] a'
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[class*="AdCard__Wrapper"] a'
+      listing_container_css_selector: '[class*="AdCard__Wrapper"]'
+      title_retriever_module:
+        name: get_attribute_value
+        css_selector: '[class*="AdTitle__StyledTitle"]'
+      price_retriever_module:
+        name: get_attribute_value
+        css_selector: '[class*="AdPrice__StyledPrice"]'
+        replace_old: R\$
+        replace_new: BRL
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: '[class*="AdThumbsSlider__SliderWrapper"] div[image]'
+        attribute_name: image
+      load_more_results_module:
+        name: load_more_by_scrolling_module
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: a[data-lurker-detail="next_page"]
+    listing_container_css_selector: li.sc-1fcmfeb-2
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h2
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .m7nrfa-0
+      replace_old: R\$
+      replace_new: BRL
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[alt]
+      attribute_name: src
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: '#cookie-notice-ok-button'
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: '{}'
+    take_screenshot: true
+    title_retriever_module:
+      name: get_json_value
+      css_selector: script#initial-data
+      attribute_name: data-json
+      output_string: '{jsons[0]["ad"]["subject"]}'
+    description_retriever_module:
+      name: get_json_value
+      css_selector: script#initial-data
+      attribute_name: data-json
+      output_string: '{jsons[0]["ad"]["description"]}'
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script#initial-data
+      attribute_name: data-json
+      output_string: '{jsons[0]["ad"]["priceValue"]}'
+      replace_old: R\$
+      replace_new: BRL
+    vendor_retriever_module:
+      name: get_json_value
+      css_selector: script#initial-data
+      attribute_name: data-json
+      output_string: '{jsons[0]["ad"]["user"]["name"]}'
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[href*="/perfil/"]
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - script#initial-data
+      value_css_selectors:
+        - script#initial-data
+      key_regex:
+        - '\"neighbourhood\"\:\"([^\"]+)'
+      value_regex:
+        - '\"neighbourhood\"\:\"([^\"]+)'
+      key_attributes:
+        - data-json
+      value_attributes:
+        - data-json
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div[data-testid="slides-wrapper"] source[srcset*="webp"]
+      attribute_name: srcset
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[class*="StoreTitle"]
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[class*="StoreLogo__Image"]
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - div[class*="ProfileExtraInfo"] div[class*="MemberSince"]
+        - div[class*="ProfileExtraInfo"] div[title*="Telefone"]
+        - div[class*="ProfileExtraInfo"] div[title*="E-mail"]
+        - div[class*="ProfileExtraInfo"] div[title*="Facebook"]
+        - div[class*="ProfileExtraInfo"] div[class*="BadgeDescription"]
+        - div[class*="StoreLocation__Content"]
+      value_css_selectors:
+        - div[class*="ProfileExtraInfo"] div[class*="MemberSince"]
+        - div[class*="ProfileExtraInfo"] div[title*="Telefone"]
+        - div[class*="ProfileExtraInfo"] div[title*="E-mail"]
+        - div[class*="ProfileExtraInfo"] div[title*="Facebook"]
+        - div[class*="ProfileExtraInfo"] div[class*="BadgeDescription"]
+        - div[class*="StoreLocation__Content"]
+      key_regex:
+        - ([\w]+ [\w]+ [\w]+)
+        - ([^ ]+)
+        - ([^ ]+)
+        - ([^ ]+)
+        - ([^ ]+)
+        - StoreLocation
+      value_regex:
+        - '[\w]+ [\w]+ [\w]+ (.+)'
+        - '[^ ]+ (.+)'
+        - '[^ ]+ (.+)'
+        - '[^ ]+ (.+)'
+        - '[^ ]+ (.+)'
+        - (.+)
+      key_attributes:
+        - textContent
+        - title
+        - title
+        - title
+        - textContent
+        - class
+      value_attributes:
+        - textContent
+        - title
+        - title
+        - title
+        - textContent
+        - textContent
+  archiving_options:
+    click_on_elements:
+      - button#onetrust-accept-btn-handler
+    height: 2000
+    width: 1924

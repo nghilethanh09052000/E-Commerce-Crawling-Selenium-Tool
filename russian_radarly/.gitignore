@@ -1,0 +1,5 @@
+*.pyc
+.env
+function.zip
+__pycache__/
+venv/

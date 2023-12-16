@@ -1,0 +1,71 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  proxies:
+    - name: iproyal/us
+    - name: 123proxy
+    - name: proxys.io/mobile/shared/us
+    - name: proxys.io/mobile/dedicated/ro
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    take_screenshots: true
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.otto.de/suche/{}
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: '#cookieBanner .cookieBanner__footer button'
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#reptile-tilelist article a.find_tile__productLink'
+      regex: otto.de\/(.*)
+    listing_container_css_selector: '#reptile-tilelist article'
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: '#reptile-paging-top-next'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .find_tile__name
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: span[class*="retailPrice"]
+      attribute_name: textContent
+      replace_old: \€
+      replace_new: EUR
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[class*="productImage"]
+      attribute_name: src
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.otto.de/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[data-qa="variationName"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.pdp_description
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div.pdp_price__inner div.pdp_price__price:not(.pl_hidden) span[class*='pdp_price']
+      attribute_name: textContent
+      replace_old: \€
+      replace_new: EUR
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: div[class*='pl_sliding-carousel__container'] .pl_sliding-carousel__slide--active
+      clickable_css_selector_2: div[class*="pswp__scroll"] button[class*="arrow--next"]
+      picture_css_selector: .pswp__item img
+      attribute_name: src
+      regex: (.+)
+      escape_popup_on_end: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '#cookieBanner .cookieBanner__footer button'

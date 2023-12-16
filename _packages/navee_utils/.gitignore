@@ -1,0 +1,7 @@
+.venv
+__pycache__
+
+# Distribution / packaging
+*.egg-info/
+build/
+dist/

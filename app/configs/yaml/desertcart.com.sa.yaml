@@ -1,0 +1,10 @@
+include: desertcart.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.desertcart.com.sa/search/{}
+    post_identifiers_retriever_module:
+      regex: desertcart.com.sa\/products\/(.*)
+  post_information_retriever_module:
+    post_url_template: https://www.desertcart.com.sa/products/{}

@@ -1,0 +1,177 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    loading_delay: 1
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.mercari.com/search/?keyword={}&sortBy=2
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[href*="/item/"]
+      regex: mercari\.com/us/item/(.+)
+      load_more_results_module:
+        name: go_to_next_page_module
+        css_selector: div[class*="Paginator"] a:last-child
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[data-testid="SearchResults"] a[href*="/item/"]
+      regex: mercari\.com\/us\/item\/(.+)
+    listing_container_css_selector: div[data-testid="SearchResults"] a[href*="/item/"]
+      , div[class*="Profile__ListWrapper"] a[href*="/item/"]
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: '[data-testid="ItemName"]'
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: '[data-testid="ItemPrice"]>span:first-child'
+      replace_old: \$
+      replace_new: USD
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[data-testid="StyledProductThumb"]>div>img'
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_scrolling_one_scroll_at_a_time
+      scroll_pause_time: 2
+      scroll_range: 1
+      loading_delay: 3
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button#truste-consent-button
+        after_pause_time: 4
+  post_information_retriever_module:
+    name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+    post_url_template: https://www.mercari.com/us/item/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="ItemInfo"] [data-testid="ItemName"]'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="ItemDetailsDescription"]'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="ItemInfo"] [data-testid="ItemPrice"]'
+      replace_old: \$
+      replace_new: USD
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="Seller"] [data-testid="ItemDetailsSellerName"]'
+      attribute_name: textContent
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: div[data-testid="ItemDetailsShipping"] div span
+      value_css_selector: div[data-testid="ItemDetailsShipping"] div span
+      key_regex: from(.+)
+      value_regex: from(.+)
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div[data-testid="Seller"] a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: div[data-testid*="FilmStripImg"] img
+      attribute_name: src
+      replace_old_regex: \?.+
+      replace_new: ''
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="UserName"]'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="UserDescription"]>p
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: img[src*="/members/"]
+      attribute_name: src
+      replace_old_regex: \?.+
+      replace_new: ''
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      loading_delay: 1
+      clickable_css_selectors:
+        - div[class*="AboutUser"] button
+        - ''
+        - ''
+        - ''
+        - ''
+        - ''
+        - ''
+        - ''
+        - ''
+      key_css_selectors:
+        - p[class*="ReviewsText"]
+        - '[class*="ReviewAndStats"] [data-testid="SellerCounts"]>p:nth-child(1)'
+        - '[class*="ReviewAndStats"] [data-testid="SellerCounts"]>p:nth-child(3)'
+        - '[class*="ReviewAndStats"] [data-testid="SellerCounts"]>p:nth-child(5)'
+        - div[class*="AboutUser"] [data-testid="MemberSince"]
+        - div[class*="AboutUser"] div div div:nth-of-type(2)
+        - div[class*="AboutUser"] div div div:nth-of-type(3)
+        - div[class*="AboutUser"] div div div:nth-of-type(4)
+        - div[class*="AboutUser"] div div div:nth-of-type(5)
+      value_css_selectors:
+        - p[class*="ReviewsText"]
+        - '[class*="ReviewAndStats"] [data-testid="SellerCounts"]>p:nth-child(1)'
+        - '[class*="ReviewAndStats"] [data-testid="SellerCounts"]>p:nth-child(3)'
+        - '[class*="ReviewAndStats"] [data-testid="SellerCounts"]>p:nth-child(5)'
+        - div[class*="AboutUser"] [data-testid="MemberSince"]
+        - div[class*="AboutUser"] div div div:nth-of-type(2)
+        - div[class*="AboutUser"] div div div:nth-of-type(3)
+        - div[class*="AboutUser"] div div div:nth-of-type(4)
+        - div[class*="AboutUser"] div div div:nth-of-type(5)
+      key_regex:
+        - Reviews
+        - ([^\d]+)
+        - ([^\d]+)
+        - ([^\d]+)
+        - .+
+        - Confirmed (.+)
+        - Confirmed (.+)
+        - Confirmed (.+)
+        - Confirmed (.+)
+      value_regex:
+        - ([\d]+)
+        - ([\d]+)
+        - ([\d]+)
+        - ([\d]+)
+        - ([\d]+)
+        - Confirmed
+        - Confirmed
+        - Confirmed
+        - Confirmed
+      key_attributes:
+        - class
+        - textContent
+        - textContent
+        - textContent
+        - data-testid
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent

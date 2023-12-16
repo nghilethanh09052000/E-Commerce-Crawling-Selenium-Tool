@@ -1,0 +1,10 @@
+include: facebook.yaml
+framework:
+  login_module:
+    login_page_url: https://www.facebook.com
+    cookies_css_selector: '[title="Allow essential and optional cookies"]'
+    username_css_selector: '[id="email"]'
+    password_css_selector: '[id="pass"]'
+    submit_css_selector: '[name="login"]'
+    username: antoine.bellami@navee.co
+    password: thebeastbynavee!

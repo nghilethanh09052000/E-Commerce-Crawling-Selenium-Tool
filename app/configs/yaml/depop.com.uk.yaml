@@ -1,0 +1,14 @@
+include: depop.yaml
+framework:
+  driver_initialization_module:
+    cookies:
+      properties:
+        location: gb
+  search_pages_browsing_module:
+    price_retriever_module:
+      replace_old: \xc2\xa3
+      replace_new: GBP
+  post_information_retriever_module:
+    price_retriever_module:
+      replace_old: \xc2\xa3
+      replace_new: GBP

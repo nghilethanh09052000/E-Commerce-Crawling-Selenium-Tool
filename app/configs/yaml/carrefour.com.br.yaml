@@ -1,0 +1,99 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 3
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.carrefour.com.br/busca/{}
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: 
+        .carrefourbr-carrefour-components-0-x-gallery>.carrefourbr-carrefour-components-0-x-galleryItem
+        a
+      regex: carrefour.com.br\/(.+)$
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: 
+        .carrefourbr-carrefour-components-0-x-gallery>.carrefourbr-carrefour-components-0-x-galleryItem
+        a
+      regex: carrefour.com.br\/(.+)$
+    listing_container_css_selector: 
+      .carrefourbr-carrefour-components-0-x-gallery>.carrefourbr-carrefour-components-0-x-galleryItem
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .carrefourbr-carrefour-components-0-x-productNameContainer
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: span[class*="x-spotPriceValue"]
+      replace_old: R\$
+      replace_new: BRL
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div[class*="x-imageContainer"]>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: li[class*="x-Pagination_NextButtonContainer"]>a
+      restart_driver: true
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler
+  post_information_retriever_module:
+    name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+    post_url_template: https://www.carrefour.com.br/{}
+    take_screenshot: true
+    loading_delay: 3
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="product-info-container"] [class*="x-productNameContainer"]
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="x-productDescriptionText"]
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="product-info-container"] [class*="x-currencySellingPrice"]
+      replace_old: R\$
+      replace_new: BRL
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="product-info-container"] [class*="x-sellerName"]>*:first-child
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div[class*="product-info-container"] [class*="x-sellerName"]>a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: div[class*="x-carouselGaleryThumbs"] .swiper-slide:has(img)
+      picture_css_selector: div[class*="x-carouselGaleryThumbs"] .swiper-slide img
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 1
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: https://www.carrefour.com.br/{}
+    take_screenshot: true
+    loading_delay: 2
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="x-sellerTitle"]'
+    description_retriever_module:
+      name: get_attribute_value
+      clickable_css_selector: '[class*="seller-description"] span.c-link'
+      css_selector: '[aria-modal="true"]>div>div:nth-of-type(2) [role="region"]'
+      close_button_css_selector: '[aria-modal="true"] button[class*="styles_closeButton"]'
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .carrefourbr-seller-page-0-x-sellerLogo>img
+      attribute_name: src
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler

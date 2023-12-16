@@ -1,0 +1,81 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    max_posts_to_browse: 3000
+    loading_delay: 12
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.desertcart.ma/search/{}
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: '.MuiDialog-paper [aria-label="close"]'
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: ul.products>li [class*="product__title"]>a
+      regex: desertcart.ma\/products\/(.+)$
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div>div.ProductBoxView>a
+      regex: desertcart.ma\/products\/(.+)$
+    listing_container_css_selector: div>div.ProductBoxView
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .ProductBoxView__title
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .ProductBoxView__discount
+      replace_old: \د\.\م\.
+      replace_new: MAD
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .ProductBoxView__image
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_click
+      css_selector: button.global__load-more>span
+      loading_delay: 4
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.desertcart.ma/products/{}
+    take_screenshot: true
+    loading_delay: 12
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+        - '.MuiDialog-paper [aria-label="close"]'
+        - div.Auth__close
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .ProductPage__productTitle
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .ProductDescription__text
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .ProductThumbnails__price
+      replace_old: \د\.\م\.
+      replace_new: MAD
+      attribute_name: textContent
+    stock_retriever_module:
+      name: get_attribute_value
+      css_selector: .LimitedStock__conditions>div
+      attribute_name: textContent
+      regex: (\d+)
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_2: .ProductThumbnails_carousel .slick-current+div button
+      picture_css_selector: .slick-active .ProductThumbnails__img__desktop>div>img
+      attribute_name: src
+      loading_delay: 3
+      regex: (.+)

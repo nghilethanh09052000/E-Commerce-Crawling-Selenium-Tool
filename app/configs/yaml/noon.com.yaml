@@ -1,0 +1,138 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+      country: AE,BH,KW,QA
+    - name: proxys.io/mobile/dedicated/ro
+    - name: proxys.io/mobile/shared/us
+    - name: 123proxy
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+    undetected_driver: true
+    headless: false
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: div div:has(img[alt="shop"], img[alt="background"]) ~ div >
+          div
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.noon.com/uae-en/search/?limit=150&q={}
+        - https://www.noon.com/egypt-en/search/?limit=150&q={}
+        - https://www.noon.com/saudi-en/search/?limit=150&q={}
+        - https://www.noon.com/uae-en/search/?limit=150&q={}&sort%5Bby%5D=new_arrivals
+        - https://www.noon.com/egypt-en/search/?limit=150&q={}&sort%5Bby%5D=new_arrivals
+        - https://www.noon.com/saudi-en/search/?limit=150&q={}&sort%5Bby%5D=new_arrivals
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: span.productContainer a[id*="productBox"]
+      regex: noon.com\/(.+)$
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: span.productContainer a[id*="productBox"]
+      regex: noon.com\/(.+)$
+    listing_container_css_selector: span.productContainer
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-qa="product-name"]
+      attribute_name: title
+    price_retriever_module:
+      name: get_multiple_text_content_and_concatenate
+      css_selector: strong.amount
+      css_selectors:
+        - span.currency
+        - strong.amount
+      replace_old: \n
+      replace_new: ' '
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: div[data-qa*="productImage"] img:not(img[alt="wdt-icon"])
+      attribute_name: src
+      replace_old_regex: \?.+
+      replace_new: ''
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: li.next
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.noon.com/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-qa*="pdp-name"]'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div div[name="TabArea"] ~ div
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-qa="div-price-now"]
+      exclude_children: true
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .soldBy~div span.allOffers
+    poster_link_retriever_module:
+      name: click_then_get_attribute
+      button_css_selector: .soldBy~div span.allOffers
+      css_selector: meta[property="og:url"]
+      attribute_name: content
+      regex: (.+)\?
+      loading_delay: 3
+    stock_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-qa*="pdp-quantity"] span.sc-7705b45-1'
+    ships_to_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .defaultAddress
+      value_css_selector: .defaultAddress
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .swiper-container-horizontal .swiper-wrapper .swiper-slide img
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: https://www.noon.com/{}
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: title
+      regex: (.+) profile
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[alt="background"]
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - a[href*="mailto:"]
+        - div[class*="sc-"][class*="-38"] div[class*="sc-"][class*="-39"]
+        - div[class*="sc-"][class*="-15"] div[class*="sc-"][class*="-17"]
+        - div[class*="sc-"][class*="-20"] div[class*="sc-"][class*="-21"]
+      value_css_selectors:
+        - a[href*="mailto:"]
+        - div[class*="sc-"][class*="-38"] div[class*="sc-"][class*="-40"]
+        - div[class*="sc-"][class*="-15"] div[class*="sc-"][class*="-18"]
+        - div[class*="sc-"][class*="-20"] div[class*="sc-"][class*="-22"]
+      key_regex:
+        - mail
+        - Open Since
+        - Seller Rating
+        - Customers
+      value_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+      key_attributes:
+        - href
+        - textContent
+        - textContent
+        - textContent
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent

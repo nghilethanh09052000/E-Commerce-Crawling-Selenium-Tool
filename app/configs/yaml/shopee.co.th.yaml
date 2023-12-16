@@ -1,0 +1,26 @@
+include: shopee.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://shopee.co.th/search?keyword={}&sortBy=ctime
+    poster_post_identifiers_retriever_module:
+      regex: shopee.co.th\/(.*)$
+    post_identifiers_retriever_module:
+      regex: shopee.co.th\/(.*)$
+    price_retriever_module:
+      replace_old: \฿
+      replace_new: THB
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        before_pause_time: 3
+        css_selector: '#modal .language-selection__list>div:first-of-type>button'
+  post_information_retriever_module:
+    post_url_template: https://shopee.co.th/{}
+    price_retriever_module:
+      replace_old: \฿
+      replace_new: THB
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        before_pause_time: 2
+        css_selector: '#modal .language-selection__list>div:first-of-type>button'

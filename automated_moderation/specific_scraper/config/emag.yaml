@@ -1,0 +1,96 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+    undetected_driver: true
+    xvfb: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: 
+          - .cookie-banner-buttons > button:first-child
+          - button.dismiss-btn
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#card_grid a[data-zone="title"]'
+      action_before_poster_post_identifiers_module:
+        - name: click_action_module
+          css_selector: .vendor-subtitle a
+          after_pause_time: 3
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#card_grid a[data-zone="title"]'
+    listing_container_css_selector: '#card_grid div.js-product-data'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: a[data-zone="title"]
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .product-new-price
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: '#listing-paginator li:last-of-type a'
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    take_screenshot: true
+    loading_delay: 1
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: 
+          - .cookie-banner-buttons > button:first-child
+          - button.dismiss-btn
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.page-title
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#description-body'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .main-product-form .product-new-price
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .highlight-vendor span a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .highlight-vendor span a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_popup
+      clickable_css_selector: div#product-gallery
+      picture_css_selector: .multimedia-gallery-wrapper img
+      attribute_name: src
+      regex: (.+)
+      escape_popup_on_end: true
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 2
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: 
+          - .cookie-banner-buttons > button:first-child
+          - button.dismiss-btn
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .vendor-name
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .vendor-description

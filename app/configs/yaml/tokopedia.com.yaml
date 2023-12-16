@@ -1,0 +1,145 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+    - name: iproyal/us
+    - name: iproyal/lithuania
+    - name: 123proxy
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    loading_delay: 8
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector:
+          - div[class*="action-wrapper"]
+          - button[aria-label="Tutup tampilan modal"]
+        before_pause_time: 2
+        after_pause_time: 1
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.tokopedia.com/search?ob=9&st=product&q={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: 'div[data-testid="divProductWrapper"] a[title]'
+      regex: (?<=www.tokopedia.com\/)(.*)$
+      post_url_cleaning_module:
+        extract_url_from_string_parameter:
+          url_parameter: r
+          extract_if_match_regex: tokopedia.com\/promo\/
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[data-testid="divProductWrapper"] a[title]
+      regex: (?<=www.tokopedia.com\/)(.*)$
+      load_more_results_module:
+        name: load_more_by_scrolling_module
+        css_selector: a[data-testid="btnShopProductPageNext"]
+    listing_container_css_selector: '[data-testid="master-product-card"]'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: title
+      css_selector: a[title]
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-testid="shopWrapper"] span.prd_link-shop-loc
+      attribute_name: textContent
+      loading_timeout: 0.1
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div.prd_link-product-price
+      attribute_name: textContent
+      replace_old: Rp
+      replace_new: IDR
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-testid="shopWrapper"] span.prd_link-shop-name
+      attribute_name: textContent
+      loading_timeout: 0.1
+    item_sold_retriever_module:
+      name: get_attribute_value
+      css_selector: span.prd_label-integrity
+      attribute_name: textContent
+      regex: Terjual(.+)
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[data-testid="imgSRPProdMain"] , img[data-testid="imgProduct"]
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      loading_delay: 5
+      css_selector: '[class*="pagination-items"] li:last-child button'
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.tokopedia.com/{}
+    loading_delay: 8
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="lblPDPDetailProductName"]'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="lblPDPDescriptionProduk"]'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="lblPDPDetailProductPrice"]'
+      replace_old: Rp
+      replace_new: IDR
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="llbPDPFooterShopName"]'
+      attribute_name: textContent
+    stock_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="lblPDPMaxPurchase"] , [data-testid="stock-label"]'
+      attribute_name: textContent
+      regex: (\d+)
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[data-testid="llbPDPFooterShopName"]
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: meta[name="twitter:data2"]
+      key_css_selector_attribute_name: content
+      value_css_selector: meta[name="twitter:data2"]
+      value_css_selector_attribute_name: content
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector_1: '#pdp_comp-product_media div.active:not([class="active"])'
+      clickable_css_selector: '[aria-modal="true"] [data-testid="PDPModalMediaThumbnail"]'
+      picture_css_selector: '[aria-modal="true"]>div img[data-testid="PDPImageDetail"]'
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 3
+      escape_popup_on_end: true
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 8
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="shopNameHeader"]'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#shopseo>p'
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div[data-ssr="shopInfoSSR"] picture img[data-unify="Image"]
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: div[data-ssr="shopInfoSSR"]~div>div>p
+      value_css_selector: div[data-ssr="shopInfoSSR"]~div>div>div>p
+  archiving_options:
+    scroll_to_bottom: true

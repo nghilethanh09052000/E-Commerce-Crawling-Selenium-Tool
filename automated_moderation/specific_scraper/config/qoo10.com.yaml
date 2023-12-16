@@ -1,0 +1,36 @@
+include: qoo10.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.qoo10.com/s/?keyword={}
+    action_before_search_pages_browsing_module:
+    - name: click_action_module
+      css_selector:
+        - 'button#CommonShipLangCurrencyBtn'
+        - 'button#CommonShipLangCurrencyBtn'
+        - 'button#ShipToSelector'
+        - '#div_layer_ship_to li[data-nation="US"]'
+        - '#ShipToLangCurrencySelector>button.btn'
+      after_pause_time: 1
+    post_identifiers_retriever_module:
+      regex: qoo10.com\/item\/(.+)$
+    price_retriever_module:
+      replace_old: US\$
+      replace_new: USD
+    poster_post_identifiers_retriever_module:
+      action_before_poster_post_identifiers_module:
+      - name: click_action_module
+        css_selector: a#btn_allitem
+        after_pause_time: 3
+      - name: click_action_module
+        css_selector:
+          - 'button#CommonShipLangCurrencyBtn'
+          - 'button#CommonShipLangCurrencyBtn'
+          - 'button#ShipToSelector'
+          - '#div_layer_ship_to li[data-nation="US"]'
+          - '#ShipToLangCurrencySelector>button.btn'
+        after_pause_time: 1
+      price_retriever_module:
+        replace_old: \$
+        replace_new: D

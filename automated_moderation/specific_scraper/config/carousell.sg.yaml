@@ -1,0 +1,21 @@
+include: carousell.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.carousell.sg/search/{}?sort_by=3&tab=marketplace
+        - https://www.carousell.sg/search/{}
+    post_identifiers_retriever_module:
+      regex: carousell\.sg\/p\/(.*)
+    poster_post_identifiers_retriever_module:
+      regex: www\.carousell\.sg\/p\/(.+)
+    price_retriever_module:
+      replace_old: S\$
+      replace_new: SGD
+  post_information_retriever_module:
+    post_url_template: https://www.carousell.sg/p/{}
+    vendor_retriever_module:
+      regex: /u/(.+)/$
+    price_retriever_module:
+      replace_old: S\$
+      replace_new: SGD

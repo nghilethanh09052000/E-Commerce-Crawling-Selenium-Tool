@@ -1,0 +1,34 @@
+include: aliexpress.yaml
+framework:
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.aliexpress.com/w/wholesale-{}.html
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector:
+          - '[data-role="region-pannel"]>#switcher-info'
+          - '[data-role="switch-country"]>a[data-role="country"]'
+          - '[data-role="switch-country"] ul.address-select-content>li[data-name="Hong Kong,China"]'
+          - div.switcher-btn>[data-role="save"]
+        stop_css_selector: '[data-role="region-pannel"]>#switcher-info>span.ship-to>i'
+        stop_attribute_name: class
+        stop_value: css_hk
+        after_pause_time: 4
+      - name: refresh_page
+        stop_css_selector: '#card-list'
+        before_pause_time: 2
+      - name: click_action_module
+        after_pause_time: 2
+        css_selector:
+          - button[data-role="gdpr-accept"]
+    post_identifiers_retriever_module:
+      regex: aliexpress.com\/item\/(.*).html
+    price_retriever_module:
+      replace_old: €
+      replace_new: EUR
+    poster_post_identifiers_retriever_module:
+      regex: aliexpress.com\/item\/(.+).html
+    

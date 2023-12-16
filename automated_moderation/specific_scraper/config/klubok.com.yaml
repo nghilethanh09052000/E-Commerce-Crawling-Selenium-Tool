@@ -1,0 +1,102 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 1000
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://klubok.com/?q={}&dt=new
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: ul#items > li > section > a
+      regex: (?<=klubok.com\/)(.*)
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: ul.item-list > li > section > a
+      regex: (?<=klubok.com\/)(.*)
+    listing_container_css_selector: ul#items > li > section > a
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: p.description
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: span.price
+      replace_old: \xd0\xb3\xd1\x80\xd0\xbd
+      replace_new: UAH
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.image-wrap>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .next-letter
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://klubok.com/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: div#head-title > h1
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .product-desc-full-text
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '#used-cost'
+      replace_old: \xd0\xb3\xd1\x80\xd0\xbd
+      replace_new: UAH
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .link-desc-product-label > div
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .link-desc-product-label
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .user_region
+      value_css_selector: .user_region
+    ships_to_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .b-desc-product
+      key_regex: \xd0\x94\xd0\xbe\xd1\x81\xd1\x82\xd0\xb0\xd0\xb2\xd0\xba\xd0\xb0(.+)
+      value_css_selector: .b-desc-product
+      value_regex: \xd0\x94\xd0\xbe\xd1\x81\xd1\x82\xd0\xb0\xd0\xb2\xd0\xba\xd0\xb0(.+)
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace
+      css_selector: main .b-mini-image > span > img
+      attribute_name: src
+      replace_old: /s/
+      replace_new: /
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: div.user-name-title
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      clickable_css_selector: div#shop_content
+      css_selector: div#shop_content
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[class*="user-info__avatar"]
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: div.b-user-info div.desc-product-label
+      value_css_selector: div.b-user-info div.counter-label

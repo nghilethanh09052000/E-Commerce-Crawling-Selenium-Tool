@@ -1,0 +1,24 @@
+include: carousell.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://nz.carousell.com/search/{}?sort_by=3
+        - https://nz.carousell.com/search/{}
+    post_identifiers_retriever_module:
+      regex: nz\.carousell\.com\/p\/(.+)
+    poster_post_identifiers_retriever_module:
+      regex: nz\.carousell\.com\/p\/(.+)
+    price_retriever_module:
+      replace_old: NZ\$
+      replace_new: NZD
+  post_information_retriever_module:
+    post_url_template: https://nz.carousell.com/p/{}
+    vendor_retriever_module:
+      regex: https://nz\.carousell\.com/u/(.+)/$
+    price_retriever_module:
+      replace_old: NZ\$
+      replace_new: NZD
+  poster_information_retriever_module:
+    description_retriever_module:
+      css_selector: div h2 ~ div ~ div ~ div > p

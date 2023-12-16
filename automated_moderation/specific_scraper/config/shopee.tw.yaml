@@ -1,0 +1,31 @@
+include: shopee.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://shopee.tw/search?keyword={}&sortBy=ctime
+    post_identifiers_retriever_module:
+      regex: (?<=shopee.tw\/)(.*)$
+    poster_post_identifiers_retriever_module:
+      regex: (?<=shopee.tw\/)(.*)$
+    load_more_results_module:
+      name: load_more_by_click
+      css_selector: '[class="shopee-icon-button shopee-icon-button--right "]'
+    price_retriever_module:
+      replace_old: \$
+      replace_new: TWD
+    location_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .zGGwiV
+    item_sold_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .uEPGHT
+  post_information_retriever_module:
+    post_url_template: https://shopee.tw/{}
+    price_retriever_module:
+      replace_old: \$
+      replace_new: TWD
+    vendor_retriever_module:
+      regex: .+tw/(.+)\?.+

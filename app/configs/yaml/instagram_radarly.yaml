@@ -1,0 +1,7 @@
+framework:
+    name: radarly_framework
+    post_identifier_regex: 'p\/(.*)\/$'
+    archiving_options:
+        height: 1400
+        width: 1000
+        click_on_elements: ["button.aOOlW.bIiDR"]

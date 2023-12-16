@@ -1,0 +1,129 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+    - name: iproyal/us
+    - name: iproyal/lithuania
+    - name: 123proxy
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 1000
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://prom.ua/search?search_term={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[data-qaid="product_link"]
+      regex: prom\.ua\/(.+)
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[data-qaid="product_gallery"]>div>div>a'
+      regex: prom\.ua\/(.+)
+      load_more_results_module:
+        name: go_to_next_page_module
+        css_selector: a[data-qaid="next_page"]
+    listing_container_css_selector: div[data-qaid="product_block"]
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: span[data-qaid="product_name"]
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div[data-qaid="product_price"]
+      replace_old: \xd0\xb3\xd1\x80\xd0\xbd
+      replace_new: UAH
+      trim_text: true
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-qaid="company_link"]>a>span
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div[data-qaid="company_link"]>a
+      attribute_name: href
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: span[data-qaid="region_title"]
+      attribute_name: textContent
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: picture[data-qaid="image_link"]>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: a[data-qaid="next_page"]
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://prom.ua/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[data-qaid="product_name"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-qaid="descriptions"]
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["price"]} {jsons[0]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a[data-qaid="company_name"]
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[data-qaid="company_name"]
+      attribute_name: href
+    ships_to_retriever_module:
+      name: get_key_value_list
+      clickable_css_selector: button[data-qaid="qa_regions_dd"]
+      key_css_selector: div[data-qaid="region_popup"] li
+      value_css_selector: div[data-qaid="region_popup"] li
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div[data-qaid="image_block"] img
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-qaid="company_name"]'
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[data-bazooka="SellerPage"] div>img'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      clickable_css_selectors:
+        - '[data-qaid="company_dashboard"]>div>div:last-child>div>div ul>li:nth-child(2)>a'
+      key_css_selectors:
+        - '[data-qaid="info_by_company"]'
+        - '[data-qaid="company_opinions"]>div:first-child>span:last-child'
+      value_css_selectors:
+        - '[data-qaid="info_by_company"]'
+        - '[data-qaid="company_opinions"]>div:first-child>span:first-of-type'
+      key_regex:
+        - На портале с
+        - отзывов
+      value_regex:
+        - На портале с(.+)
+        - (.+)
+      key_attributes:
+        - textContent
+        - textContent
+      value_attributes:
+        - textContent
+        - textContent
+  archiving_options:
+    scroll_to_bottom: true

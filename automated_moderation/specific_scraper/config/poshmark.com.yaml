@@ -1,0 +1,15 @@
+include: poshmark.yaml
+framework:
+  # driver_initialization_module:
+  #   chromeprofile_domain_name: poshmark.com
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://poshmark.com/search?query={}&type=listings&src=dir&sort_by=added_desc
+    post_identifiers_retriever_module:
+      regex: poshmark\.com/listing/(.+)
+    poster_post_identifiers_retriever_module:
+      regex: poshmark\.com/listing/(.+)
+    price_retriever_module:
+      replace_old: \$
+      replace_new: USD

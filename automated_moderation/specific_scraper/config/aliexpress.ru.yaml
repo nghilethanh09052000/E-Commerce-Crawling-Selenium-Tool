@@ -1,0 +1,58 @@
+include: aliexpress.yaml
+framework:
+  name: selenium_framework
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://aliexpress.ru/wholesale?SearchText={}
+    action_before_search_pages_browsing_module:
+      - name: slider_bypass
+        draggable_css_selector: '#nc_1_n1z'
+        attempts_count: 30
+        slider_box_size: 300
+        slider_bar_size: 0
+        restart_button_css_selector: div[id="`nc_1_refresh1`"]
+      - name: click_action_module
+        css_selector: .baxia-dialog-close
+        before_pause_time: 2
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[data-product-id] a[href*="/item/"]
+      regex: aliexpress.ru\/+item\/(.+).html
+    listing_container_css_selector: 'div[data-product-id]'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="name"]
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="Price__mainM"]
+      replace_old: \xe2\x82\xbd
+      replace_new: RUB
+    item_sold_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="sold"]
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a[href*="/store/"]
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[href*="/store/"]
+      attribute_name: href
+      replace_old: aliexpress.ru
+      replace_new: aliexpress.com
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: div[class*="picListWrapper"] picture img
+      attribute_name: src
+      replace_old_regex: (_.+)
+      replace_new: ''
+    load_more_results_module:
+      name: load_more_by_scrolling_module
+      scroll_pause_time: 2
+      loading_delay: 3
+      css_selector: a[class*="Pagination__arrow"]:last-of-type
+    poster_post_identifiers_retriever_module:
+      regex: aliexpress.ru\/item\/(.+).html
+      load_more_results_module:
+        name: click_on_next_page_module
+        css_selector: .ui-pagination-navi a:last-child , a.pc-store-nav-Товары

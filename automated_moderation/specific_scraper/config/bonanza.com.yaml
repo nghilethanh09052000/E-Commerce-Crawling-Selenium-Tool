@@ -1,0 +1,174 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+    load_images: true
+    xvfb: true
+    cloudflare_bypass: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 1000
+    loading_delay: 10
+    take_screenshots: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.bonanza.com/items/search?q[x]=&q[search_term]={}
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[href*="/listings/"]
+      regex: bonanza.com\/listings\/(.+)
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .item_title a[href*="/listings/"]
+      regex: bonanza.com\/listings\/(.+)
+    listing_container_css_selector: div.browsable_item
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .item_title a[href*="/listings/"]
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: a.item_price
+      regex: (\$\d+\.\d+)
+      replace_old: \$
+      replace_new: USD
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.item_image a>img
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_scrolling_module
+      scroll_pause_time: 4
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.bonanza.com/listings/{}
+    loading_delay: 3
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: span[itemprop="name"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .plain_text_description
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .item_price
+      replace_old: \$
+      replace_new: USD
+      attribute_name: textContent
+    stock_retriever_module:
+      name: get_attribute_value
+      css_selector: div.scarcity_banner>div>p:last-child
+      attribute_name: textContent
+      regex: (\d+)
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .item_listing_seller_details div.booth_title_and_feedback div.booth_link
+        a
+      attribute_name: textContent
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: span[class="details_text"]
+      key_regex: Ships from (.+)
+      value_css_selector: span[class="details_text"]
+      value_regex: Ships from (.+)
+    ships_to_retriever_module:
+      name: get_key_value_list
+      key_css_selector: span[class="details_text"]
+      key_regex: \) to (.+)
+      value_css_selector: span[class="details_text"]
+      value_regex: \) to (.+)
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .booth_link>a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.slick_carousel_item_container a
+      attribute_name: href
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: h1 a[href*="/profile"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="about_me"] .content
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .user_avatar img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - .user_name ul li:nth-of-type(1)
+        - .user_name ul li:nth-of-type(2)
+        - a[href*="/user_feedbacks"]
+        - div[class="contact module"] li[class="my_website "]
+        - div[class="contact module"] li[class="facebook "]
+        - div[class="contact module"] li[class="twitter "]
+        - div[class="contact module"] li[class="instagram "]
+        - div[class="contact module"] li[class="pinterest "]
+        - div[class="contact module"] li[class="phone "]
+      value_css_selectors:
+        - .user_name ul li:nth-of-type(1)
+        - .user_name ul li:nth-of-type(2)
+        - a[href*="/user_feedbacks"]
+        - div[class="contact module"] li[class="my_website "] span a
+        - div[class="contact module"] li[class="facebook "] span a
+        - div[class="contact module"] li[class="twitter "] span a
+        - div[class="contact module"] li[class="instagram "] span a
+        - div[class="contact module"] li[class="pinterest "] span a
+        - div[class="contact module"] li[class="phone "] span
+      key_regex:
+        - joined
+        - active
+        - user_feedbacks
+        - my_website
+        - facebook
+        - twitter
+        - instagram
+        - pinterest
+        - phone
+      value_regex:
+        - joined (.+)
+        - active (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+      key_attributes:
+        - textContent
+        - textContent
+        - href
+        - class
+        - class
+        - class
+        - class
+        - class
+        - class
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - href
+        - href
+        - href
+        - href
+        - href
+        - textContent
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: a[href*="/profile"]

@@ -1,0 +1,69 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 4
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.flipkart.com/search?q={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div._13oc-S>div>div>a:first-child
+      regex: flipkart.com\/(.*)$
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: a._1LKTO3
+    listing_container_css_selector: div._13oc-S>div
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: title
+      css_selector: div>a:nth-child(2)
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div._30jeq3
+      replace_old: \₹
+      replace_new: INR
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: div>a:first-child>div>div img
+      replace_old_regex: (.+\/)\d+\/\d+(\/.+)\?.+
+      replace_new: \g<1>1000/1000\g<2>
+      attribute_name: src
+  post_information_retriever_module:
+    name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+    post_url_template: https://www.flipkart.com/{}
+    take_screenshot: true
+    loading_delay: 2
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.yhB1nd>span
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div._2o-xpa>div:first-child
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div._25b18c>div:first-child
+      attribute_name: textContent
+      replace_old: \₹
+      replace_new: INR
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '#sellerName>span>span'
+      attribute_name: textContent
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_one_picture_only_case
+      css_selector_1: ul._3GnUWp>li img
+      attribute_name_1: src
+      replace_old_1: /128/128/
+      replace_new_1: /1000/1000/
+      regex_1: (.+)\?
+      css_selector_2: div._3kidJX>div>img
+      attribute_name_2: src

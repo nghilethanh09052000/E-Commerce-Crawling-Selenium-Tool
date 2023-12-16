@@ -1,0 +1,193 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+    loading_delay: 2
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[class="feed-grid"] > div[class="feed-grid__item"] a[data-testid*="overlay-link"]
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .feed-grid a[data-testid*="overlay-link"]
+      load_more_results_module:
+        name: load_more_by_scrolling_module
+        scroll_pause_time: 5
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: '[class*="_next"]'
+    listing_container_css_selector: div[class="feed-grid"] > div[class*="feed-grid__item"]:not([class*="feed-grid__item--full-row"])
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: title
+      css_selector:  a[data-testid*="overlay-link"]
+      regex: (.+?)\,
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid*="owner-name"]'
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: '[data-testid*="owner"]>a'
+      attribute_name: href
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div h3[data-testid*="price-text"]
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div img:not([data-testid*="owner"]
+      attribute_name: src
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector:
+          - div[role="dialog"] button
+          - button#onetrust-accept-btn-handler
+        after_pause_time: 1
+  post_information_retriever_module:
+    name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+    take_screenshot: true
+    loading_delay: 2
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: div[itemprop="name"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_multiple_text_content_and_concatenate
+      css_selectors:
+        - '[itemprop="description"]'
+        - .details-list.details-list--details
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[data-component-name="ItemPriceHeading"]
+      output_string: '{jsons[0]["price"]} {jsons[0]["currency"]}'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div[id*="ItemUserInfo"]>a div[class*="Cell__title"]
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div[id*="ItemUserInfo"]>a
+      attribute_name: href
+    date_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="item-details-uploaded_date"]>div>div>span'
+      input_format: '%d/%m/%Y, %H:%M:%S'
+      output_format: '%Y-%m-%d %H:%M:%S'
+      attribute_name: title
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-icon-name="location-pin"] ~ div ~ div'
+      attribute_name: textContent
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: '[data-icon-name="location-pin"] ~ div ~ div'
+      value_css_selector: '[data-icon-name="location-pin"] ~ div ~ div'
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: '#content div.item-photos>figure:first-child img'
+      clickable_css_selector_2: a.fancybox-next , [data-testid="image-carousel-button-right"]
+      picture_css_selector: img.fancybox-image , [data-testid="image-carousel"] img
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 2
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - div[role="dialog"] button
+          - button#onetrust-accept-btn-handler
+        after_pause_time: 1
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    loading_delay: 6
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: meta[property="og:title"]
+      attribute_name: content
+    description_retriever_module:
+      name: get_attribute_value
+      clickable_css_selector: span[data-testid="more-button"] span
+      css_selector: div[class*="user-description"]
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: meta[property="og:image"]
+      attribute_name: content
+      remove_if_match_regex: /assets/no-photo/
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - button[data-testid="rating-button"]
+        - button[data-testid="rating-button"] div[aria-label] div[class*="Rating__label"]
+          span
+        - div[role="presentation"] .u-flexbox div ul[class*="List__list"] li:nth-of-type(1)
+          div>span[data-icon-name="location-pin"]
+        - a[href*="followers"]
+        - a[href*="following"]
+        - div[role="presentation"] .u-flexbox div:last-child ul[class*="List__list"]>li:nth-of-type(1)>div>div>div
+        - div[role="presentation"] .u-flexbox div:last-child ul[class*="List__list"]>li:nth-of-type(2)>div>div>div
+        - div[role="presentation"] .u-flexbox div:last-child ul[class*="List__list"]>li:nth-of-type(3)>div>div>div
+      value_css_selectors:
+        - button[data-testid="rating-button"] div[aria-label]
+        - button[data-testid="rating-button"] div[aria-label] div[class*="Rating__label"]
+          span
+        - div[role="presentation"] .u-flexbox div:nth-of-type(1) ul[class*="List__list"]
+          li:nth-of-type(1) div>div>div
+        - a[href*="followers"]
+        - a[href*="following"]
+        - div[role="presentation"] .u-flexbox div:last-child ul[class*="List__list"]>li:nth-of-type(1)>div>div>span
+        - div[role="presentation"] .u-flexbox div:last-child ul[class*="List__list"]>li:nth-of-type(2)>div>div>span
+        - div[role="presentation"] .u-flexbox div:last-child ul[class*="List__list"]>li:nth-of-type(3)>div>div>span
+      key_regex:
+        - rating
+        - review
+        - location
+        - followers
+        - following
+        - (.+)
+        - (.+)
+        - (.+)
+      value_regex:
+        - (.+)
+        - (\d+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - check
+        - check
+        - check
+      key_attributes:
+        - data-testid
+        - textContent
+        - data-icon-name
+        - href
+        - href
+        - textContent
+        - textContent
+        - textContent
+      value_attributes:
+        - aria-label
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - data-icon-name
+        - data-icon-name
+        - data-icon-name
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - div[role="dialog"] button
+          - button#onetrust-accept-btn-handler
+  archiving_options:
+    click_on_elements:
+      - button#onetrust-accept-btn-handler
+    scroll_to_bottom: true

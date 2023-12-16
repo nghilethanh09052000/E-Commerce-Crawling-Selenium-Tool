@@ -1,0 +1,176 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+    - name: iproyal/us
+    - name: iproyal/lithuania
+    - name: 123proxy
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    scroll_down_after_get_new_page: true
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector:
+          - button[id="popin_tc_privacy_button_2"]
+        before_pause_time: 5
+        after_pause_time: 3
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.vestiairecollective.com/search/?q={}&sortBy=3
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[class*="product-search_catalog__"] ul>li a[class*="product-card_productCard__image"]'
+      regex: (?<=vestiairecollective.com\/)(.*)$
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .productItem a
+      regex: (?<=vestiairecollective.com\/)(.*)$
+      load_more_results_module:
+        name: click_on_next_page_module
+        css_selector: '#pgnid_Next'
+    listing_container_css_selector: '[class*="product-search_catalog__"] ul>li'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: h2[class*="productLink"]
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="productCard__text__location"]
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["price"]}{jsons[0]["offers"]["priceCurrency"]}'
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div[class*="vc-images_image"]>img
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: '[class*="pagination_pagination"]>button:last-child'
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.vestiairecollective.com/{}
+    take_screenshot: true
+    loading_delay: 3
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        before_pause_time: 1
+        after_pause_time: 4
+        css_selector:
+          - button[title="Continue without accepting"]
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: title
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="descriptionList__block"]
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="product-price_productPrice"] p span:last-child
+      replace_old: \$
+      replace_new: USD
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="product-seller-block_sellerBlock"]>a>div[data-cy="sellerblock_details_id"]
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div[class*="product-seller-block_sellerBlock"]>a
+      attribute_name: href
+    date_retriever_module:
+      name: get_attribute_value
+      regex: \:(.*)
+      css_selector: div[class*="descriptionList__block"] li
+      input_format: '%Y-%m-%d'
+      output_format: '%Y-%m-%d %H:%M:%S'
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: div.additional-details_additionalDetails__item__292kn:first-of-type>div>span
+      regex: .+?(?=,)
+      attribute_name: textContent
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_and_upload_to_s3
+      css_selector: 'div[class*="product-gallery_pdtImg__nav__thumb"] img'
+      attribute_name: src
+      replace_old: ''
+      replace_new: ''
+      replace_tail: ''
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        before_pause_time: 1
+        after_pause_time: 4
+        css_selector:
+          - button[title="Continue without accepting"]
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - button[id="popin_tc_privacy_button_2"]
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .id_title
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '#profile_pic #profil_img'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - .headerProfile__username
+        - .history_sold
+        - .profile-infos li:nth-child(2)
+        - .profile-infos li:nth-child(3)
+        - .profile-stats li:first-child span strong
+        - .profile-stats li:nth-child(2) span strong
+      value_css_selectors:
+        - .headerProfile__username
+        - .history_sold
+        - .profile-infos li:nth-child(2)
+        - .profile-infos li:nth-child(3) a
+        - .profile-stats li:first-child span span
+        - .profile-stats li:nth-child(2) span span
+      key_regex:
+        - username
+        - sold product\(s\)
+        - Joined Vestiaire Community
+        - Community rank
+        - (.+)
+        - (.+)
+      value_regex:
+        - (.+)
+        - (.+) sold
+        - Community (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+      key_attributes:
+        - class
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - button[id="popin_tc_privacy_button_2"]

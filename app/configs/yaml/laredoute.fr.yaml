@@ -1,0 +1,22 @@
+include: laredoute.yaml
+framework:
+  proxies:
+    - name: proxyrack
+      country: fr
+    - name: proxys.io/mobile/dedicated/ro
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.laredoute.fr/psrch/psrch.aspx?kwrd={}
+    poster_post_identifiers_retriever_module:
+      regex: laredoute.fr\/ppdp\/(.+).aspx
+    post_identifiers_retriever_module:
+      regex: laredoute.fr\/ppdp\/(.+).aspx
+    price_retriever_module:
+      replace_old: \€
+      replace_new:  EUR
+  post_information_retriever_module:
+    post_url_template: https://www.laredoute.fr/ppdp/{}.aspx
+    price_retriever_module:
+      replace_old: \€
+      replace_new: EUR

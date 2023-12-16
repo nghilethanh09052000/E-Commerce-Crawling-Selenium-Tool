@@ -1,0 +1,12 @@
+include: facebook.yaml
+framework:
+  proxies:
+    - name: proxyrack
+    - name: iproyal/us
+    - name: iproyal/lithuania
+    - name: 123proxy
+    - name: proxys.io/mobile/shared/us
+    - name: proxys.io/mobile/dedicated/ru
+    - name: proxys.io/mobile/dedicated/th
+  driver_initialization_module:
+    xvfb: true

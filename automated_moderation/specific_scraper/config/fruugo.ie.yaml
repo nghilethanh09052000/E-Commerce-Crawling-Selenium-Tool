@@ -1,0 +1,19 @@
+include: fruugo.yaml
+framework:
+    search_pages_browsing_module:
+      search_page_urls_builder_module:
+        search_page_url_templates:
+          - https://www.fruugo.ie/search/?q={}
+      poster_post_identifiers_retriever_module:
+        regex: fruugo.ie\/(.+)$
+      post_identifiers_retriever_module:
+        regex: fruugo.ie\/(.+)$
+      price_retriever_module:
+        replace_old: \€
+        replace_new: EUR
+    post_information_retriever_module:
+      name: classic_post_information_retriever_module
+      post_url_template: https://www.fruugo.ie/{}
+      price_retriever_module:
+        replace_old: \€
+        replace_new: EUR

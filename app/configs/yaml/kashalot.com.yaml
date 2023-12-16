@@ -1,0 +1,140 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://kashalot.com/aukcion/?q={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .kl-lot-widget-img-container .swiper-wrapper>div:first-child>a
+      regex: kashalot.com\/aukcion\/(.*)$
+    listing_container_css_selector: div.kl-js-lots-item>div
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.kl-lot-widget-caption>a>span:first-child
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: td:first-of-type>a.kl-js-lot-blitz-buy-button
+      replace_old: \xe2\x82\xb4
+      replace_new: UAH
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div.kl-lot-widget-content__seller div.dropdown-menu>a:first-child>span:last-child
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div.kl-lot-widget-content__seller div.dropdown-menu>a:first-child
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.kl-lot-widget-img div.swiper-slide>a>img
+      attribute_name: data-src
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .kl-market-widget-link , .kl-lot-widget-caption>a.link-dark
+      regex: kashalot.com\/aukcion\/(.*)$
+      load_more_results_module:
+        name: go_to_next_page_module
+        css_selector: .kl-full-link a[href*="/lots/"] , .pager li:last-child a
+    load_more_results_module:
+      name: load_more_by_scrolling_one_scroll_at_a_time
+      scroll_pause_time: 1
+      scroll_range: 10
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://kashalot.com/aukcion/{}
+    take_screenshot: true
+    loading_delay: 2
+    title_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["name"]}'
+    description_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["description"]}'
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["price"]} {jsons[0]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .kl-lot-seller>div>div>a.link-dark
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .kl-lot-seller>div>div>a.link-dark
+      attribute_name: data-href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .kl-lot-gallery-img-link
+      attribute_name: href
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 4
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .kl-user-profile-info__nickname
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute_with_replace
+      css_selector: .kl-user-profile-info__avatar .kl-user-widget-avatar
+      attribute_name: style
+      replace_old: 'background-image: url("//'
+      replace_new: https://
+      replace_tail: '")'
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      clickable_css_selectors:
+        - .kl-user-profile-tabs__tab-link[href*="/opinions/"]
+      key_css_selectors:
+        - .kl-user-profile-info__content-block:nth-of-type(2) div.kl-user-profile-info__content-block-text:nth-of-type(1)
+        - .kl-user-profile-info__content-block:nth-of-type(2) div.kl-user-profile-info__content-block-text:nth-of-type(2)
+          span
+        - .kl-user-profile-info__content-block:nth-of-type(2) div.kl-user-profile-info__content-block-text:nth-of-type(3)
+        - .kl-shop-opinions-link:nth-of-type(1)
+        - .kl-shop-opinions-link:nth-of-type(2)
+      value_css_selectors:
+        - .kl-user-profile-info__content-block:nth-of-type(2) div.kl-user-profile-info__content-block-text:nth-of-type(1)
+        - .kl-user-profile-info__content-block:nth-of-type(2) div.kl-user-profile-info__content-block-text:nth-of-type(2)
+        - .kl-user-profile-info__content-block:nth-of-type(2) div.kl-user-profile-info__content-block-text:nth-of-type(3)
+        - .kl-shop-opinions-link:nth-of-type(1)
+        - .kl-shop-opinions-link:nth-of-type(2)
+      key_regex:
+        - сайте
+        - map-marker
+        - На Кашалоте с
+        - положительных
+        - отрицательных
+      value_regex:
+        - сайте (.+)
+        - (.+)
+        - На Кашалоте с(.+)
+        - (\d+)
+        - (\d+)
+      key_attributes:
+        - textContent
+        - class
+        - textContent
+        - textContent
+        - textContent
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '[data-role="accept-consent"]'

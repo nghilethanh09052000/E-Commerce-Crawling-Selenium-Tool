@@ -1,0 +1,18 @@
+include: dubizzle.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.dubizzle.com.kw/ads/q-{}/?search%5Border%5D=created_at%3Adesc
+    post_identifiers_retriever_module:
+      regex: dubizzle.com.kw/ad/(.+).html
+    poster_post_identifiers_retriever_module:
+      regex: dubizzle.com.kw/ad/(.+).html
+    price_retriever_module:
+      replace_old: \xd8\xaf. \xd9\x83
+      replace_new: KWD
+  post_information_retriever_module:
+    post_url_template: https://www.dubizzle.com.kw/ad/{}.html
+    price_retriever_module:
+      replace_old: \xd8\xaf. \xd9\x83
+      replace_new: KWD

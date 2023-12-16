@@ -1,0 +1,29 @@
+include: aliexpress.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.aliexpress.us/w/wholesale-{}.html
+    action_before_search_pages_browsing_module:
+      - name: slider_bypass
+        draggable_css_selector: '#nc_1_n1z'
+        attempts_count: 30
+        slider_box_size: 300
+        slider_bar_size: 0
+        restart_button_css_selector: div[id="`nc_1_refresh1`"]
+      - name: click_action_module
+        after_pause_time: 3
+        css_selector:
+          - button[data-role="gdpr-accept"]
+          - div[class*="law18--left"]
+          - '[data-role="region-pannel"]>#switcher-info'
+          - '[data-role="switch-country"]>a[data-role="country"]'
+          - '[data-role="switch-country"] ul.address-select-content>li[data-name="United States"]'
+          - div.switcher-btn>[data-role="save"]
+    post_identifiers_retriever_module:
+      regex: aliexpress.us\/item\/(.*).html
+    price_retriever_module:
+      replace_old: \$
+      replace_new: USD
+    poster_post_identifiers_retriever_module:
+      regex: aliexpress.us\/item\/(.+).html

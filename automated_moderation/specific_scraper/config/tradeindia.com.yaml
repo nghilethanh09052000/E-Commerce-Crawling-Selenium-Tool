@@ -1,0 +1,153 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.tradeindia.com/search.html?keyword={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[class*="ProductCardStyle__StyledProductCard"]>.card .img_container a'
+      regex: tradeindia.com\/products\/(.+).html
+    action_before_search_pages_browsing_module:
+        - name: click_action_module
+          css_selector: button.popupClose
+        - name: scroll_to_load_element
+          scroll_pause_time: 7
+          css_selector: button.popupClose
+        - name: click_action_module
+          css_selector: button.popupClose
+    listing_container_css_selector: '[class*="ProductCardStyle__StyledProductCard"]>.card'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .product_details .card_title
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .product_details .price_and_qty p.Body3R
+      replace_old: '[\D]*([\d\.\,]+)[^INRUSD]+([INRUSD]+).*'
+      replace_new: '\g<1> \g<2>'
+    vendor_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .product_details>div>a
+    poster_link_retriever_module:
+      name: get_attribute_url
+      attribute_name: href
+      css_selector: .product_details>div>a
+    location_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .product_details .d-block>div>[class*="Typography__Body"]
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .img_container a[href*="/products/"] span img
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: a[aria-label="Next Page"]
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[class*="ProductCardStyle__StyledProductCard"]>.card .img_container a'
+      regex: tradeindia.com\/products\/(.+).html
+      action_before_poster_post_identifiers_module:
+        - name: click_action_module
+          css_selector:
+            - button.popupClose
+        - name: scroll_to_load_element
+          scroll_pause_time: 7
+          css_selector:
+            - button.popupClose
+        - name: click_action_module
+          css_selector:
+            - button.popupClose
+      listing_container_css_selector: '[class*="ProductCardStyle__StyledProductCard"]>.card'
+      title_retriever_module:
+        name: get_attribute_value
+        attribute_name: textContent
+        css_selector: .product_details .card_title
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: .img_container a[href*="/products/"] span img
+        attribute_name: src
+      load_more_results_module:
+        name: click_on_next_page_module
+        css_selector: .d-flex>button.glmEU:only-child
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.tradeindia.com/products/{}.html
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: 'button.popupClose'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .bx-main h1
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[id="__NEXT_DATA__"]
+      output_string: '{jsons[0]["props"]["pageProps"]["serverData"]["entireData"]["custom_fields"]["custom_field_data_meta_info"]["Price_And_Quantity"][0]["value"]}'
+      replace_old: '[\D]*([\d\.\,]+)[^INRUSD]+([INRUSD]+).*'
+      replace_new: '\g<1> \g<2>'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a.supDetBx
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a.supDetBx
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - '#__NEXT_DATA__'
+      value_css_selectors:
+        - '#__NEXT_DATA__'
+      key_regex:
+        - \"city\"[^\w]+([^\"]+)
+      value_regex:
+        - \"city\"[^\w]+([^\"]+)
+      key_attributes:
+        - textContent
+      value_attributes:
+        - textContent
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .productShow img
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: 'button.popupClose'
+      - name: click_action_module
+        css_selector: span.close
+      - name: click_action_module
+        css_selector: 'button.popupClose'
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="SellerHighPaid"] [class*="HeaderSection"] h1'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      clickable_css_selector: '.dINNDz.Body2R+span.c-pointer'
+      css_selector: .dINNDz.Body2R>div
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .sellerImg>span>img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: '[class*="SellerDetails"] .Title3 , [class*="AboutCompanyDetails"] h3'
+      value_css_selector: '[class*="SellerDetails"] .Body4R , [class*="AboutCompanyDetails"] p'

@@ -1,0 +1,92 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.pinterest.co.uk/search/pins/?q={}&rs=typed
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[data-test-id="pin"][data-test-pin-id] a'
+      regex: pinterest.co.uk/pin/(.+)
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[data-test-id="pin"][data-test-pin-id] a'
+      regex: pinterest.co.uk/pin/(.+)
+    load_more_results_module:
+      name: load_more_by_scrolling_module
+    listing_container_css_selector: '[data-test-id="pin"][data-test-pin-id]'
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[data-test-id="pin-visual-wrapper"] img'
+      attribute_name: src
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.pinterest.co.uk/pin/{}
+    take_screenshot: true
+    loading_delay: 5
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-test-id="pinTitle"], [data-test-id="CloseupMainPin"] h1'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-test-id="truncated-description"]'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-test-id="official-user-attribution"] a div[title], [data-test-id="creator-card-profile"]
+        a:has(div[data-test-id="creator-profile-name"])'
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: '[data-test-id="official-user-attribution"] a, [data-test-id="creator-card-profile"]
+        a:has(div[data-test-id="creator-profile-name"])'
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[data-test-id="pin-closeup-image"] img, [data-test-id="story-pin-closeup"]
+        video'
+      attribute_name: src
+    videos_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: body script[type="application/json"][data-relay-response="true"]
+        ~ script[type="application/json"]
+      attribute_name: textContent
+      regex: \"(http[^\"]+t4.mp4)\"
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}/_created'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-test-id="profile-name"]'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-test-id="main-user-description-text"]'
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[data-test-id="gestalt-avatar-svg"] img'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - '[data-test-id="profile-followers-link"]'
+        - '[data-test-id="follower-count"]'
+      value_css_selectors:
+        - '[data-test-id="profile-followers-link"]'
+        - '[data-test-id="follower-count"]'
+      key_regex:
+        - ' ([^ ]+)$'
+        - ' ([^ ]+)$'
+      value_regex:
+        - ([^ ]+) .+
+        - ([^ ]+) .+
+      key_attributes:
+        - textContent
+        - textContent
+      value_attributes:
+        - textContent
+        - textContent

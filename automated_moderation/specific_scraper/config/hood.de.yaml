@@ -1,0 +1,125 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    scroll_down_after_get_new_page: true
+    loading_delay: 4
+    take_screenshots: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.hood.de/suchergebnisse.htm?q={}
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: '#closeCookieConsent'
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .iGridList>.iProductGridItem
+      attribute_name: id
+      regex_substitute: '\_'
+      regex_substitute_string: '-'
+      action_before_poster_post_identifiers_module:
+        - name: click_action_module
+          css_selector: '#closeCookieConsent'
+          undetected_click: true
+        - name: click_action_module
+          css_selector: .iSellerBox [onclick*="alle-artikel"]
+          undetected_click: true
+          stop_css_selector: .iGridList>.iProductGridItem
+          loading_timeout: 1
+          after_pause_time: 4
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .iGridList>.iProductGridItem
+      attribute_name: id
+      regex_substitute: '\_'
+      regex_substitute_string: '-'
+    listing_container_css_selector: .iGridList>.iProductGridItem
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .iGridTitle>[itemprop="name"]
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .iPrice
+      replace_old: \€
+      replace_new: EUR
+    item_sold_retriever_module:
+      name: get_attribute_value
+      css_selector: .iAdditionalElement>div.iGray
+      attribute_name: textContent
+      regex: '(\d+ verkauft)'
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .iGridImage >img
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_scrolling_one_scroll_at_a_time
+      scroll_range: 2
+  post_information_retriever_module:
+    name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+    post_url_template: https://www.hood.de/i/{}.htm
+    take_screenshot: true
+    loading_delay: 2
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .iProductContainer h1>[itemprop="name"]
+    description_retriever_module:
+      name: get_attribute_value
+      iframe_css_selector: '#description>iframe'
+      css_selector: body
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .iProductContainer .iOfferDetails [itemprop="price"]
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '.iSellerBox>div>div>a[href*="accounts_details"]'
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: '#sellerBox>.iShopHeader'
+      attribute_name: href
+    stock_retriever_module:
+      name: get_attribute_value
+      css_selector: .iProductContainer span[itemprop="inventoryLevel"] , .iProductContainer [itemprop="availability"]>b
+      attribute_name: textContent
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '#mainImage>div>div.item>img'
+      attribute_name: src
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '#closeCookieConsent'
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: 'https://www.hood.de/shop/{}'
+    take_screenshot: true
+    loading_delay: 1
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .iSellerBox>div>div>a[href*="accounts_details"]
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .iFlexTable>.iCellLeft>img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - .iSellerBox .fa-phone+span>a
+      value_css_selectors:
+        - .iSellerBox .fa-phone+span>a
+      key_regex:
+        - tel
+      value_regex:
+        - tel\:(.+)
+      key_attributes:
+        - href
+      value_attributes:
+        - href

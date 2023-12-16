@@ -1,0 +1,87 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+    - name: iproyal/us
+    - name: iproyal/lithuania
+    - name: 123proxy
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    mobile_driver: true
+    override_user_agent: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 1000
+    loading_delay: 9
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://m.1688.com/offer_search/-6D7033.html?keywords={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .list_group-item  a.item-link
+      attribute_name: data-offer-id
+    load_more_results_module:
+      name: load_more_by_scrolling_one_scroll_at_a_time
+      scroll_range : 10
+      scroll_pause_time: 1
+      loading_delay: 10
+      css_selector: '.list-loadmore[style="display: flex;"]'
+    listing_container_css_selector: '.list_group-item'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .item-info_title
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .count_price
+      regex: \D+[\d\.]+
+      replace_old: \xef\xbf\xa5
+      replace_new: CNY
+    item_sold_retriever_module:
+      name: get_attribute_value
+      css_selector: .count_vol
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: img.image_src
+      attribute_name: src
+      replace_old_regex: (_\d+x\d+.+)
+      replace_new: ''
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://m.1688.com/offer/{}.html
+    take_screenshot: true
+    loading_delay: 55
+    action_before_retrieving_post_information_module:
+      - name: close_xdg_open_prompt
+        after_pause_time: 2
+      - name: click_action_module
+        before_pause_time: 3
+        after_pause_time: 3
+        css_selector: .failModal-close
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: title
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .step-price-item .price-box, .price-column
+      replace_old: \xc2\xa5
+      replace_new: CNY
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a.store-top span.store-trt-title
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a.store-top
+      post_url_cleaning_module:
+        skip_query_string_cleaning: true
+      attribute_name: href
+      regex: memberId\=([^\&]+)\&
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: 'span.logistics-freight'
+      value_css_selector: 'span.logistics-freight'
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .bottom-show img.rax-image
+      attribute_name: src
+      regex: (.+)

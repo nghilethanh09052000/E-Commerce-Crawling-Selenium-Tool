@@ -1,0 +1,21 @@
+include: carousell.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://au.carousell.com/search/{}?sort_by=3
+        - https://au.carousell.com/search/{}
+    post_identifiers_retriever_module:
+      regex: au\.carousell\.com\/p\/(.+)
+    poster_post_identifiers_retriever_module:
+      regex: au\.carousell\.com\/p\/(.+)
+    price_retriever_module:
+      replace_old: A\$
+      replace_new: AUD
+  post_information_retriever_module:
+    post_url_template: https://au.carousell.com/p/{}
+    vendor_retriever_module:
+      regex: https://au\.carousell\.com/u/(.+)/$
+    price_retriever_module:
+      replace_old: A\$
+      replace_new: AUD

@@ -1,0 +1,9 @@
+include: mercadolibre.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://listado.mercadolibre.com.ec/{}
+    price_retriever_module:
+      replace_old: U\$S\n
+      replace_new: USD

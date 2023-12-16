@@ -1,0 +1,94 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+    override_user_agent: true
+    undetected_driver: true
+    xvfb: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    loading_delay: 10
+    take_screenshots: true
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates: 
+        - https://www.leboncoin.fr/recherche?text={}
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: .didomi-popup-view button#didomi-notice-agree-button
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: 'a[data-qa-id="aditem_container"]'
+      regex: (?<=leboncoin.fr\/)(.*)\.htm$
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[data-qa-id="aditem_container"]
+      regex: (?<=leboncoin.fr\/)(.*)\.htm$
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: nav[aria-label="pagination"] li:last-of-type a
+    listing_container_css_selector: a[data-qa-id="aditem_container"]
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: p[data-qa-id="aditem_title"]
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: span[data-qa-id="aditem_price"] > span
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img
+      attribute_name: src
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.leboncoin.fr/{}.htm
+    loading_delay: 2
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[data-qa-id="adview_title"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: p[class*="src__DescriptionWrapper"]
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: article[id="grid"] div[data-qa-id="adview_price"] span
+      replace_old: \€
+      replace_new: EUR
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-qa-id="adview_profile_part"] a[class*="_3Hrjq"]
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div[data-qa-id="adview_profile_part"] a[class*="_3Hrjq"]
+      attribute_name: href
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-qa-id="adview-location"] span div
+      attribute_name: textContent
+    pictures_retriever_module:
+      name: get_pictures_from_popup
+      clickable_css_selector: section[data-qa-id="adview_spotlight_container"] div.kWlfAP > div:nth-child(1) > button img
+      picture_css_selector: '[data-qa-id="gallery_modal"] .slick-track>.slick-slide:not(.slick-cloned)'
+      attribute_name: src
+      loading_delay: 2
+      regex: (.+)
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: 'https://www.leboncoin.fr/profil/{}'
+    loading_delay: 1
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: h3.text-headline-2-expanded
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.styles_Profile__3vhTo .ikVEbG img
+      attribute_name: src

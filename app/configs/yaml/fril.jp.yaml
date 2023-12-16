@@ -1,0 +1,98 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://fril.jp/search/{}?order=desc&sort=created_at
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .item-box__image-wrapper > a
+      regex: item.fril.jp\/(.*)$
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a.link_shop_title
+      regex: item.fril.jp\/(.*)$
+    listing_container_css_selector: .item>.item-box
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: p.item-box__item-name
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: p.item-box__item-price
+      replace_old: \¥
+      replace_new: JPY
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.item-box__image-wrapper>a>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .btn-next > a
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://item.fril.jp/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .item__name
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="item__description__line"]
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["price"]} {jsons[0]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .header-shopinfo__shop-name > span:nth-child(1)
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[class*="shopinfo-wrap"]
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: table[class="item__details"]
+      key_regex: \xe7\x99\xba\xe9\x80\x81\xe5\x85\x83\xe3\x81\xae\xe5\x9c\xb0\xe5\x9f\x9f(.+)
+      value_css_selector: table[class="item__details"]
+      value_regex: \xe7\x99\xba\xe9\x80\x81\xe5\x85\x83\xe3\x81\xae\xe5\x9c\xb0\xe5\x9f\x9f(.+)
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: '[class="sp-image"]'
+      attribute_name: src
+      replace_old_regex: (\?.+$)
+      replace_new: ''
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .profile-area__shop-name
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: section .category-cloud:first-child .content-group__text
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: .profile-area__user-icon img
+      attribute_name: src
+      replace_old_regex: (\?.+$)
+      replace_new: ''
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: div.shop_score
+      value_css_selector: div.shop_score>div
+      key_css_selector_attribute_name: class
+  archiving_options:
+    scroll_to_bottom: true

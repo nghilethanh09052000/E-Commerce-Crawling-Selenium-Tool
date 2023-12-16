@@ -1,0 +1,86 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+    headless: false
+    xvfb: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.grid-pod>.pod
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.grid-pod>.pod
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: button[id*="arrow-right"]
+      loading_delay: 4
+    listing_container_css_selector: div.grid-pod>.pod
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[id*="displaySubTitle"]'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="primary medium"]'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '[id*="displaySellerText"]'
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: a img
+      attribute_name: src
+      replace_old_regex: \?.*
+      replace_new: ''
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button[id="testId-accept-cookies-btn"]
+  post_information_retriever_module:
+    name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+    take_screenshot: true
+    loading_delay: 5
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .pdp-detail-section h1
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="product-information"]
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-variant="PDP_MAIN"] span
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a[id*="sellerName"]
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[id*="sellerName"]
+      attribute_name: href
+    ships_to_retriever_module:
+      name: get_key_value_list
+      key_css_selector: li[class*="Autocomplete-module_marketplace"]
+      value_css_selector: li[class*="Autocomplete-module_marketplace"]
+      clickable_css_selector:
+        - div[id*="HomeDelivery"]
+        - '#geofinder-input-level1'
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_2: button#testId-ImageGalleryControlButton-right
+      picture_css_selector: button#testId-ImageGalleryControlButton-right+img
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 2
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button[id="testId-accept-cookies-btn"]
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[id*="BrandTitle"]'

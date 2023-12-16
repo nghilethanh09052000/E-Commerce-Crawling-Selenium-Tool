@@ -1,0 +1,130 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+    undetected_driver: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    max_posts_to_browse: 3000
+    loading_delay: 4
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.gumtree.com.au/s-{}/k0r10
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[class*="user-ad-collection"]>a
+      regex: gumtree.com.au\/s-ad\/(.+)$
+    listing_container_css_selector: div[class*="user-ad-collection"]>a
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: p[class*="title"]>span[class*="title"]
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="user-ad-price"]>span[class*="user-ad-price"]:first-child
+      attribute_name: textContent
+      replace_old: \$
+      replace_new: AUD
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="location"]
+      attribute_name: textContent
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector:  img.user-ad-image__thumbnail
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: a.page-number-navigation__link-next
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: ul.ad-listing__list >li a.ad-listing__title-link
+      regex: gumtree.com.au\/s-ad\/(.+)$
+      listing_container_css_selector: ul.ad-listing__list >li
+      title_retriever_module:
+        name: get_attribute_value
+        attribute_name: textContent
+        css_selector: a.ad-listing__title-link
+      price_retriever_module:
+        name: get_attribute_value
+        css_selector: div[itemprop="price"]
+        attribute_name: content
+        replace_old: .+
+        replace_new: AUD \g<0>
+      location_retriever_module:
+        name: get_attribute_value
+        css_selector: div.ad-listing__location
+        attribute_name: textContent
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector:  a.ad-listing__thumb-link img
+        attribute_name: src
+      load_more_results_module:
+        name: load_more_by_click
+        css_selector: button.ad-listing__load-more-btn:not([style])
+        loading_delay: 5
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.gumtree.com.au/s-ad/{}
+    take_screenshot: true
+    loading_delay: 3
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.vip-ad-title__header
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.vip-ad-description__content
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div.user-ad-price>span:first-child
+      replace_old: \$
+      replace_new: AUD
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: span.seller-profile__name
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a.seller-profile.link
+      attribute_name: href
+      regex: gumtree.com.au\/s\-seller\/(.+)$
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: div.vip-ad-title__location
+      attribute_name: textContent
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: div.vip-ad-image button[class*="main-image-cta"]
+      clickable_css_selector_2: .modal button.vip-ad-gallery__nav-btn--next
+      loading_delay: 3
+      picture_css_selector: .modal img.vip-ad-gallery__img--loaded
+      attribute_name: src
+      regex: (.+)
+      escape_popup_on_end: true
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: https://www.gumtree.com.au/s-seller/{}
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: p>span.seller-profile__seller-name-text
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.seller-profile__seller-image>span
+      attribute_name: style
+      regex: url\((.+)\)
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .user-rating__trust-marker-item
+      value_css_selector: .user-rating__trust-marker-item
+      key_regex: ([a-zA-Z\ ]*)
+      value_regex: \d+

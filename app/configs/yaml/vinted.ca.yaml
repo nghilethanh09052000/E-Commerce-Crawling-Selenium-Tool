@@ -1,0 +1,154 @@
+framework:
+  name: api_selenium_framework
+  driver_initialization_module:
+    name: classic_api_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://api.vinted.ca/graphql#{}
+    api_request_params:
+      method_type: POST
+      post_body: '[{"operationName":"Products","variables":{"first":MAX_POSTS_TO_BROWSE,"filterBy":{"query":"SEARCH_QUERY"},"orderBy":"NEWEST","after":null},"query":"query
+        Products($first: Int!, $after: String, $filterBy: ProductFilters, $orderBy:
+        ProductsOrder) {\n  productsConnection(\n    first: $first\n    after: $after\n    filterBy:
+        $filterBy\n    orderBy: $orderBy\n  ) {\n    nodes {\n      ...ListProduct\n      __typename\n    }\n    totalCount\n    pageInfo
+        {\n      hasNextPage\n      __typename\n    }\n    __typename\n  }\n  alternatingContent(feedFilters:
+        $filterBy, feedOrderBy: $orderBy) {\n    ...AlternatingContentItem\n    __typename\n  }\n}\n\nfragment
+        ListProduct on Product {\n  id\n  state\n  title\n  brand {\n    name\n    __typename\n  }\n  viewerIsSeller\n  category
+        {\n    ...ListProductCategory\n    parent {\n      ...ListProductCategory\n      parent
+        {\n        ...ListProductCategory\n        parent {\n          ...ListProductCategory\n          parent
+        {\n            ...ListProductCategory\n            parent {\n              ...ListProductCategory\n              __typename\n            }\n            __typename\n          }\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n  price
+        {\n    amount\n    __typename\n  }\n  tags {\n    ...FullProductTag\n    __typename\n  }\n  colors
+        {\n    title\n    __typename\n  }\n  image(variant: LEGACY_LARGE) {\n    url\n    __typename\n  }\n  size
+        {\n    label\n    __typename\n  }\n  condition\n  outletDiscount {\n    preOutletPrice
+        {\n      amount\n      __typename\n    }\n    discountPercentage\n    __typename\n  }\n  viewerHasFavorited\n  __typename\n}\n\nfragment
+        ListProductCategory on ProductCategory {\n  id\n  title\n  __typename\n}\n\nfragment
+        FullProductTag on ProductTag {\n  name\n  __typename\n}\n\nfragment AlternatingContentItem
+        on AlternatingContentItem {\n  id\n  position\n  item {\n    ... on HTMLFeedItem
+        {\n      ...HTMLFeedItem\n      __typename\n    }\n    __typename\n  }\n  __typename\n}\n\nfragment
+        HTMLFeedItem on HTMLFeedItem {\n  id\n  campaignId\n  html\n  __typename\n}"}]'
+      api_headers: "{\"authority\": \"api.vinted.ca\",\"accept\": \"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7\"\
+        ,\"accept-language\": \"en-US,en;q=0.9\",\"content-type\": \"application/json\"\
+        ,\"dpr\": \"2\",\"origin\": \"https://vinted.ca\",\"referer\": \"https://vinted.ca/\"\
+        ,\"sec-ch-ua\": \"'Chromium';v='116', 'Not)A;Brand';v='24', 'Google Chrome';v='116'\"\
+        ,\"sec-ch-ua-mobile\": \"?0\",\"sec-ch-ua-platform\": \"'Linux'\",\"sec-fetch-dest\"\
+        : \"empty\",\"sec-fetch-mode\": \"cors\",\"sec-fetch-site\": \"same-site\"\
+        ,\"user-agent\": \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML,
+        like Gecko) Chrome/116.0.0.0 Safari/537.36\",\"x-currency\": \"CAD\",\"x-device\"\
+        : \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)
+        Chrome/116.0.0.0 Safari/537.36\",\"x-locale\": \"en_CA\",\"x-platform\": \"\
+        web\",\"x-version\": \"3.125.4\"}"
+    listing_retriever_module:
+      name: get_json_obj
+      attribute_names:
+        - '[0].data.productsConnection.nodes'
+    post_identifiers_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - id
+    title_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - title
+    price_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - price.amount
+      append_text: CAD
+    pictures_retriever_module:
+      name: get_json_pictures
+      attribute_names:
+        - image.url
+      return_list: true
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://vinted.ca/en/product/{}
+    take_screenshot: true
+    driver_initialization_module:
+      name: classic_selenium_initialization_module
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '#onetrust-accept-btn-handler'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: article section section section h1
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: meta[name="description"]
+      attribute_name: content
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[itemprop="offers"]'
+      replace_old: \$
+      replace_new: CAD
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: section > section div a[href*="/user/"]
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: section > section div a[href*="/user/"]
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: main > article section > section div button:has(img)
+      picture_css_selector: main > article section > section > div[style*="background-image"]
+        > img
+      regex: (.+)
+      attribute_name: src
+      escape_popup_on_end: true
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '#onetrust-accept-btn-handler'
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: title
+      replace_old: \|.+
+      replace_new: ''
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: meta[property="og:image"]
+      attribute_name: content
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - a[href*="/reviews"]
+        - a[href*="/user/"][href*="closet"] span:nth-of-type(2)
+        - a[href*="/user/"][href*="favorites"] span:nth-of-type(2)
+        - a[href*="/user/"][href*="followers"] span:nth-of-type(2)
+        - a[href*="/user/"][href*="following"] span:nth-of-type(2)
+      value_css_selectors:
+        - a[href*="/reviews"] span
+        - a[href*="/user/"][href*="closet"] span:nth-of-type(1)
+        - a[href*="/user/"][href*="favorites"] span:nth-of-type(1)
+        - a[href*="/user/"][href*="followers"] span:nth-of-type(1)
+        - a[href*="/user/"][href*="following"] span:nth-of-type(1)
+      key_regex:
+        - reviews
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+      value_regex:
+        - \(([^\)]+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+      key_attributes:
+        - href
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent

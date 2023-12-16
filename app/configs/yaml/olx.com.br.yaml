@@ -1,0 +1,69 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.olx.com.br/brasil?q={}&sf=1
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#main-content>div.renderIfVisible>.olx-ad-card>a'
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: '#listing-pagination div>a.disabled[aria-label="Página selecionada"]+a'
+    listing_container_css_selector: '#main-content>div.renderIfVisible'
+    hover_over_listing_elements: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h2
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .olx-ad-card__price
+      replace_old: R\$
+      replace_new: BRL
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[alt]
+      attribute_name: src
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: '#cookie-notice-ok-button'
+  post_information_retriever_module:
+    name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+    post_url_template: '{}'
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '#cookie-notice-ok-button'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .ad__sc-45jt43-0
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-section="description"]'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_multiple_text_content_and_concatenate
+      css_selectors:
+        - '[data-testid="currencySymbol"]'
+        - '[data-testid="currencySymbol"]+*'
+      attribute_name: textContent
+      replace_old: R\$\n
+      replace_new: BRL
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .ckFhRN [data-testid="ad-properties"]>div>div>span:first-child
+      value_css_selector: .ckFhRN [data-testid="ad-properties"]>div>div>span:last-child
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[data-ds-component="DS-Flex"] div[data-testid="slides-wrapper"]
+        img , ul[data-testid="gallery-wrapper"]>li>img'
+      attribute_name: src
+  archiving_options:
+    height: 2000
+    width: 1924

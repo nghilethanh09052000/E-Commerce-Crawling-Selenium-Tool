@@ -1,0 +1,32 @@
+include: aliexpress.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.aliexpress.us/w/wholesale-{}.html
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector:
+          - '[data-role="region-pannel"]>#switcher-info'
+          - '[data-role="switch-country"]>a[data-role="country"]'
+          - '[data-role="switch-country"] ul.address-select-content>li[data-name="United States"]'
+          - div.switcher-btn>[data-role="save"]
+        after_pause_time: 4
+        stop_css_selector: '[data-role="region-pannel"]>#switcher-info>span.ship-to>i'
+        stop_attribute_name: class
+        stop_value: css_us
+      - name: refresh_page
+        stop_css_selector: '#card-list'
+        before_pause_time: 2
+      - name: click_action_module
+        after_pause_time: 1
+        css_selector:
+          - button[data-role="gdpr-accept"]
+          - div[class*="law18--left"]
+    post_identifiers_retriever_module:
+      regex: aliexpress.us\/item\/(.*).html
+    price_retriever_module:
+      replace_old: \$
+      replace_new: USD
+    poster_post_identifiers_retriever_module:
+      regex: aliexpress.us\/item\/(.+).html

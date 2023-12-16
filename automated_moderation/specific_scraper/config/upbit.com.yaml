@@ -1,0 +1,86 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+  search_pages_browsing_module:
+    name: search_only_browsing_module
+    max_posts_to_browse: 500
+    loading_delay: 3
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://upbit.com/nft/marketplace?contractName=ALL&searchKeyword={}&sort=RECENT
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.css-1ytc8a1>div[collection]>div>a[href*="/nft/marketplace/"]
+      regex: https\://upbit.com/nft/marketplace/edition/(.+)
+    load_more_results_module:
+      name: load_more_by_scrolling_one_scroll_at_a_time
+      scroll_range: 1
+      scroll_pause_time: 5
+    listing_container_css_selector: div.css-1ytc8a1>div[collection]>div>a[href*="/nft/marketplace/"]
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: div.css-1qwdsol>p
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div.css-1ugdy5e>div:last-child>p
+      regex: '\d.+'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div.css-1ugdy5e>div:first-child>div:last-child>p
+      regex: by (.+)
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: picture>source:first-child
+      attribute_name: srcset
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: 'https://upbit.com/nft/marketplace/edition/{}'
+    take_screenshot: true
+    loading_delay: 3
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: div.css-1i2bp3g>p
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.css-1s5idl8>div.css-1xaekgw
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div.css-1wavjlf>div>div:first-child>div>p:last-child
+      regex: (\d.+)
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div.css-1i2bp3g>div:last-of-type>button
+    poster_link_retriever_module:
+      name: get_attribute_value
+      css_selector: div.css-147v1r a[href*="nft/creators/"]
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_between_2_attribute
+      css_selector: '.css-szc2m3 picture>source:first-child , .css-1yjhsbj video>source'
+      attribute_name_1: srcset
+      attribute_name_2: src
+      loading_timeout: 0.1
+    videos_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '.css-1yjhsbj video>source'
+      attribute_name: src
+      loading_timeout: 0.1
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 3
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: div.css-a7rvz4>div>div>p
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: 'div.css-a7rvz4 .css-1wohsz2'
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.css-a7rvz4>div>img.chakra-image
+      attribute_name: src

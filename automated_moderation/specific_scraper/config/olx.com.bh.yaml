@@ -1,0 +1,100 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.olx.com.bh/ads/q-{}/?search%5Border%5D=created_at%3Adesc
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: li[aria-label="Listing"]>article>div:first-of-type>a[href*="/ad/"]
+      regex: (?<=olx.com.bh\/ad\/)(.*)(\.html)
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: article>div:first-child>a
+      regex: (?<=olx.com.bh\/ad\/)(.*)(\.html)
+      load_more_results_module:
+        name: load_more_by_click
+        css_selector: button[type="submit"]
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: div[role="navigation"] li:last-child a
+      restart_driver: true
+    listing_container_css_selector: li[aria-label="Listing"]
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[aria-label="Title"]'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[aria-label="Price"]>span'
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[role="presentation"]
+      attribute_name: src
+  post_information_retriever_module:
+    name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+    post_url_template: https://www.olx.com.bh/ad/{}.html
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: div[aria-label="Overview"] h1
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["description"]}'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div[aria-label="Overview"] div div div span
+      replace_old: \xd8\xaf. \xd8\xa8
+      replace_new: BHD
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a[href*="/profile/"] img
+      attribute_name: alt
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[href*="/profile/"]
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: '[aria-label="Overview"] [aria-label="Location"]'
+      value_css_selector: '[aria-label="Overview"] [aria-label="Location"]'
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.image-gallery picture>source
+      attribute_name: srcset
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: title
+      regex: '([^\|]+) '
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[aria-label="User photo"]
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - span[class="_34a7409b"]
+      value_css_selectors:
+        - span[class="_34a7409b"]
+      key_regex:
+        - ([^\d]+)
+      value_regex:
+        - \d+
+  archiving_options:
+    click_on_elements:
+      - button#onetrust-accept-btn-handler
+    height: 2000
+    width: 1924

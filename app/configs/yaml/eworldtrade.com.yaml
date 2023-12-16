@@ -1,0 +1,110 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 2
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.eworldtrade.com/search/?s={}&type=product
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: '#premiumBanner [title="Close"]'
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.buyer-tab-products>div>div>a
+      regex: eworldtrade.com\/pd\/(.+)$
+    listing_container_css_selector: div.buyer-tab-products>div
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: :scope>div>div>a
+      attribute_name: title
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .tab-brand-logo>a
+      attribute_name: title
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .tab-brand-logo>a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .list_image_container img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .pagintion-next>a
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#all-prod ul>li>a'
+      regex: eworldtrade.com\/pd\/(.+)$
+      listing_container_css_selector: '#all-prod ul>li'
+      title_retriever_module:
+        name: get_attribute_value
+        css_selector: :scope>a
+        attribute_name: title
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: a>img
+        attribute_name: src
+      load_more_results_module:
+        name: load_more_by_scrolling_module
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.eworldtrade.com/pd/{}
+    take_screenshot: true
+    loading_delay: 2
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .prd-titile
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[module-title="detailTextContent"] , .product-des:last-of-type'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .prod-supplier-box a.product-a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .prod-supplier-box a.product-a
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .prod-info>ul>li:first-child
+      value_css_selector: .prod-info>ul>li:first-child
+      key_regex: \:(.+)
+      value_regex: \:(.+)
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '#image-gallery>li>img'
+      attribute_name: src
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '#premiumBanner [title="Close"]'
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 2
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: body h1
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .com-details
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .com-logo>img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      loading_delay: 3
+      key_css_selector: '#company-info ul>li'
+      value_css_selector: '#company-info ul>li>b'
+      key_regex: '(.+)\:'

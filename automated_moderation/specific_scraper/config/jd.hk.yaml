@@ -1,0 +1,22 @@
+include: jd.yaml
+framework:
+  search_pages_browsing_module:
+    max_posts_to_browse: 2000
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://search.jd.hk/search?keyword={}&sort=sort_winsdate_desc
+    post_identifiers_retriever_module:
+      regex: /.*item.jd.hk/(.+).html$
+    poster_post_identifiers_retriever_module:
+      css_selector: a[href*="/item.jd."]
+      regex: /.*item.jd.hk/(.+).html$
+    price_retriever_module:
+      css_selector: div[class*="price"]>div[class*="price"]>span
+      replace_new: CNY
+      replace_old: \¥
+    pictures_retriever_module:
+      attribute_name: src
+  post_information_retriever_module:
+    post_url_template: https://npcitem.jd.hk/{}.html
+    price_retriever_module:
+      replace_old: \￥\n

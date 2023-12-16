@@ -1,0 +1,112 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 4
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.diytrade.com/china/pl/0-s-i-1/Search.html?ns=1&qc=prd&qs={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: ul.prodItemGrid>li .itemTitle a
+      regex: diytrade.com\/(.+).html
+    listing_container_css_selector: ul.prodItemGrid>li
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .itemTitle a
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .price
+      replace_old: US \$
+      replace_new: USD
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .compIcon>a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .imgBorder img
+      attribute_name: src
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .comHomeItemGrid>li span>a , .comProdItems>li h3>a
+      regex: diytrade.com\/(.+).html
+      listing_container_css_selector: .comProdItems>li , .comHomeItemGrid>li
+      title_retriever_module:
+        name: get_attribute_value
+        attribute_name: textContent
+        css_selector: h3>a
+      price_retriever_module:
+        name: get_attribute_value
+        attribute_name: textContent
+        css_selector: h4
+        replace_old: US \$
+        replace_new: USD
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: .imgBorder img
+        attribute_name: src
+      load_more_results_module:
+        name: go_to_next_page_module
+        css_selector: .comPageMenu>li>a[href*="/pl.html"] , .pageNavList>a.next
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .pageNavList>a.next
+  post_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    post_url_template: https://www.diytrade.com/{}.html
+    take_screenshot: true
+    loading_delay: 2
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .prodDetailBlock>div>h2
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.prodDetailDesc
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .prodDetailBlock .priceStr
+      attribute_name: textContent
+      replace_old: US \$
+      replace_new: USD
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .prodDetailBlock .com-info-detail h3
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .prodDetailBlock .com-info-detail h3>a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .prodImgBlock>div img
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: https://www.diytrade.com/{}.html
+    take_screenshot: true
+    loading_delay: 2
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '#titleBar h3'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#comContentTable .comPageDesc'
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '#comContentTable .comPageDesc>a>img'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .comInfoTable tr>th
+      value_css_selector: .comInfoTable tr>td:not([style],[width])

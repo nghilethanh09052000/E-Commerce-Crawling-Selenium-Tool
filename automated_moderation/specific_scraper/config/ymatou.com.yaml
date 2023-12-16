@@ -1,0 +1,139 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    max_posts_to_browse: 3000
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.ymatou.com/products?k={}
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#sellerproducts a[href*="/product/"]'
+      regex: ymatou.com/product/(.+).html
+      load_more_results_module:
+        name: click_on_next_page_module
+        css_selector: .paginationjs ul li:last-of-type a
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#product-list li>a[href*="/product/"]'
+      regex: ymatou.com/product/(.+).html
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: .pagination li:last-of-type a
+    listing_container_css_selector: '#product-list li[class*="product-item"] , #sellerproducts li[class*="product-item"]'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .name
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .price
+      regex: (\xc2\xa5.*\d+)
+      replace_old: \xc2\xa5
+      replace_new: HKD
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .sellerinfo .txt
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .sellerinfo
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: a[class="product-img"] img
+      attribute_name: src
+      replace_old_regex: _l
+      replace_new: _o
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.ymatou.com/product/{}.html
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h3.title
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#productdetail-module'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '#p_price'
+      replace_old: \xc2\xa5
+      replace_new: HKD
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '#seller_name'
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div[class*="seller"] a[href*="/sellerhome"]
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .address
+      value_css_selector: .address
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace
+      css_selector: '#imageMenu ul li img'
+      attribute_name: src
+      replace_old: _i
+      replace_new: _o
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '#sellerinfo'
+      attribute_name: data-sellername
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '#user-logo'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - 'li.seller-info dl dd:nth-of-type(3) i'
+        - 'li.seller-info dl dd:nth-of-type(4)'
+        - 'li.seller-score p:nth-of-type(1)'
+        - 'li.seller-service.rest-score p:nth-of-type(1)'
+        - 'li.seller-service.rest-score p:nth-of-type(2)'
+        - 'li.seller-totalscore.rest-score p'
+      value_css_selectors:
+        - 'li.seller-info dl dd:nth-of-type(3)'
+        - 'li.seller-info dl dd:nth-of-type(4)'
+        - 'li.seller-score p:nth-of-type(2)'
+        - 'li.seller-service.rest-score p:nth-of-type(1) i'
+        - 'li.seller-service.rest-score p:nth-of-type(2) i'
+        - 'li.seller-totalscore.rest-score p i'
+      key_regex:
+        - 'address'
+        - '[^\d]+'
+        - '.+'
+        - '(.+) \d'
+        - '(.+) \d'
+        - '(.+) \d'
+      value_regex:
+        - '.+'
+        - '[^\d]+ (\d+)'
+        - '.+'
+        - '.+'
+        - '.+'
+        - '.+'
+      key_attributes:
+        - 'class'
+        - 'textContent'
+        - 'textContent'
+        - 'textContent'
+        - 'textContent'
+        - 'textContent'
+      value_attributes:
+        - 'textContent'
+        - 'textContent'
+        - 'textContent'
+        - 'textContent'
+        - 'textContent'
+        - 'textContent'

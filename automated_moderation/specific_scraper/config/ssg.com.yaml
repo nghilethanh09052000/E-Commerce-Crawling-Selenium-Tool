@@ -1,0 +1,112 @@
+framework:
+    name: selenium_framework
+    driver_initialization_module:
+      name: classic_selenium_initialization_module
+      start_maximized: true
+    search_pages_browsing_module:
+      name: classic_page_browsing_module
+      max_posts_to_browse: 2000
+      scroll_down_after_get_new_page: true
+      loading_delay: 3
+      search_page_urls_builder_module:
+        name: classic_search_page_urls_builder_module
+        search_page_url_templates:
+          - https://www.ssg.com/search.ssg?query={}&sort=regdt
+      post_identifiers_retriever_module:
+        name: classic_post_identifiers_retriever_module
+        css_selector: .cunit_thmb_lst>li .title>a
+        regex: ssg.com\/item\/itemView.ssg\?itemId=(.+)$
+        post_url_cleaning_module:
+          query_string_to_keep:
+          - itemId
+      listing_container_css_selector: '.cunit_thmb_lst>li'
+      title_retriever_module:
+        name: get_attribute_value
+        css_selector: '.title>a>em[class*="ko"]'
+      price_retriever_module:
+        name: get_multiple_text_content_and_concatenate
+        css_selectors:
+          - '.opt_price>.ssg_price'
+          - '.opt_price>.ssg_price+span'
+        replace_old: \x0a\xec\x9b\x90
+        replace_new: KRW
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: .thmb>a>img
+        attribute_name: src
+      load_more_results_module:
+        name: click_on_next_page_module
+        css_selector: a.btn_next
+        loading_delay: 3
+      poster_post_identifiers_retriever_module:
+        name: classic_post_identifiers_retriever_module
+        css_selector: .cunit_thmb_lst>li .title>a
+        regex: ssg.com\/item\/itemView.ssg\?itemId=(.+)$
+        post_url_cleaning_module:
+          query_string_to_keep:
+          - itemId
+        action_before_poster_post_identifiers_module:
+          - name: click_action_module
+            css_selector:
+              - a[aria-label="신상품"]
+            after_pause_time: 2
+        load_more_results_module:
+          name: load_more_by_click
+          css_selector: button.store_set_btnmore
+    post_information_retriever_module:
+      name: classic_post_information_retriever_module
+      post_url_template: https://www.ssg.com/item/itemView.ssg?itemId={}
+      loading_delay: 3
+      take_screenshot: true
+      title_retriever_module:
+        name: get_attribute_value
+        attribute_name: textContent
+        css_selector: .cdtl_info_tit_txt
+      price_retriever_module:
+        name: get_multiple_text_content_and_concatenate
+        css_selectors:
+          - .cdtl_new_price .ssg_price
+          - .cdtl_new_price .ssg_tx
+        replace_old: \x0a\xec\x9b\x90
+        replace_new: ' KRW'
+      vendor_retriever_module:
+        name: get_attribute_value
+        attribute_name: textContent
+        css_selector: .brand_store_info_tit>a , .official_brand_tit
+      poster_link_retriever_module:
+        name: get_attribute_url
+        css_selector: .brand_store_info_tit>a , .cdtl_official_brand_view>a
+        attribute_name: href
+      stock_retriever_module:
+        name: get_attribute_value
+        css_selector: '#cdtl_opt_bx_uitem p>span>span.tx_en'
+        attribute_name: textContent
+        regex: (\d+)
+      pictures_retriever_module:
+        name: get_pictures_from_popup_with_multi_selectors
+        clickable_css_selector_2: .cdtl_pager_lst>li.active+li
+        picture_css_selector: 'img#mainImg'
+        attribute_name: src
+        regex: (.+)
+        loading_delay: 2
+    poster_information_retriever_module:
+      name: classic_poster_information_retriever_module
+      poster_url_template: '{}'
+      loading_delay: 2
+      take_screenshot: true
+      poster_name_retriever_module:
+        name: get_attribute_value
+        attribute_name: textContent
+        css_selector: .store_tit_tx
+      description_retriever_module:
+        name: get_attribute_value
+        attribute_name: textContent
+        css_selector: .dmNjqT , .sc-keVrkP
+      picture_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: .store_profile_img>img , .special_logo a>img
+        attribute_name: src
+      payload_retriever_module:
+        name: get_key_value_list
+        key_css_selector: .store_report_lst>li>em
+        value_css_selector: .store_report_lst>li>span.store_point_nm , .store_report_lst>li>strong

@@ -1,0 +1,140 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    load_images: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    take_screenshots: true
+    loading_delay: 5
+    max_posts_to_browse: 2000
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.bukalapak.com/products?search%5Bkeywords%5D={}&search%5Bsort_by%5D=last_relist_at%3Adesc
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.bl-product-card-new__thumbnail a[href*="bukalapak.com/p/"]
+      regex: (?<=bukalapak.com\/p\/)(.*)
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#merchant-page-product-list .c-product-card-description>a'
+      regex: (?<=bukalapak.com\/p\/)(.*)
+      load_more_results_module:
+        name: click_on_next_page_module
+        css_selector: span.c-ghostblock-pagination__next
+    listing_container_css_selector: div.bl-product-card-new
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: section.bl-product-card-new__name>p>a.bl-link
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: section div.bl-product-card-new__price-and-currency
+      replace_old: Rp
+      replace_new: IDR
+      trim_text: true
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: section div.bl-product-card-new__store-name-and-location>p[class*="store-name"]
+      attribute_name: title
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: section div.bl-product-card-new__store-name-and-location>p[class*="store-name"]>a
+      attribute_name: href
+    location_retriever_module:
+      name: get_attribute_value
+      attribute_name: title
+      css_selector: section div.bl-product-card-new__store-name-and-location>p[class*="location"]
+    item_sold_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: section>p.bl-product-card-new__sold-count
+      regex: \d+
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: figure.bl-thumbnail a>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: nav li:last-child a[role="button"]
+      restart_driver: true
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.bukalapak.com/p/{}
+    take_screenshot: true
+    loading_delay: 7
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '#section-main-product h1[title]'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .c-information__description-txt
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '#section-main-product div[class*="product-price"].-main'
+      replace_old: Rp
+      replace_new: IDR
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '#section-informasi-pelapak h3'
+      attribute_name: textContent
+    stock_retriever_module:
+      name: get_attribute_value
+      css_selector: '#section-main-product>div>div.u-txt--base'
+      attribute_name: textContent
+      regex: ([\d\>\ ]+)
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: h3[class*="seller__name"]>a
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - div[class*="location__seller"] div[class*="location__name"]
+      value_css_selectors:
+        - div[class*="location__seller"] div[class*="location__name"]
+      key_regex:
+        - (.+)
+      value_regex:
+        - (.+)
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_2: div.c-product-gallery__main  button.c-carousel-mv__nav-button--next
+      picture_css_selector: div.c-carousel-mv__slide--active>div>div>picture>img
+      loading_delay: 2
+      attribute_name: src
+      regex: (.+)
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .ut-store-name
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .c-tab>div:nth-child(3)>div
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .c-avatar__image
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      loading_delay: 3
+      key_css_selector: .c-table td>span:nth-child(2)
+      value_css_selector: .c-table tr>td:nth-child(2n)
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: .merchant-page__nav>li:nth-child(2)>span

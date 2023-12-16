@@ -1,0 +1,14 @@
+include: depop.yaml
+framework:
+  driver_initialization_module:
+    cookies:
+      properties:
+        location: de
+  search_pages_browsing_module:
+    price_retriever_module:
+      replace_old: \xe2\x82\xac
+      replace_new: EUR
+  post_information_retriever_module:
+    price_retriever_module:
+      replace_old: \xe2\x82\xac
+      replace_new: EUR

@@ -1,0 +1,44 @@
+framework:
+  name: selenium_framework_from_specified_urls
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    headless: false
+    load_images: true
+  login_module:
+    name: classic_login_module
+    login_page_url: https://www.instagram.com
+  post_url_cleaning_module:
+    skip_query_string_cleaning: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.instagram.com/explore/tags/{}/
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .v1Nh3 > a
+      regex: p\/(.*)\/$
+    load_more_results_module:
+      name: load_more_by_scrolling_module
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.instagram.com/p/{}
+    loading_delay: 5
+    take_screenshot: true
+    record_redirection_url: false
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .PpGvg > div:nth-child(1) > div:nth-child(1) > div:nth-child(2)
+        > span
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .e1e1d > a, .e1e1d > span > a
+      attribute_name: textContent
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .KL4Bh[style] > img
+      attribute_name: src
+    only_send_business_accounts_posts: false
+    save_posts_in_specific_scraper_database: false

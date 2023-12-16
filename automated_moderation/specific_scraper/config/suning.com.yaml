@@ -1,0 +1,109 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://search.suning.com/{}/
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[class*="search-product"] li > a
+      regex: product.suning.com\/(.*)
+      listing_container_css_selector: div[class*="search-product"] li
+      title_retriever_module:
+        name: get_attribute_value
+        css_selector: p.sf-proName a
+      price_retriever_module:
+        name: get_attribute_value
+        css_selector: p.sf-price
+        replace_old: \¥
+        replace_new: 'JPY '
+        exclude_children: true
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: a > img
+        attribute_name: src
+      load_more_results_module:
+        name: click_on_next_page_module
+        css_selector: div.sf-pages b + a
+      action_before_poster_post_identifiers_module:
+        - name: click_action_module
+          css_selector: h4#chead_road
+          after_pause_time: 3
+        - name: click_action_module
+          css_selector: div.sg-details a.btn_good
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div#product-wrap ul li .product-box .title-selling-point > a
+      regex: product.suning.com\/(.*)
+    listing_container_css_selector: div#product-wrap ul li .product-box
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: a#nextPage
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .title-selling-point > a
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .def-price
+      regex: (\d+\.\d+)
+      replace_old: (.+)
+      replace_new: \g<1> JPY
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .store-name
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .store-name
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .img-block > a > img
+      attribute_name: src
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://product.suning.com/{}
+    loading_delay: 4
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1#itemDisplayName
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: meta[name="description"]
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: span.mainprice
+      replace_old: \¥
+      replace_new: 'JPY '
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: span#shopName > a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: span#shopName > a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: div.imgzoom-thumb-main li
+      picture_css_selector: a#bigImg img
+      regex: (.+)
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 2
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: div.storname a
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div[id*="logoUrl"] img
+      attribute_name: src

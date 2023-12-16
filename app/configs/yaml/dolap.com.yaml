@@ -1,0 +1,93 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    loading_delay: 2
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://dolap.com/ara?q={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .img-block > a
+      regex: (?<=dolap.com\/urun\/)(.*)
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .img-block>a
+      regex: (?<=dolap.com\/urun\/)(.*)
+    listing_container_css_selector: div.content-block>div.row>div
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.title-info-block>span.title
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.price-detail>span.price
+      replace_old: TL
+      replace_new: TRY
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div.detail-head>div>a>div>span.title
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div.detail-head>div>a
+      attribute_name: href
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: .next > a
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://dolap.com/urun/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .title-block > div > h1
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .remarks-block > p
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .price-block > div > span.price
+      replace_old: TL
+      replace_new: TRY
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .profile-block > div.detail-head > div > div > a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .profile-block a.title
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.product-detail-block div.mask > ul > li > a > img
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .title-block h1
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .main-profile-block .text-block p
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .main-profile-block .person-img svg:last-child image
+      attribute_name: xlink:href
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .followers-list li span
+      value_css_selector: .followers-list li strong

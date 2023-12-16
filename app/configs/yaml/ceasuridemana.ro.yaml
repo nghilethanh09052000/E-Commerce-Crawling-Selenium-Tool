@@ -1,0 +1,114 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - http://ceasuridemana.ro/{}.html
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#ad_list > li> div> a'
+      regex: (?<=http:\/\/ceasuridemana.ro\/)(.*)
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#ad_list > li> div> a'
+      regex: (?<=http:\/\/ceasuridemana.ro\/)(.*)
+    listing_container_css_selector: '#ad_list>li.ad'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.title>h2
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.price strong
+      replace_old: '[L|l][E|e][I|i]'
+      replace_new: RON
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div.by>strong>a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div.by>strong>a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.short_ad>a>img
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_click
+      css_selector: li.pagination-next > a > span
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: http://ceasuridemana.ro/{}
+    take_screenshot: true
+    loading_delay: 4
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '#content > h1'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#content > p'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div.price strong
+      replace_old: '[L|l][E|e][I|i]'
+      replace_new: RON
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '#ccode a'
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: '#ccode a'
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.aimg a
+      attribute_name: href
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .user_name
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[name="description"]'
+      attribute_name: content
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - .totalca
+        - .soldca
+        - .member-from
+      value_css_selectors:
+        - .totalca>strong
+        - .soldca>strong
+        - .member-from>strong
+      key_regex:
+        - Anunturi
+        - Anunturi marcate ca vandute
+        - Membru din
+      value_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+      key_attributes:
+        - textContent
+        - textContent
+        - textContent
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent

@@ -1,0 +1,117 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 5
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.tiktok.com/tag/{}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[data-e2e="challenge-item-list"]>div>div>div>div>a'
+      regex: tiktok.com\/(.*)$
+    listing_container_css_selector: '[data-e2e="challenge-item-list"]>div'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: title
+      css_selector: '[data-e2e="challenge-item-desc"]>a'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="DivCardAvatar"]>a+a'
+      attribute_name: title
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: '[class*="DivCardAvatar"]>a'
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img:not([class*="ImgAvatar"])
+      attribute_name: src
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[data-e2e="user-post-item"]+div>a'
+      regex: tiktok.com\/(.*)$
+      listing_container_css_selector: '[data-e2e="user-post-item-list"]>div'
+      title_retriever_module:
+        name: get_attribute_value
+        attribute_name: title
+        css_selector: '[data-e2e="user-post-item-desc"]>a'
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: img
+        attribute_name: src
+    load_more_results_module:
+      name: load_more_by_scrolling_one_scroll_at_a_time
+      scroll_pause_time: 1
+      scroll_range: 4
+      loading_delay: 6
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: div#tiktok-verify-ele a#verify-bar-close
+      - name: click_action_module
+        css_selector: '#app>div[class*="DivBannerContainer"] a[class*="AButtonLink"]'
+      - name: click_shadow_root_element
+        css_selector: body tiktok-cookie-banner
+        clickable_css_selector: div>button:last-child
+  post_information_retriever_module:
+    name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+    post_url_template: https://www.tiktok.com/{}
+    loading_delay: 3
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-e2e="browse-video-desc"]'
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-e2e="browser-nickname"]'
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[data-e2e="browse-user-avatar"]
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div[class*="DivBlurBackgroundWrapper"] img
+      attribute_name: src
+    videos_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div[class*="DivBasicPlayerWrapper"] video
+      attribute_name: src
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: div#tiktok-verify-ele a#verify-bar-close
+      - name: click_action_module
+        css_selector: '#login-modal [data-e2e="modal-close-inner-button"]'
+      - name: click_shadow_root_element
+        css_selector: body tiktok-cookie-banner
+        clickable_css_selector: div>button:last-child
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 4
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-e2e="user-title"]'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-e2e="user-bio"]'
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[data-e2e="user-avatar"] img'
+      attribute_name: src
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: div#tiktok-verify-ele a#verify-bar-close
+      - name: click_action_module
+        css_selector: '#app>div[class*="DivBannerContainer"] a[class*="AButtonLink"]'
+      - name: click_shadow_root_element
+        css_selector: body tiktok-cookie-banner
+        clickable_css_selector: div>button:last-child

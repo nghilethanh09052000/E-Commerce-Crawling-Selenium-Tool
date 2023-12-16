@@ -1,0 +1,209 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+    - name: iproyal/us
+    - name: iproyal/lithuania
+    - name: 123proxy
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    max_posts_to_browse: 1000
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.adverts.ie/for-sale/q_{}/
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.posts>div.sr-grid-cell .item-details .title>a
+      regex: adverts.ie\/(.+)
+    listing_container_css_selector: div.posts>div.sr-grid-cell
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .item-details .title>a
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .item-details .price>a
+      replace_old: \€
+      replace_new: EUR
+      attribute_name: textContent
+    location_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .item-details .location>a
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: a.main-image>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .paging>.next>a
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.posts >div.info-box>div.img-holder>a
+      regex: adverts.ie\/(.+)
+      listing_container_css_selector: div.posts >div.info-box
+      title_retriever_module:
+        name: get_attribute_value
+        attribute_name: textContent
+        css_selector: .info>div.header>h4>a
+      price_retriever_module:
+        name: get_attribute_value
+        css_selector: .info>div.header>dl>dd
+        replace_old: \€
+        replace_new: EUR
+        attribute_name: textContent
+      location_retriever_module:
+        name: get_attribute_value
+        attribute_name: textContent
+        css_selector: .info>div[class="holder "]>ul>li:nth-child(2)
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: div.img-holder>a>img
+        attribute_name: src
+      load_more_results_module:
+        name: go_to_next_page_module
+        css_selector: '#activity .desc-info>dd:first-of-type>a , ul.paging>li.next>a'
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button[data-tracking="cc-accept"]
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.adverts.ie/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["name"]}'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .main-description
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["price"]} {jsons[0]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a.sellername
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a.sellername
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_popup
+      clickable_css_selector: div[class*="main_image"]>span>img
+      picture_css_selector: li.pbxl_carousel_item img
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 3
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button[data-tracking="cc-accept"]
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '#username_head'
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '#details .image_left>img'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - .desc-info-table tr:nth-child(1)>td:first-child
+        - .desc-info-table tr:nth-child(2)>td:first-child
+        - .desc-info-table tr:nth-child(3)>td:first-child
+        - '#feedback_breakdown>a[href*="positive"]'
+        - '#feedback_breakdown>a[href*="negative"]'
+        - '#activity #ads_placed'
+        - '#activity .desc-info dt:nth-of-type(1)'
+        - '#activity .desc-info dt:nth-of-type(2)'
+        - '#activity .desc-info dt:nth-of-type(3)'
+        - '#activity .desc-info dt:nth-of-type(4)'
+        - td.social_dd a:nth-of-type(1) img
+        - td.social_dd a:nth-of-type(2) img
+        - img.sms-badge-tooltip
+      value_css_selectors:
+        - .desc-info-table tr:nth-child(1)>td:last-child
+        - .desc-info-table tr:nth-child(2)>td:last-child
+        - .desc-info-table tr:nth-child(3)>td:last-child
+        - '#feedback_breakdown>dd.positive'
+        - '#feedback_breakdown>dd.negative'
+        - '#activity #ads_placed>span'
+        - '#activity .desc-info dd:nth-of-type(1)'
+        - '#activity .desc-info dd:nth-of-type(2)'
+        - '#activity .desc-info dd:nth-of-type(3)'
+        - '#activity .desc-info dd:nth-of-type(4)'
+        - td.social_dd a:nth-of-type(1)
+        - td.social_dd a:nth-of-type(2)
+        - img.sms-badge-tooltip
+      key_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - sms-badge
+      value_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+      key_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - id
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - alt
+        - alt
+        - class
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - href
+        - href
+        - alt
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button[data-tracking="cc-accept"]

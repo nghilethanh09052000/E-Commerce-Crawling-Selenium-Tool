@@ -1,0 +1,137 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+    - name: iproyal/us
+    - name: iproyal/lithuania
+    - name: 123proxy
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.redbubble.com/shop/?query={}&sortOrder=recent
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button[aria-label="Close Modal"]
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[element="a"]'
+      regex: redbubble.com\/i\/(.*)$
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[element="a"]'
+      regex: redbubble.com\/i\/(.*)$
+    listing_container_css_selector: '[element="a"]'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div[class*="2Ww2j"]>div>div>span
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div[class*="2Ww2j"] [data-testid="product-price"]>span
+      replace_old: \$
+      replace_new: USD
+      regex: (\$.+)
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="2Ww2j"]>div>div>div>span
+      attribute_name: textContent
+      regex: By (.+)
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div[class*="imageContainer"] img[class*="productImage"]
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: '[class*="Pagination__nextPage"] a'
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.redbubble.com/i/{}
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button[aria-label="Close Modal"]
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.styles__marginTop-xs--2KZR5
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class="styles__box--2Ufmy styles__display-flex--2Ww2j styles__flexDirection-column--1NsQo
+        styles__paddingRight-m--1CQ43"]'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="DesktopProductPage__config"]>div>div>div>span>span'
+      replace_old: \$
+      replace_new: USD
+      attribute_name: textContent
+    stock_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="VolumeDiscount__volumeDiscount"]>span'
+      attribute_name: textContent
+      exclude_children: true
+      regex: ([\d\+]+)
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a[class*="ArtworkDetails__artistLink"]
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[class*="ArtworkDetails__artistLink"]
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: a[href*="/people/"][href$="/shop"] span div span:nth-of-type(2)
+      value_css_selector: a[href*="/people/"][href$="/shop"] span div span:nth-of-type(2)
+      key_regex: ([^\d]+)
+      value_regex: ([^\d]+)
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[class*="GalleryImage__img"]
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="ArtistHeader__artistName"]'
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[class*="ArtistHeader__avatar"] img'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - ul[class*="ArtistHeader__artistInfoList"]>div:nth-child(2)>li
+        - div[class*="ArtistProfile__metrics"]>div:nth-child(1)>a>div>div:last-child
+        - div[class*="ArtistProfile__metrics"]>div:nth-child(2)>a>div>div:last-child
+        - div[class*="ArtistProfile__metrics"]>div:nth-child(3)>div>div:last-child
+      value_css_selectors:
+        - ul[class*="ArtistHeader__artistInfoList"]>div:nth-child(2)>li
+        - div[class*="ArtistProfile__metrics"]>div:nth-child(1)>a>div>div:first-child
+        - div[class*="ArtistProfile__metrics"]>div:nth-child(2)>a>div>div:first-child
+        - div[class*="ArtistProfile__metrics"]>div:nth-child(3)>div>div:first-child
+      key_regex:
+        - designs
+        - (.+)
+        - (.+)
+        - (.+)
+      value_regex:
+        - \d+
+        - (.+)
+        - (.+)
+        - (.+)
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="ArtistProfile__bioText"]'
+      attribute_name: textContent

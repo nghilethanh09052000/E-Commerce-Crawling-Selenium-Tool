@@ -1,0 +1,21 @@
+include: craigslist.org.yaml
+framework: 
+    search_pages_browsing_module:
+        search_page_urls_builder_module:
+            search_page_url_templates:
+                - 'https://adelaide.craigslist.org/search/sss?query={}'
+                - 'https://brisbane.craigslist.org/search/sss?query={}'
+                - 'https://cairns.craigslist.org/search/sss?query={}'
+                - 'https://canberra.craigslist.org/search/sss?query={}'
+                - 'https://darwin.craigslist.org/search/sss?query={}'
+                - 'https://goldcoast.craigslist.org/search/sss?query={}'
+                - 'https://melbourne.craigslist.org/search/sss?query={}'
+                - 'https://ntl.craigslist.org/search/sss?query={}'
+                - 'https://perth.craigslist.org/search/sss?query={}'
+                - 'https://sydney.craigslist.org/search/sss?query={}'
+                - 'https://hobart.craigslist.org/search/sss?query={}'
+                - 'https://wollongong.craigslist.org/search/sss?query={}'
+                - 'https://auckland.craigslist.org/search/sss?query={}'
+                - 'https://christchurch.craigslist.org/search/sss?query={}'
+                - 'https://dunedin.craigslist.org/search/sss?query={}'
+                - 'https://wellington.craigslist.org/search/sss?query={}'

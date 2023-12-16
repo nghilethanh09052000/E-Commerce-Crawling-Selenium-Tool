@@ -1,0 +1,13 @@
+include: poshmark.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://poshmark.ca/search?query={}&type=listings&src=dir
+    post_identifiers_retriever_module:
+      regex: poshmark\.ca/listing/(.+)
+    poster_post_identifiers_retriever_module:
+      regex: poshmark\.ca/listing/(.+)
+    price_retriever_module:
+      replace_old: C\$
+      replace_new: CAD

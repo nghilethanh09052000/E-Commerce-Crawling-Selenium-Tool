@@ -1,0 +1,152 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    scroll_down_after_get_new_page: true
+    stop_css_selector: .block-word-search-tip-text
+    loading_delay: 3
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://pt.dhgate.com/wholesale/search.do?act=search&stype=down&sinfo=operatedate&searchkey={}
+        - https://de.dhgate.com/wholesale/search.do?act=search&stype=down&sinfo=operatedate&searchkey={}
+        - https://tr.dhgate.com/wholesale/search.do?act=search&stype=down&sinfo=operatedate&searchkey={}
+        - https://kr.dhgate.com/wholesale/search.do?act=search&stype=down&sinfo=operatedate&searchkey={}
+        - https://ar.dhgate.com/wholesale/search.do?act=search&stype=down&sinfo=operatedate&searchkey={}
+        - https://es.dhgate.com/wholesale/search.do?act=search&stype=down&sinfo=operatedate&searchkey={}
+        - https://ru.dhgate.com/wholesale/search.do?act=search&stype=down&sinfo=operatedate&searchkey={}
+        - https://it.dhgate.com/wholesale/search.do?act=search&stype=down&sinfo=operatedate&searchkey={}
+        - https://fr.dhgate.com/wholesale/search.do?act=search&stype=down&sinfo=operatedate&searchkey={}
+        - https://www.dhgate.com/wholesale/search.do?act=search&stype=down&sinfo=operatedate&searchkey={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .gitem > h3.pro-title > a
+      regex: (?<=.dhgate.com\/product\/)(.*)(.html)
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div .pic
+      regex: (?<=.dhgate.com\/product\/)(.*)(.html)
+      load_more_results_module:
+        name: click_on_next_page_module
+        css_selector: .seeAll span , .page .pagelist+a
+    listing_container_css_selector: div.gitem
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: h3.pro-title > a
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: ul.pricewrap>li.price>span
+      replace_old: US \$
+      replace_new: USD
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div.seller-title>a.seller-name
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div.seller-title>a.seller-name
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.photo>a>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .next
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.dhgate.com/product/{}.html
+    take_screenshot: true
+    loading_delay: 2
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .hinfo > h1:nth-child(1)
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .div-specifications
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: ul.js-wholesale-list > li.current > span:nth-child(1)
+      replace_old: \$
+      replace_new: USD
+      attribute_name: textContent
+    stock_retriever_module:
+      name: get_attribute_value
+      css_selector: .stock-in
+      attribute_name: textContent
+      regex: (\d+)
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: span.name
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: '#storename>a'
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.j-banner-max > div.bimg-inner
+      attribute_name: data-imgurl
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: a.sto-name , span.seller>a
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      clickable_css_selector: '#AboutMoreLink>span:first-child'
+      css_selector: .aboutcon dd>h2
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .storelogo img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - '#BasicContent+div>dl:nth-child(1)>dt'
+        - '#BasicContent+div>dl:nth-child(2)>dt'
+        - '#BasicContent+div>dl:nth-child(3)>dt'
+        - '#BasicContent+div>dl:nth-child(4)>dt'
+        - '#BasicContent+div>dl:nth-child(5)>dt'
+        - .feedback-score>.feedback-info>li:nth-child(1)
+        - .feedback-score>.feedback-info>li:nth-child(2)
+      value_css_selectors:
+        - '#BasicContent+div>dl:nth-child(1)>dd'
+        - '#BasicContent+div>dl:nth-child(2)>dd'
+        - '#BasicContent+div>dl:nth-child(3)>dd'
+        - '#BasicContent+div>dl:nth-child(4)>dd'
+        - '#BasicContent+div>dl:nth-child(5)>dd'
+        - .feedback-score>.feedback-info>li:nth-child(1)
+        - .feedback-score>.feedback-info>li:nth-child(2)
+      key_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - Positive Feedback
+        - Transactions
+      value_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - .*\%
+        - \d+
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: a[href*="/about-us/"]

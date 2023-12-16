@@ -1,0 +1,122 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://wanelo.co/discover?q%5Bs%5D=created_at+desc&query={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.shoppers-discovers-product>a
+      regex: wanelo\.co/p/(.+)
+    listing_container_css_selector: div.shoppers-discovers-product
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: alt
+      css_selector: img.shoppers-discovers-product__image
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div.shoppers-discovers-product__price
+      attribute_name: textContent
+      replace_old: \$
+      replace_new: USD
+      regex: (\$\d+\.\d*)
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img.shoppers-discovers-product__image
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_click
+      css_selector: a[class*="results__link"]
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.shoppers-discovers-product>a
+      regex: wanelo\.co/p/(.+)
+      load_more_results_module:
+        name: load_more_by_click
+        css_selector: a[class*="products__link"]
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button[data-action*="Close"]
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://wanelo.co/p/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: meta[property="og:title"]
+      attribute_name: content
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: section[class="shoppers-products-description"] article[aria-hidden="true"]
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: section[class="shoppers-products-prices"] > h3 > span
+      replace_old: \$
+      replace_new: USD
+      exclude_children: true
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: article[class*="store__name"]
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: button[class*="store__title"] ~ article > a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[role="presentation"][class*="products-images"]
+      attribute_name: src
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button[data-action*="Close"]
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: section[class="shoppers-profiles-avatar"] h1
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: section[class="shoppers-profiles-avatar"] img
+      attribute_name: src
+      replace_old_regex: \?.+
+      replace_new: ''
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - span[class*="follows__count"]
+        - article[class*="review"] span[class*="detail__score"]
+        - article[class*="review"] span[class*="reviews-count"]
+        - article[class*="review"] ~ article
+      value_css_selectors:
+        - span[class*="follows__count"]
+        - article[class*="review"] span[class*="detail__score"]
+        - article[class*="review"] span[class*="reviews-count"]
+        - article[class*="review"] ~ article
+      key_regex:
+        - follows__count
+        - score
+        - reviews-count
+        - </span>(.+)$
+      value_regex:
+        - (.+)
+        - (.+)
+        - \((.+)\)
+        - '>(.+)</span>'
+      key_attributes:
+        - class
+        - class
+        - class
+        - innerHTML
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - innerHTML

@@ -1,0 +1,22 @@
+include: lazada.yaml
+framework:
+  proxies:
+    - name: proxys.io/mobile/dedicated/th
+    - name: proxyrack
+      country: PH
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.lazada.com.ph/catalog/?q={}
+    post_identifiers_retriever_module:
+      regex: lazada\.com\.ph/products/(.+)\.html
+    poster_post_identifiers_retriever_module:
+      regex: lazada\.com\.ph/products/(.+)\.html
+    price_retriever_module:
+      replace_old: \xe2\x82\xb1
+      replace_new: PHP
+  post_information_retriever_module:
+    post_url_template: https://www.lazada.com.ph/products/{}.html
+    price_retriever_module:
+      replace_old: \xe2\x82\xb1
+      replace_new: PHP

@@ -1,0 +1,207 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    max_posts_to_browse: 3000
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.newegg.com/p/pl?d={}
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .goods-container a.goods-img
+      regex: newegg.com/(.+)
+      listing_container_css_selector: .goods-container
+      title_retriever_module:
+        name: get_attribute_value
+        css_selector: a.goods-title
+      price_retriever_module:
+        name: get_attribute_value
+        css_selector: .goods-price-current
+        regex: \D+[\d\.]+
+        replace_old: \$
+        replace_new: USD
+      pictures_retriever_module:
+        name: get_pictures_from_attribute_with_replace_regex
+        css_selector: img[src*="ProductImage"]
+        attribute_name: src
+        replace_old_regex: CompressAll\d+/
+        replace_new: /
+      load_more_results_module:
+        name: click_on_next_page_module
+        css_selector: a[title="Next"]
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .item-cell a.item-title
+      regex: newegg.com/(.+)
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: button[title="Next"]
+    listing_container_css_selector: .item-cell
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: a.item-title
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: li.price-current
+      regex: \D+[\d\.]+
+      replace_old: \$
+      replace_new: USD
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .d2c-section-title span
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .d2c-section-title a
+      attribute_name: href
+      regex: newegg.com/Seller-Store/(.+)
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: img[src*="ProductImage"]
+      attribute_name: src
+      replace_old_regex: CompressAll\d+/
+      replace_new: /
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button[class*="type_accept"]
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.newegg.com/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.product-title
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .product-bullets
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: li.price-current
+      replace_old: \$
+      replace_new: USD
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .product-seller a[href*="Seller-Store"]
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .product-seller a[href*="Seller-Store"]
+      attribute_name: href
+      regex: newegg.com/Seller-Store/(.+)
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .product-ship-from
+      value_css_selector: .product-ship-from
+      key_regex: from ([^\.]+)
+      value_regex: from ([^\.]+)
+    ships_to_retriever_module:
+      name: get_key_value_list
+      clickable_css_selector: a.product-address-inner
+      key_css_selector: .menu-list.scrollbar .menu-list-link
+      value_css_selector: .menu-list.scrollbar .menu-list-link
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: .product-view-bar img.product-view-img-original
+      attribute_name: src
+      replace_old_regex: CompressAll\d+/
+      replace_new: /
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button[class*="type_accept"]
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: https://www.newegg.com/Seller-Store/{}
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: span.seller-head-name
+    description_retriever_module:
+      name: get_attribute_value
+      clickable_css_selector: div[data-target="about_us"]
+      css_selector: .review-content
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img.seller-avatar-img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      clickable_css_selectors:
+        - div[data-target="reviews"]
+        - .section-title .section-right div button:nth-of-type(1)
+      key_css_selectors:
+        - span.seller-data-sales
+        - span.seller-data-follow
+        - ul.seller-list-info .seller-data-rating span.seller-data-rating-positive
+        - ul.seller-list-info .seller-data-rating span.seller-data-rating-num ~ span
+        - ul.seller-list-info .seller-data-rating i.rating
+        - .reviews-rating .seller-data-rating span.seller-data-rating-positive
+        - .reviews-rating .seller-data-rating span.seller-data-rating-num
+        - .reviews-rating .seller-data-rating i.rating
+        - .percent-list div.percent:nth-of-type(1) .circle-percent
+        - .percent-list div.percent:nth-of-type(2) .circle-percent
+        - .percent-list div.percent:nth-of-type(3) .circle-percent
+      value_css_selectors:
+        - span.seller-data-sales
+        - span.seller-data-follow
+        - ul.seller-list-info .seller-data-rating span.seller-data-rating-positive
+        - ul.seller-list-info .seller-data-rating span.seller-data-rating-num
+        - ul.seller-list-info .seller-data-rating i.rating
+        - .reviews-rating .seller-data-rating span.seller-data-rating-positive
+        - .reviews-rating .seller-data-rating span.seller-data-rating-num
+        - .reviews-rating .seller-data-rating i.rating
+        - .percent-list div.percent:nth-of-type(1) .circle-percent
+        - .percent-list div.percent:nth-of-type(2) .circle-percent
+        - .percent-list div.percent:nth-of-type(3) .circle-percent
+      key_regex:
+        - Sales
+        - Followers
+        - \([\d,\.]+\% (.+)\)
+        - Ratings
+        - rating
+        - positive
+        - rating-num
+        - r
+        - \%(.+)
+        - \%(.+)
+        - \%(.+)
+      value_regex:
+        - ([\d,\.]+)
+        - ([\d,\.]+)
+        - \(([\d,\.]+)\% .+\)
+        - (.+)
+        - (.+)
+        - \(([\d,\.]+)\% .+\)
+        - (.+)
+        - (.+)
+        - (.+\%)
+        - (.+\%)
+        - (.+\%)
+      key_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - class
+        - class
+        - class
+        - class
+        - textContent
+        - textContent
+        - textContent
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - aria-label
+        - textContent
+        - textContent
+        - aria-label
+        - textContent
+        - textContent
+        - textContent
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button[class*="type_accept"]

@@ -1,0 +1,118 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    loading_delay: 2
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.made-in-china.com/productdirectory.do?subaction=hunt&word={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.search-list>div.prod-list>div.list-node .product-name>a
+      regex: (.+made-in-china.com\/product\/.+).html
+    listing_container_css_selector: div.search-list>div.prod-list>div.list-node
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .product-name>a
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .price-info>.price
+      replace_old: US(.*\$)
+      replace_new: USD
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .company-name-wrapper>a.compnay-name
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .company-name-wrapper>a.compnay-name
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .prod-img a.swiper-slide img
+      attribute_name: data-original
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .pager>a.nextpage
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.prod-result-item .prod-title>a , div[faw-module="Prod_list"]
+        div.sr-proList-name>a
+      regex: (.+made-in-china.com\/product\/.+).html
+      listing_container_css_selector: div.prod-result-item
+      title_retriever_module:
+        name: get_attribute_value
+        css_selector: .prod-title>a
+      price_retriever_module:
+        name: get_attribute_value
+        css_selector: .prod-price>.value
+        replace_old: US(.*\$)
+        replace_new: USD
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: div.prod-image>a>img
+        attribute_name: src
+      load_more_results_module:
+        name: go_to_next_page_module
+        css_selector: .pager a.next , li.sr-nav-item:not(.selected)>a[href*="product-list"]
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: '{}.html'
+    take_screenshot: true
+    loading_delay: 3
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[class*="baseInfo-name"] , .pro-name>h1
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.detail-desc , .product-info .desc>div:last-child
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["price"]} {jsons[0]["offers"]["priceCurrency"]}{jsons[1]["offers"]["price"]}
+        {jsons[1]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '[faw-module="company_homepage"] div.title-txt>a , .com-info .com-name>a'
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: '[faw-module="company_homepage"] div.title-txt>a , .com-info .com-name>a'
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: div.J-pic-dots-wrap ul>li>div>img:last-child
+      picture_css_selector: 'div.J-pic-list-wrap div.J-pic-item.swiper-slide-active .enlargeHref>img , #pic-list>.item div>img'
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 2
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: .gdpr-close
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 2
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: div.title-txt
+    description_retriever_module:
+      name: get_attribute_value
+      clickable_css_selector: li.sr-nav-item.selected+li
+      css_selector: p.intro-cnt
+      attribute_name: textContent
+      loading_delay: 4
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.sr-comInfo-logo>a>img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: div.sr-comProfile-infos>table>tbody>tr>td.info-label-td ,
+        div.sr-comProfile-item>div:first-child
+      value_css_selector: div.sr-comProfile-infos>table>tbody>tr>td:last-child , div.sr-comProfile-item>div:last-child

@@ -1,0 +1,133 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://novi.kupujemprodajem.com/pretraga?keywords={}&order=posted%20desc
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: article[class*="AdItem"] a
+      regex: kupujemprodajem.com\/(.*)$
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: article[class*="AdItem"] a
+      regex: kupujemprodajem.com\/(.*)$
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: a[class*="buttonNext"]
+    listing_container_css_selector: article[class*="AdItem"]
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="AdItem_name"]'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="AdItem_adText"] p'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="AdItem_price_"]'
+      replace_old: din
+      replace_new: RSD
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="AdItem_price"] a[class*="Link_link_"]'
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: '[class*="AdItem_price"] a[class*="Link_link_"]'
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: '[class*="AdItem_image"] img'
+      attribute_name: src
+      replace_old_regex: tmb-\d+x\d+-
+      replace_new: ''
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector:
+          - '#reload-button'
+          - '[class*="CookieConsent_button"]'
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://novi.kupujemprodajem.com/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="AdViewInfo_name"]'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="AdViewDescription"]'
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["price"]} {jsons[0]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: span[class*="UserSummary_profile"] ~ span
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: '[class*="UserSummary_ident"]>a[class*="Link_link"]'
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: div[class*="userDetails"] div:last-child
+      value_css_selector: div[class*="userDetails"] div:last-child
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[class*="imageGalleryImage"]
+      attribute_name: src
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - '#reload-button'
+          - '[class*="CookieConsent_button"]'
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="pageTitle"]'
+      regex: '- (.+)'
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - '[class*="ReviewThumbLinks_positive"]'
+        - '[class*="ReviewThumbLinks_negative"]'
+        - '[class*="UserSummary_userInfo"]'
+        - '[class*="UserSummary_userInfo"] p:nth-of-type(2)'
+      value_css_selectors:
+        - '[class*="ReviewThumbLinks_positive"]'
+        - '[class*="ReviewThumbLinks_negative"]'
+        - '[class*="UserSummary_userInfo"] p:nth-of-type(1)'
+        - '[class*="UserSummary_userInfo"] p:nth-of-type(2)'
+      key_regex:
+        - positive
+        - negative
+        - userInfo
+        - Član od
+      value_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+        - \:(.+)\.
+      key_attributes:
+        - class
+        - class
+        - class
+        - textContent
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - '#reload-button'
+          - '[class*="CookieConsent_button"]'

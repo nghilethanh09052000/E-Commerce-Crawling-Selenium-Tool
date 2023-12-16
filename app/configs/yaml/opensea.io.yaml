@@ -1,0 +1,105 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+    - name: iproyal/us
+    - name: iproyal/lithuania
+    - name: 123proxy
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+    load_images: true
+    cloudflare_bypass: true
+  search_pages_browsing_module:
+    name: search_only_browsing_module
+    loading_delay: 10
+    scroll_down_after_get_new_page: true
+    listing_container_css_selector: article.Asset--loaded
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://opensea.io/assets?search[query]={}&search[resultModel]=ASSETS
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[href*="/assets"]
+      regex: (https\://opensea.io/.+)
+    load_more_results_module:
+      name: load_more_by_scrolling_one_scroll_at_a_time
+      scroll_range: 4
+      scroll_pause_time: 1
+      loading_delay: 15
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: a[href*="/assets"] div:nth-of-type(3) div div div
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-testid="ItemCardPrice"]>div
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: a[href*="/assets"] div[role="link"]
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: a[href*="/assets"] div.AssetMedia--img img[src*="sea"]
+      attribute_name: src
+      replace_old_regex: \?.+
+      replace_new: ''
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector:
+          - i[value="apps"]
+          - i[value="arrow_back"]
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: '{}'
+    take_screenshot: true
+    loading_delay: 8
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .item--title
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="description-text"]
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .TradeStation--price div.Price--amount
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-testid="ItemOwnerAccountLink"] a span
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_value
+      css_selector: a.CollectionLink--link
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .item--summary article img[class*="image"]
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-testid="phoenix-header"] h1
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: meta[property="og:description"]
+      attribute_name: content
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '#main button>span>img'
+      attribute_name: src
+      regex: (.+)\?
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: '[data-testid*="collection-stats"]>div>span:last-child'
+      value_css_selector: '[data-testid*="collection-stats"]>div>span>div'

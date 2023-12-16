@@ -1,0 +1,10 @@
+include: sears.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.sears.com/search={}
+    post_identifiers_retriever_module:
+      regex: sears.com\/(.+)$
+    poster_post_identifiers_retriever_module:
+      regex: sears.com\/(.+)$

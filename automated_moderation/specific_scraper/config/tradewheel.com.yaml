@@ -1,0 +1,113 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    loading_delay: 2
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.tradewheel.com/search/product?keyword={}
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector:  div.main_products div.prod_box > a
+      regex: tradewheel.com\/p\/(.*)
+      action_before_poster_post_identifiers_module:
+        - name: click_action_module
+          css_selector: ul.product_groups li:last-of-type
+      listing_container_css_selector: div.main_products div.prod_box
+      title_retriever_module:
+        name: get_attribute_value
+        css_selector: a
+        attribute_name: title
+      price_retriever_module:
+        name: get_attribute_value
+        css_selector: span.prod_price
+        attribute_name: textContent
+        regex: (.*)/
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: div.product-pic picture img
+        attribute_name: src
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.wbg .pl-listitem .col-product h2 a
+      regex: tradewheel.com\/p\/(.*)
+    listing_container_css_selector: div.wbg .pl-listitem
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: ul.pagination li:last-of-type a
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .col-product h2 a
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: div.col-comp > ul > li:first-child > span
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div.col-comp > h4 > a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div.col-comp > h4 > a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img.img-resp
+      attribute_name: src
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.tradewheel.com/p/{}
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.pd-heading
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.product-details-container
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div.pd-price
+      attribute_name: textContent
+      replace_old: "FOB Price"
+      replace_new: ''
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div.comp-info > a > h2
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div.comp-info > a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: .ZoomContainer
+      clickable_css_selector_2: div[id="prod_image_gallery"] div.next-img
+      picture_css_selector: 'div[id="prod_image_gallery"] div[class*="bg_image"]:not([style*="display: none"]) img'
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 1.5
+      escape_popup_on_end: true
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: div.comp_short_info span.title
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: meta[name="description"]
+      attribute_name: content
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.comp_short_info img[class*="package_badge"]
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: div#comp_info table tr td:first-child
+      value_css_selector: div#comp_info table tr td:last-child

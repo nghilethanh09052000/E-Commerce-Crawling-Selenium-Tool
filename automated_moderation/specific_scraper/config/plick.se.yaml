@@ -1,0 +1,128 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://plick.se/?query={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#ads-view>div>div>a'
+      regex: plick.se\/(.*)$
+    listing_container_css_selector: '[id*="ads-view"]>div>div.ad'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: a.details div.info-box:first-child>p:first-child
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: a.details div.info-box:last-child>p:last-child
+      replace_old: kr
+      replace_new: " SEK"
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div.hover-box>a[href*="/säljare/"]
+      attribute_name: title
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div.hover-box>a[href*="/säljare/"]
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: a>div.image-wrapper>img
+      attribute_name: src
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[id*="ads-view"]>div>div>a
+      regex: plick.se\/(.*)$
+      load_more_results_module:
+        name: load_more_by_scrolling_module
+        scroll_pause_time: 2
+    load_more_results_module:
+      name: load_more_by_scrolling_module
+      scroll_pause_time: 2
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://plick.se/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.desc-title
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.description-container
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: p.ad-price
+      replace_old: kr
+      replace_new: ' SEK'
+      attribute_name: textContent
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: p.user-location
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: h3.user-name
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a.user-link
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: p.info-boxes-title
+      value_css_selector: p.info-boxes-description
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.item-photos>img
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.profile-name
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: p.user-description
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img.profile-image
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - div.profile-info>span:first-child
+        - div.profile-info>span:last-child
+        - h2.profile-location
+      value_css_selectors:
+        - div.profile-info>span:first-child>strong
+        - div.profile-info>span:last-child>strong
+        - h2.profile-location
+      key_regex:
+        - \d+(.+)
+        - \d+(.+)
+        - location
+      value_regex:
+        - \d+
+        - \d+
+        - (.+)
+      key_attributes:
+        - textContent
+        - textContent
+        - class
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent

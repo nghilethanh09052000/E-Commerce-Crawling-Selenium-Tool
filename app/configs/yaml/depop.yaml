@@ -1,0 +1,124 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+    cookies:
+      url: https://www.depop.com
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 3
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.depop.com/search/?q={}
+        - https://www.depop.com/search/?q={}&sort=newlyListed
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[href*="/products/"]
+      regex: (?<=depop.com\/products\/)(.*)$
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[href*="/products/"]
+      regex: (?<=depop.com\/products\/)(.*)$
+    load_more_results_module:
+      name: load_more_by_scrolling_module
+      scroll_pause_time: 8
+    listing_container_css_selector: ul[data-testid="product__items"]>li
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: href
+      css_selector: a[data-testid="product__item"]
+      replace_old: '-'
+      replace_new: ' '
+      regex: products\/(.+)\/
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div[class*="ProductPrice"]>p:last-of-type
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-testid="primaryProductImage"]>img
+      attribute_name: alt
+      regex: by (.+)
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: div[data-testid="primaryProductImage"]>img
+      attribute_name: src
+      replace_old_regex: \/P\d
+      replace_new: /P0
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button[data-testid="cookieBanner__acceptAllButton"]
+        before_pause_time: 3
+        after_pause_time: 5
+  post_information_retriever_module:
+    name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+    post_url_template: https://www.depop.com/products/{}/
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: title
+      replace_old: \| Depop
+      replace_new: ''
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="product__description"]'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="ProductPrice-styles__PriceWrapper"]>p:last-of-type
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div:not([data-testid="bioMobileHeader"])>[class*="BioUserDetails"]>div>span>a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div:not([data-testid="bioMobileHeader"])>[class*="BioUserDetails"]>div>span>a
+      attribute_name: href
+    date_retriever_module:
+      name: get_attribute_value
+      css_selector: time
+      attribute_name: datetime
+      input_format: '%Y-%m-%dT%H:%M:%S.%fZ'
+      output_format: '%Y-%m-%d %H:%M:%S'
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: div:not([data-testid="bioMobileHeader"])>[class*="BioUserDetails"]>div>p
+      attribute_name: textContent
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div[class*="Desktop"]>div[class*="ImageContainer"]>img
+      attribute_name: src
+      loading_delay: 3
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: div[data-testid="cookieBanner"] button:last-child
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[class*="FullName"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="UserDescription"]
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div[data-testid="avatar"] img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      loading_delay: 3
+      key_css_selector: p[class*="StatsDescription"]
+      value_css_selector: p[class*="StatsValue"]
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: div[data-testid="cookieBanner"] button:last-child

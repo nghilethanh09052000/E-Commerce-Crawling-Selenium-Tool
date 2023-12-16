@@ -1,0 +1,153 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.kidstaff.com.ua/search/words-{}/by-new
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#maincontentblock .goodscard-inner>a'
+      regex: kidstaff.com.ua\/(.*)$
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#maincontentblock .goodscard-inner>a'
+      regex: kidstaff.com.ua\/(.*)$
+    listing_container_css_selector: '#maincontentblock .goodscard-inner'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.goodscard-title
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.goodscard-price--current
+      replace_old: \xe2\x82\xb4
+      replace_new: UAH
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .goodscard-inner div.goodscard-photo>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: a.pagination-next
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector:
+          - div[data-id="usertabs"] ul li:nth-of-type(1) a
+          - '#maincontentblock a[href*="section-0"][class="button is-success"]'
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://kidstaff.com.ua/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .column>h1
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .cm-links-underline
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["mainEntity"]["offers"]["price"]} {jsons[0]["mainEntity"]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .cm-seller-icon-wr+div>a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .cm-seller-icon-wr+div>a
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: span[class*="image-location"] ~ i
+      value_css_selector: span[class*="image-location"] ~ i
+    ships_to_retriever_module:
+      name: get_key_value_list
+      key_css_selector: div[class*="info-block"]
+      key_regex: \xd0\x94\xd0\xbe\xd1\x81\xd1\x82\xd0\xb0\xd0\xb2\xd0\xba\xd0\xb0\:([^\|]+)
+      value_css_selector: div[class*="info-block"]
+      value_regex: \xd0\x94\xd0\xbe\xd1\x81\xd1\x82\xd0\xb0\xd0\xb2\xd0\xba\xd0\xb0\:([^\|]+)
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace
+      css_selector: .cm-dop-thema-photo>img
+      attribute_name: src
+      replace_old: 250x250
+      replace_new: 600x600
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: a[href*="/user-"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .pb-3 div:nth-of-type(2) div:nth-of-type(2) div div div[class*="is-nowrap"]
+      attribute_name: textContent
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      clickable_css_selectors:
+        - ''
+        - span[class*="image-phone"] ~ span
+        - a[data-target="premium-description-modal"]
+      key_css_selectors:
+        - .pb-3 div:nth-of-type(2) div:nth-of-type(2) div div div[class*="pb-1"] span
+          span:nth-of-type(2)
+        - .pb-3 div:nth-of-type(2) div:nth-of-type(2) div div div[class*="pb-1"] span[class="is-nowrap"]
+          span:nth-of-type(2)
+        - .pb-3 div:nth-of-type(2) div:nth-of-type(1) div:nth-of-type(3) span:nth-of-type(1)
+        - .pb-3 div:nth-of-type(2) div:nth-of-type(1) div:nth-of-type(3) a
+        - .pb-3 div:nth-of-type(2) div:nth-of-type(1) div:nth-of-type(4)
+        - span[class*="image-phone"] ~ span
+        - '#premium-description-modal'
+      value_css_selectors:
+        - .pb-3 div:nth-of-type(2) div:nth-of-type(2) div div div[class*="pb-1"] span
+        - .pb-3 div:nth-of-type(2) div:nth-of-type(2) div div div[class*="pb-1"] span[class="is-nowrap"]
+        - .pb-3 div:nth-of-type(2) div:nth-of-type(1) div:nth-of-type(3) span:nth-of-type(2)
+        - .pb-3 div:nth-of-type(2) div:nth-of-type(1) div:nth-of-type(3) a
+        - .pb-3 div:nth-of-type(2) div:nth-of-type(1) div:nth-of-type(4)
+        - span[class*="image-phone"] ~ span
+        - '#premium-description-modal .card-content'
+      key_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+        - userhistory
+        - ([^\d]+)
+        - phone
+        - premium-description
+      value_regex:
+        - '\: (.+)'
+        - '\: (.+)'
+        - (.+)
+        - (.+)
+        - '[^\d]+(.+)'
+        - (.+)
+        - (.+)
+      key_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - href
+        - textContent
+        - class
+        - id
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+  archiving_options:
+    scroll_to_bottom: true

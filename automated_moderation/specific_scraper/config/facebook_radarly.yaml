@@ -1,0 +1,6 @@
+framework:
+    name: radarly_framework
+    post_identifier_regex: 'facebook\.com\/([0-9]*)'
+    archiving_options:
+        height: 1400
+        width: 1000

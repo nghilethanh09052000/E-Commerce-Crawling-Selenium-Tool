@@ -1,0 +1,143 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+    undetected_driver: true
+    headless: false
+    xvfb: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 8
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.cdiscount.com/search/10/{}.html
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: li[data-sku] a
+      regex: cdiscount.com/(.+).html
+      listing_container_css_selector: li[data-sku]
+      title_retriever_module:
+        name: get_attribute_value
+        attribute_name: textContent
+        css_selector: a h2.prdtTit
+      price_retriever_module:
+        name: get_attribute_value
+        attribute_name: textContent
+        css_selector: div.priceLine>.priceColor
+        replace_old: \€
+        replace_new: EUR
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: div.imgWrapper>ul>li>img
+        attribute_name: src
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: li[data-sku]>div.prdtBlocInline .prdtBILDetails>a
+      regex: cdiscount.com/(.+).html
+    listing_container_css_selector: li[data-sku]>div.prdtBlocInline
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .prdtBILDetails>a>h2
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .prdtBILPrice>span.priceColor
+      replace_old: (.+)\€(.*)
+      replace_new: \g<1>,\g<2> EUR
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.prdtBILImg ul>li>img
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: a[class*="NxtPage"]
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: '#footer_tc_privacy_button_2'
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.cdiscount.com/{}.html
+    take_screenshot: true
+    loading_delay: 3
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[itemprop="name"]
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#fpBulletPointReadMore'
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[1]["offers"]["price"]} {jsons[1]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a.fpSellerName
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a.fpSellerName
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: div[class*="ExpeditionMessage"] b
+      value_css_selector: div[class*="ExpeditionMessage"] b
+    ships_to_retriever_module:
+      name: get_key_value_list
+      key_css_selector: '#fpShippingCustomer a'
+      value_css_selector: '#fpShippingCustomer a'
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: li.fpZoomPic img
+      attribute_name: src
+      replace_old_regex: \d+x\d+
+      replace_new: '0x0'
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button#popin_tc_privacy_button_2
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: span[itemprop="name"]
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '#sellerLogo'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - .rateBvLk
+        - .maxrate
+        - .shTop
+        - span.sellerLocationTitle
+      value_css_selectors:
+        - .rateBvLk span
+        - .maxrate
+        - .shTop
+        - span.sellerLocationTitle
+      key_regex:
+        - rate
+        - maxrate
+        - Vendeur basé
+        - Pays d'expédition
+      value_regex:
+        - (.+)
+        - (.+)
+        - Vendeur basé à <b>(.+)</b>
+        - Pays d'expédition \:(.+)
+      key_attributes:
+        - class
+        - class
+        - outerHTML
+        - textContent
+      value_attributes:
+        - textContent
+        - textContent
+        - outerHTML
+        - textContent

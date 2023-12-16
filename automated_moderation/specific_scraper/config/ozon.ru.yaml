@@ -1,0 +1,156 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+    - name: iproyal/us
+    - name: iproyal/lithuania
+    - name: 123proxy
+    - name: proxys.io/mobile/shared/ru
+    - name: proxys.io/mobile/dedicated/ru
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+    headless: False
+    load_images: true
+    undetected_driver: true
+    xvfb: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 1000
+    loading_delay: 5
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        before_pause_time: 3
+        after_pause_time: 15
+        css_selector:
+          - 'div[data-addressbookbar]>div button>span'
+        stop_css_selector: div[data-addressbookbar]>div button>span>span
+        stop_value: 'Москва'
+      - name: click_action_module
+        after_pause_time: 3
+        css_selector:
+          - 'div[data-widget="commonAddressBook"]>div>div:nth-of-type(2)>div>div>div>div>.tsBodyL'
+          - 'div[data-widget="citySelector"]>div:last-of-type>div>div>div:first-of-type'
+        stop_css_selector: div[data-addressbookbar]>div button>span>span
+        stop_attribute_name: textContent
+        stop_value: 'Москва'
+      - name: click_action_module
+        css_selector: '[data-widget="cookieBubble"] button'
+        before_pause_time: 8
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.ozon.ru/search/?from_global=true&sorting=new&text={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.widget-search-result-container>div>div a
+      regex: product\/.*?(\d+)$
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.widget-search-result-container>div>div
+      regex: product\/.*?(\d+)$
+    listing_container_css_selector: div.widget-search-result-container>div>div
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div>a>span>span
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div:first-of-type>div:first-child>div:first-child , div:first-of-type>div:first-child>span>span:first-child
+      replace_old: \₽
+      replace_new: RUB
+      trim_text: true
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div>div:last-child>div>span>span>font
+      attribute_name: textContent
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: a>div>div>img
+      regex: (.+)
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: '[data-widget="megaPaginator"]>div:last-of-type>div>div>div:last-child>a'
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.ozon.ru/search/?from_global=true&product_id={}
+    take_screenshot: true
+    loading_delay: 2
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        before_pause_time: 2
+        after_pause_time: 16
+        css_selector:
+          - 'div[data-addressbookbar]>div button'
+        stop_css_selector: div[data-addressbookbar]>div button>span>span
+        stop_value: 'Москва'
+      - name: click_action_module
+        after_pause_time: 3
+        css_selector:
+          - 'div[data-widget="commonAddressBook"]>div>div:nth-of-type(2)>div'
+          - 'div[data-widget="citySelector"]>div:last-of-type>div>div>div:first-of-type'
+        stop_css_selector: div[data-addressbookbar]>div button>span>span
+        stop_value: 'Москва'
+      - name: click_action_module
+        css_selector: .container [data-widget="webOutOfStock"]>div a
+        before_pause_time: 8
+      - name: click_action_module
+        css_selector: '[data-widget="cookieBubble"] button'
+        before_pause_time: 4
+    title_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["name"]}'
+    description_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["description"]}'
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["price"]} {jsons[0]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-widget*="Seller"] div>a[title]
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div[data-widget*="Seller"] div>a[title]
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: '[data-widget="webGallery"]>div>div:last-child>div:first-child>div:first-child>div>div[class]'
+      picture_css_selector: '[data-widget="webGallery"]>div>div:first-child img'
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 3
+    videos_retriever_module:
+      name: get_pictures_from_carousel_after_click
+      picture_css_selector: '[qa-id="video-player"] video'
+      attribute_name: src
+      loading_delay: 2
+      clickable_css_selector: '[data-widget="webGallery"]>div>div:last-child>div:first-child>div:first-child>div>div.jm4'
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 3
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-widget="sellerTransparency"] h1'
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[data-widget="sellerTransparency"] div>img'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      clickable_css_selector: '[data-widget="sellerNavigation"]>a[href*="/profile"]'
+      clickable_css_is_always_present: true
+      key_css_selector: '[data-widget="sellerProfile"]>div>div>div>div:first-child'
+      value_css_selector: '[data-widget="sellerProfile"]>div>div>div>div:last-child'
+      loading_delay: 5
+  archiving_options:
+    scroll_to_bottom: true

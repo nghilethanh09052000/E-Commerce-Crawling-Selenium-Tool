@@ -1,0 +1,122 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    loading_delay: 2
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.morele.net/wyszukiwarka/?q={}
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: '#cookie_box button.close-cookie-box'
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[class*="list-products"] div.cat-product .cat-product-name  a.productLink
+      regex: morele.net\/(.*)
+      load_more_results_module:
+        name: click_on_next_page_module
+        css_selector: .category-list .pagination button[class*="next"]
+        undetected_click: true
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[class*="list-products"] div.cat-product .cat-product-name  a.productLink
+      regex: morele.net\/(.*)
+    listing_container_css_selector: div[class*="list-products"] div.cat-product
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .category-list .pagination li.next > a
+      restart_driver: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .cat-product-name  a.productLink
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .price-new
+      replace_old: zł
+      replace_new: PLN
+      exclude_children: true
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .cat-product-features
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .prod-supplier-name a
+      attribute_name: textContent
+      loading_timeout: 0.1
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .prod-supplier-name a
+      attribute_name: href
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img.product-image 
+      attribute_name: src
+  post_information_retriever_module:
+    name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+    post_url_template: https://www.morele.net/{}/
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.prod-name
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[itemprop="description"]
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div[itemprop="price"]
+      attribute_name: textContent
+      replace_old: zł
+      replace_new: PLN
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div.merchant-box__info a[class*="name"]
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div.merchant-box__info a[class*="name"]
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: img[itemprop="image"]
+      clickable_css_selector_2: button.mobx-next
+      picture_css_selector: .mobx-slider .mobx-item img
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 2
+      escape_popup_on_end: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '#cookie_box button.close-cookie-box'
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    loading_delay: 2
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: p.supplier-name
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: about-supplier__description
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img.supplier-logo__image
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .company-info__section--vertical span[class*="name"]
+      value_css_selector: .company-info__section--vertical span[class*="value"]
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '#cookie_box button.close-cookie-box'
+      - name: click_action_module
+        css_selector: a.pictogram-anchors__item
+        undetected_click: true

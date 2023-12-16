@@ -1,0 +1,154 @@
+stages:
+  - build
+  - deploy
+
+# Use docker inside pipeline
+variables:
+  DOCKER_TLS_CERTDIR: "/certs"
+  GIT_SUBMODULE_STRATEGY: recursive
+  AWS_REGION: eu-west-1
+
+services:
+  - docker:19.03.12-dind
+
+build_specific_scraper:
+  variables:
+    DOCKERFILE_PATH: deployment
+    APPLICATION_NAME: specific-scraper-production
+  stage: build
+  environment: production
+  before_script:
+    - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_REGISTRY/$APPLICATION_NAME
+    - docker pull $AWS_REGISTRY/$APPLICATION_NAME:latest
+  script:
+    - cp $DOTENV .env.$CI_ENVIRONMENT_SLUG
+    - cp $SELENIUM_DOTENV selenium_driver/.env.$CI_ENVIRONMENT_SLUG
+    # set up SENTRY_RELEASE in .env
+    - RELEASE=specific_scraper_$(date +%Y-%m-%d-%H:%M)
+    - awk -v pat="^SENTRY_RELEASE=" -v value="SENTRY_RELEASE=$RELEASE" '{ if ($0 ~ pat) print value; else print $0; }' .env.$CI_ENVIRONMENT_SLUG > .env.tmp
+    - mv .env.tmp .env.$CI_ENVIRONMENT_SLUG
+    - docker build -f $DOCKERFILE_PATH/Dockerfile -t $AWS_REGISTRY/$APPLICATION_NAME:latest --cache-from $AWS_REGISTRY/$APPLICATION_NAME:latest --build-arg ENVIRONMENT_NAME=$CI_ENVIRONMENT_SLUG .
+    - docker push $AWS_REGISTRY/$APPLICATION_NAME:latest
+  allow_failure: false
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: manual
+    - if: "$CI_COMMIT_BRANCH =~ /^release/"
+      when: manual
+    - if: "$CI_COMMIT_BRANCH =~ /^feature/"
+      when: manual
+    - if: "$CI_COMMIT_BRANCH =~ /^hotfix/"
+      when: manual
+
+
+deploy_navee_driver:
+  variables:
+    DOCKERFILE_PATH: deployment
+    APPLICATION_NAME: navee-driver
+  stage: deploy
+  needs:
+    - build_specific_scraper
+  environment: production
+  before_script:
+    - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_REGISTRY/$APPLICATION_NAME
+  script:
+    - cp $DOTENV .env.$CI_ENVIRONMENT_SLUG
+    - cp $SELENIUM_DOTENV selenium_driver/.env.$CI_ENVIRONMENT_SLUG
+    - cd deployment && ln Dockerrun.aws.json  docker-compose.yml
+    - zip -r navee-driver.production.zip .ebextensions .platform Dockerrun.aws.json && cd ..
+    - aws s3 cp deployment/navee-driver.production.zip s3://docker-images-navee-driver/navee-driver.production.zip
+    - aws elasticbeanstalk create-application-version --application-name $APPLICATION_NAME --region $AWS_REGION --version-label $CI_JOB_STARTED_AT --source-bundle S3Bucket="docker-images-navee-driver",S3Key="navee-driver.production.zip"
+    - eb init -p Docker --region $AWS_REGION $APPLICATION_NAME
+    - eb deploy $APPLICATION_NAME --version $CI_JOB_STARTED_AT --timeout 45
+  allow_failure: false
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: manual
+    - if: "$CI_COMMIT_BRANCH =~ /^release/"
+      when: manual
+    - if: "$CI_COMMIT_BRANCH =~ /^feature/"
+      when: manual
+    - if: "$CI_COMMIT_BRANCH =~ /^hotfix/"
+      when: manual
+
+
+deploy_worker:
+  variables:
+    CONFIG_PATH: eb_scraping_worker/deployment
+    APPLICATION_NAME: scraping-worker
+  stage: deploy
+  needs:
+    - build_specific_scraper
+  environment: production
+  script:
+    - cp $DOTENV .env.$CI_ENVIRONMENT_SLUG
+    - cp $SELENIUM_DOTENV selenium_driver/.env.$CI_ENVIRONMENT_SLUG
+    - PACKAGE_NAME=$APPLICATION_NAME-$CI_JOB_STARTED_AT.zip
+    - cd $CONFIG_PATH && ln docker-compose.worker.yml docker-compose.yml
+    - zip -r $PACKAGE_NAME .ebextensions docker-compose.yml && cd -
+    - aws s3 cp $CONFIG_PATH/$PACKAGE_NAME s3://docker-images-navee-driver/$PACKAGE_NAME
+    - aws elasticbeanstalk create-application-version --application-name $APPLICATION_NAME --region $AWS_REGION --version-label $PACKAGE_NAME --source-bundle S3Bucket="docker-images-navee-driver",S3Key="$PACKAGE_NAME"
+    - eb init -p Docker --region $AWS_REGION $APPLICATION_NAME
+    - eb deploy $APPLICATION_NAME --version $PACKAGE_NAME --timeout 30
+  allow_failure: false
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: manual
+    - if: "$CI_COMMIT_BRANCH =~ /^release/"
+      when: manual
+    - if: "$CI_COMMIT_BRANCH =~ /^feature/"
+      when: manual
+    - if: "$CI_COMMIT_BRANCH =~ /^hotfix/"
+      when: manual
+
+
+deploy_lambda_redis:
+  variables:
+    DOCKERFILE_PATH: lambda_redis
+    APPLICATION_NAME: $AWS_APPLICATION_NAME_LAMBDA
+  stage: deploy
+  environment: production
+  before_script:
+    - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_REGISTRY/$APPLICATION_NAME
+    - docker pull $AWS_REGISTRY/$APPLICATION_NAME:latest
+  script:
+    - cp $DOTENV .env.$CI_ENVIRONMENT_SLUG
+    - cp $SELENIUM_DOTENV selenium_driver/.env.$CI_ENVIRONMENT_SLUG
+    # set up SENTRY_RELEASE in .env
+    - RELEASE=specific_scraper_$(date +%Y-%m-%d-%H:%M)
+    - awk -v pat="^SENTRY_RELEASE=" -v value="SENTRY_RELEASE=$RELEASE" '{ if ($0 ~ pat) print value; else print $0; }' .env.$CI_ENVIRONMENT_SLUG > .env.tmp
+    - mv .env.tmp .env.$CI_ENVIRONMENT_SLUG
+    # Prevent Radarly initialization
+    - awk -v pat="^RADARLY_CLIENT_ID=" -v value="RADARLY_CLIENT_ID=''" '{ if ($0 ~ pat) print value; else print $0; }' .env.$CI_ENVIRONMENT_SLUG > .env.tmp
+    - mv .env.tmp .env.$CI_ENVIRONMENT_SLUG
+    - docker build -f $DOCKERFILE_PATH/Dockerfile -t $AWS_REGISTRY/$APPLICATION_NAME:latest --cache-from $AWS_REGISTRY/$APPLICATION_NAME:latest --build-arg ENVIRONMENT_NAME=$CI_ENVIRONMENT_SLUG .
+    - docker push $AWS_REGISTRY/$APPLICATION_NAME:latest
+    - aws lambda update-function-code --region eu-west-1 --function-name redis-interface-lambda --image-uri $AWS_REGISTRY/$APPLICATION_NAME:latest
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: manual
+    - if: "$CI_COMMIT_BRANCH =~ /^release/"
+      when: manual
+    - if: "$CI_COMMIT_BRANCH =~ /^feature/"
+      when: manual
+    - if: "$CI_COMMIT_BRANCH =~ /^hotfix/"
+      when: manual
+
+
+
+deploy_lambda_ip:
+  variables:
+    DOCKERFILE_PATH: lambda_ip
+    APPLICATION_NAME: get-ip-lambda-production
+  stage: deploy
+  environment: production
+  before_script:
+    - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_REGISTRY/$APPLICATION_NAME
+    - docker pull $AWS_REGISTRY/$APPLICATION_NAME:latest
+  script:
+    - docker build -f $DOCKERFILE_PATH/Dockerfile -t $AWS_REGISTRY/$APPLICATION_NAME:latest --cache-from $AWS_REGISTRY/$APPLICATION_NAME:latest --build-arg ENVIRONMENT_NAME=$CI_ENVIRONMENT_SLUG .
+    - docker push $AWS_REGISTRY/$APPLICATION_NAME:latest
+    - aws lambda update-function-code --region eu-west-1 --function-name ip-lambda --image-uri $AWS_REGISTRY/$APPLICATION_NAME:latest
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: manual

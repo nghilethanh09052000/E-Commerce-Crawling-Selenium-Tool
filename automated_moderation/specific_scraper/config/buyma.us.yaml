@@ -1,0 +1,142 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    max_posts_to_browse: 3000
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector:
+          - .vex-close
+          - .fav-promotion__message
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.buyma.us/by/items/find/?keyword={}&sort=newest
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: ul.sr-main li > a
+      regex: buyma.us/(.+)
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: ul.sr-main li > a
+      regex: buyma.us/(.+)
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: .li-item-more a, a[rel="next"]
+    listing_container_css_selector: 'ul.sr-main li'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .sr-item-name
+    price_retriever_module:
+      name: get_json_value
+      css_selector: a[data-ga4-item]
+      attribute_name: data-ga4-item
+      output_string: '{jsons[0]["price"]} {jsons[0]["currency"]}'
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .sr-item-picture img
+      attribute_name: src
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.buyma.us/{}/
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: .vex-close
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class="item-subttl--brand"]'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .item-detail__product-information
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["price"]} {jsons[0]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .seller-link a
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .seller-link a
+      attribute_name: href
+      regex: buyma.us/ps/(.+)
+    ships_from_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - section.item-detail__section
+      value_css_selectors:
+        - section.item-detail__section
+      key_regex:
+        - 'Shipping From \: ([^<]+)'
+      value_regex:
+        - 'Shipping From \: ([^<]+)'
+      key_attributes:
+        - innerHTML
+      value_attributes:
+        - innerHTML
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .slick-track a.item-image img
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: 'https://www.buyma.us/ps/{}/'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class="shopper-name"]'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .shopper-intro
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .shopper-prof-image img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - .shopper-location
+        - .shopper-count
+        - .shopper-sales
+        - .shipped_day_ave
+        - .shipped_rate
+        - .verified-status-wrap
+      value_css_selectors:
+        - .shopper-location
+        - .shopper-count
+        - .shopper-sales
+        - .shipped_day_ave
+        - .shipped_rate
+        - .verified-status-wrap
+      key_regex:
+        - location
+        - count
+        - sales
+        - Ship within
+        - Success Rate
+        - verified-status
+      value_regex:
+        - (.+)
+        - (.+)
+        - ([ \d]+)
+        - 'Ship within\:(.+)'
+        - 'Success Rate\:(.+)'
+        - (.+)
+      key_attributes:
+        - class
+        - class
+        - class
+        - textContent
+        - textContent
+        - class
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent

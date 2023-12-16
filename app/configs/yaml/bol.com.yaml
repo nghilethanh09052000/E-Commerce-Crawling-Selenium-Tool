@@ -1,0 +1,91 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    take_screenshots: true
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.bol.com/nl/nl/s/?searchtext={}
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: '#js-first-screen-accept-all-button'
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: li[class*="product-item"] a.product-title
+      regex: bol.com\/nl\/nl\/p\/(.*)
+    listing_container_css_selector: li[class*="product-item"]
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: ul.pagination > li:last-of-type
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: a.product-title
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: meta[itemprop="price"]
+      attribute_name: content
+      replace_old: .+
+      replace_new: \g<0> EUR
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.product-item__image img
+      attribute_name: src
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: li[class*="product-item"] a.product-title
+      regex: bol.com\/nl\/nl\/p\/(.*)
+      action_before_poster_post_identifiers_module:
+        - name: click_action_module
+          css_selector: '[data-test="seller_offers"]>a'
+          after_pause_time: 3
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.bol.com/nl/nl/p/{}/
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '#product_title > h1> span'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.product-description
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: span[data-test="buy-block-sticky-cta-price"]
+      attribute_name: textContent
+      replace_old: .+
+      replace_new: \g<0> EUR
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '#buy-block a.product-seller__link span'
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: '#buy-block a.product-seller__link'
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: li.filmstrip__flex > div
+      picture_css_selector: .container-item__current img
+      regex: (.+)
+      attribute_name: src
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '#js-first-screen-accept-all-button'
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[data-test="seller_name"]
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: '[data-test="company_info_block"]>dl>dt'
+      value_css_selector: '[data-test="company_info_block"]>dl>dd'

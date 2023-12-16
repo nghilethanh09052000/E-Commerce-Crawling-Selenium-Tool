@@ -1,0 +1,2 @@
+from .instagram.post import take_instagram_post_screenshots
+from .instagram.profile import take_instagram_profile_screenshots

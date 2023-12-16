@@ -1,0 +1,132 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    cloudflare_bypass: true
+    headless: False
+    xvfb: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    loading_delay: 3
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://bazar.bg/obiavi?q={}&sort=date
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.span > div > div>a.listItemLink
+      regex: (?<=bazar.bg\/)(.*)
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[class*="search_cont"] .listItemContainer a
+    listing_container_css_selector: div[class*="search_cont"] div.listItemContainer
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.title
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div>.price
+      replace_old: \xd0\xbb\xd0\xb2
+      replace_new: BGN
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: div>.location
+      attribute_name: textContent
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: div.paging > a.next
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button.fc-primary-button
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://bazar.bg/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.classifiedTitle
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.bObiavaItem > div:nth-of-type(4)
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: content
+      css_selector: meta[property="og:price"]
+      replace_old: \xd0\xbb\xd0\xb2
+      replace_new: BGN
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div.main > span:first-child
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div.main > span:first-child
+      attribute_name: data-link
+      replace_old: .+
+      replace_new: https:\g<0>
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: a[class="location"]
+      value_css_selector: a[class="location"]
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.bObiavaItem img.picture
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .userName
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute_with_replace
+      css_selector: .userPhoto div
+      attribute_name: style
+      replace_old: 'background: url("'
+      replace_new: 'https:'
+      replace_tail: '") center center / contain no-repeat scroll rgb(255, 255, 255);
+        height: 160px; width: 160px;'
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - '[class="menu"]>ul:first-child>li:first-child'
+        - '[class="menu"]>ul:first-child>li:nth-child(2)'
+        - '[class="menu"]>ul:last-child>li:nth-child(2)'
+        - '[class="menu"]>ul:last-child>li:nth-child(1)'
+      value_css_selectors:
+        - '[class="menu"]>ul:first-child>li:first-child>strong'
+        - '[class="menu"]>ul:first-child>li:nth-child(2)>strong'
+        - '[class="menu"]>ul:last-child>li:nth-child(2)>strong'
+        - '[class="menu"]>ul:last-child>li:nth-child(1) strong'
+      key_regex:
+        - Последна активност
+        - В bazar.bg от
+        - Следван от
+        - Рейтинг
+      value_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+      key_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent

@@ -1,0 +1,102 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    loading_delay: 2
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.digitec.ch/search?q={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#productListingContainer>div>article>a'
+      attribute_name: href
+      regex: (?<=/www.digitec.ch\/de\/)(.*)$
+    listing_container_css_selector: '#productListingContainer article'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: alt
+      css_selector: '#productListingContainer article img'
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#productListingContainer>div>article>a'
+      regex: (?<=/www.digitec.ch\/de\/)(.*)$
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '#productListingContainer div.sc-pr6hlf-0 span'
+      attribute_name: textContent
+      replace_old: .+
+      replace_new: '\g<0> EUR'
+      regex: (\d+(?:,\d+)?(?:\.\d+)?)
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '#productListingContainer article img'
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_click
+      css_selector: '#productListingContainer>div:last-child>button'
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.digitec.ch/en/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[class*=sc-12r9jwk-0]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      clickable_css_selector: 'button[data-test=showMoreButton-description]'
+      css_selector: div[class*=sc-13r1zam-0]
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: button[class*=sc-1aeovxo-5]
+      replace_old: .+
+      replace_new: '\g<0> EUR'
+      attribute_name: textContent
+      regex: (\d+(?:,\d+)?(?:\.\d+)?)
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-test=offerFrom]>div>a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-test=offerFrom]>div>a
+      attribute_name: href
+    stock_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*=sc-695aof-3]>div:nth-child(2)
+      attribute_name: textContent
+      regex: (\d+)
+    pictures_retriever_module:
+      name: get_pictures_from_popup
+      clickable_css_selector: img[class*=sc-1ienw2c-1]
+      picture_css_selector: '[role="dialog"] [aria-label="Carousel"] [aria-roledescription="slide"]>div>img'
+      attribute_name: src
+      loading_delay: 3
+      regex: (.+)
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: 'section[class*=sc-1qqogss-0] #availability'
+        loading_delay: 0.2
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: 'https://www.digitec.ch/en/marketplace/{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.sc-1j7w3gf-0
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*=sc-1pyva2i-2]>p
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div[class*=sc-1pyva2i-1]>img
+      attribute_name: src

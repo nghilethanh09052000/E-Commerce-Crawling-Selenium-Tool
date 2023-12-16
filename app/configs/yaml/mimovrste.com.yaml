@@ -1,0 +1,116 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 2
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.mimovrste.com/iskanje?s={}
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector:
+          - .adult-modal div>button
+          - .legal-consent button.rounded-button--tertiary
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.category-products>div>div>div.gallery-list>a
+      attribute_name: href
+      regex: (?<=/www.mimovrste.com\/)(.*)$
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.category-products>div>div>div.gallery-list>a
+      attribute_name: href
+      regex: (?<=/www.mimovrste.com\/)(.*)$
+    listing_container_css_selector: div.category-products>div
+    hover_over_listing_elements: true
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: '[data-sel=product-box-title]'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-sel=product-box-price]'
+      attribute_name: textContent
+      replace_old: \€
+      replace_new: EUR
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .marketplace-partner__wrapper>*
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .marketplace-partner__wrapper>a
+      loading_timeout: 0.1
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.gallery-list li.is-active img
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_scrolling_module
+      scroll_pause_time: 4
+      css_selector: a.pagination__item--next
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.mimovrste.com/{}
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - .adult-modal div>button
+          - .legal-consent button.rounded-button--tertiary
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: div.detail article h1:first-child
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class=description__content]'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid=tooltipLabel]>span>span'
+      attribute_name: textContent
+      replace_old: .+
+      replace_new: \g<0> EUR
+      regex: (\d+)
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .marketplace-partner__wrapper>*
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_value
+      css_selector: .marketplace-partner__wrapper>a
+      attribute_name: href
+      loading_timeout: 0.1
+    stock_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class=availability-box] h3'
+      attribute_name: textContent
+      regex: (\d+)
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: .product-gallery__wrapper .hooper-list>ul>li.is-active
+      clickable_css_selector_2: .gallery-modal button.gallery-slider__button--next
+      picture_css_selector: .gallery-modal .hooper-list>ul>li.is-active img:first-of-type
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 1
+      escape_popup_on_end: true
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    loading_delay: 1
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - .legal-consent button.rounded-button--tertiary
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: span[data-sel="page-title"]
+      attribute_name: textContent

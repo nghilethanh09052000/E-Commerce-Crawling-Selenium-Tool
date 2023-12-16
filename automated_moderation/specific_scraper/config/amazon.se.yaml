@@ -1,0 +1,19 @@
+include: amazon.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://api.rainforestapi.com/request?api_key=6768ED63A27148F9A78B12335D87F0B4&type=search&amazon_domain=amazon.se&search_term={SEARCH_QUERY}
+        - https://api.rainforestapi.com/request?api_key=6768ED63A27148F9A78B12335D87F0B4&type=search&amazon_domain=amazon.se&search_term={SEARCH_QUERY}&sort_by=most_recent
+    poster_post_identifiers_retriever_module:
+      regex: https?://(?:www\.)?amazon\.se/(?:[^/]+/)?(?:dp|product)/([A-Z0-9]{10})
+    post_identifiers_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - asin
+      regex: https?://(?:www\.)?amazon\.se/(?:[^/]+/)?(?:dp|product)/([A-Z0-9]{10})
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.amazon.se/dp/{}
+    endpoint_post_url_template: https://api.rainforestapi.com/request?api_key=6768ED63A27148F9A78B12335D87F0B4&url=https://www.amazon.se/dp/{}&type=product

@@ -1,0 +1,33 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: search_only_browsing_module
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.google.com/search?q={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div#search div#rso>div:is(.MjjYud, .hlcw0c) a[jsname="UWckNb"],
+        div[id*="arc-srp"]>div>div:is(.MjjYud, .hlcw0c) a[jsname="UWckNb"]
+      regex: (.+)
+    listing_container_css_selector: div#search div#rso>div:is(.MjjYud, .hlcw0c), div[id*="arc-srp"]>div>div:is(.MjjYud,
+      .hlcw0c)
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: a[jsname="UWckNb"] > h3
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: a[jsname="UWckNb"] img
+      attribute_name: src
+      loading_timeout: 0.1
+    load_more_results_module:
+      name: load_more_by_scrolling_one_scroll_at_a_time
+      css_selector: div.GNJvt, a#pnnext
+      scroll_range: 4
+      loading_delay: 6
+    post_url_template: '{}'

@@ -1,0 +1,69 @@
+framework:
+    name: selenium_framework
+    driver_initialization_module:
+      name: classic_selenium_initialization_module
+      start_maximized: true
+    search_pages_browsing_module:
+      name: classic_page_browsing_module
+      max_posts_to_browse: 3000
+      loading_delay: 2
+      search_page_urls_builder_module:
+        name: classic_search_page_urls_builder_module
+        search_page_url_templates:
+          - https://mustit.co.kr/product/search?search_action=search&keyword={}&click=all_productsearch#sort=LATEST&per_page=0
+      post_identifiers_retriever_module:
+        name: classic_post_identifiers_retriever_module
+        css_selector: .product_list a.mi-block
+        regex: \/product_detail\/(.+)$
+      listing_container_css_selector: .product_list a.mi-block
+      title_retriever_module:
+        name: get_attribute_value
+        attribute_name: textContent
+        css_selector: '[class*="mi-product-name"]'
+      price_retriever_module:
+        name: get_attribute_value
+        attribute_name: textContent
+        css_selector: '[class*="mi-product-name"]~span>span'
+        replace_old: .+
+        replace_new: KRW\g<0>
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: '[class*="mi-card-product-image"]>img'
+        attribute_name: src
+      load_more_results_module:
+        name: click_on_next_page_module
+        css_selector: li.mi-next-link
+    post_information_retriever_module:
+      name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+      post_url_template: https://mustit.co.kr/product/product_detail/{}
+      loading_delay: 2
+      take_screenshot: true
+      title_retriever_module:
+        name: get_attribute_value
+        css_selector: '#productDetailInfo .product_name_google'
+        attribute_name: textContent
+      description_retriever_module:
+        name: get_attribute_value
+        css_selector: '.detail_area #product_comment'
+        attribute_name: textContent
+      price_retriever_module:
+        name: get_attribute_value
+        css_selector: '#productDetailInfo .product_price_area>div:first-child>.product_price_area__cell_td'
+        replace_old: 원
+        replace_new: KRW
+        trim_text: true
+        attribute_name: textContent
+      vendor_retriever_module:
+        name: get_attribute_value
+        css_selector: '.seller_info #seller_info_product'
+        attribute_name: textContent
+      poster_link_retriever_module:
+        name: get_attribute_url
+        css_selector: .seller_info p>button:last-child
+        attribute_name: onclick
+        replace_old: .*\(\'(.+)\'\)
+        replace_new: 'https://mustit.co.kr\g<1>'
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: .img_area .product_image_wrapper>div:not(.bx-clone)>img
+        attribute_name: src

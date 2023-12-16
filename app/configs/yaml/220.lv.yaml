@@ -1,0 +1,159 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: 123proxy
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    undetected_driver: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 3
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://220.lv/lv/search?q={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[class="cover-link"]
+      regex: 220.lv\/lv\/(.*)
+      post_url_cleaning_module:
+        query_string_to_keep:
+          - id
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[class="cover-link"]
+      regex: 220.lv\/lv\/(.*)
+      post_url_cleaning_module:
+        query_string_to_keep:
+          - id
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: a[widget-attachpoint="pageNext"]
+    listing_container_css_selector: '#productListLoader div[class*="product-list-item"]'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: p[class="product-name"]
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: span[class*="price notranslate"]
+      replace_old: \xe2\x82\xac
+      replace_new: EUR
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: a[class="product-image-container"] img
+      attribute_name: src
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector:
+          - div button[rel-widget-id="cookie_block"]:last-child
+          - li[class="menu-item"][data-menu="1"]
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://220.lv/lv/{}
+    take_screenshot: true
+    loading_delay: 2
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '#product-info .c-product__name'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .c-product__description
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["price"]} {jsons[0]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .c-product__seller-info .c-link
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .c-product__seller-info .c-link
+      attribute_name: href
+    ships_to_retriever_module:
+      name: get_key_value_list
+      clickable_css_selector: '#product-chose-location>div>span'
+      key_css_selector: select[name="userCity"]>option
+      value_css_selector: select[name="userCity"]>option
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '#product-media #gallery-container>img'
+      attribute_name: data-src
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: div button[rel-widget-id="cookie_block"]:last-child
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[class*="title"]
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: section[class="products-ratings-block"]
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .vendor-section__block .logo img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - .seller-features div:not(div[class*="tooltip"]):nth-of-type(1)
+        - .seller-features div:not(div[class*="tooltip"]):nth-of-type(2)
+        - .seller-features div:not(div[class*="tooltip"]):nth-of-type(3)
+        - .seller-features div:not(div[class*="tooltip"]):nth-of-type(4)
+        - .seller-features div:not(div[class*="tooltip"]):nth-of-type(5)
+        - .seller-features div:not(div[class*="tooltip"]):nth-of-type(6)
+        - div[class*="stars__total seller-page"]
+        - .product-users-reviews
+      value_css_selectors:
+        - .seller-features div:not(div[class*="tooltip"]):nth-of-type(1) strong
+        - .seller-features div:not(div[class*="tooltip"]):nth-of-type(2) strong
+        - .seller-features div:not(div[class*="tooltip"]):nth-of-type(3) strong
+        - .seller-features div:not(div[class*="tooltip"]):nth-of-type(4) strong
+        - .seller-features div:not(div[class*="tooltip"]):nth-of-type(5) strong
+        - .seller-features div:not(div[class*="tooltip"]):nth-of-type(6) strong
+        - div[class*="stars__total seller-page"]
+        - .product-users-reviews
+      key_regex:
+        - '>([^\d<]+)'
+        - '>([^\d<]+)'
+        - '>([^\d<]+)'
+        - '>([^\d<]+)'
+        - '>([^\d<]+)'
+        - '>([^\d<]+)'
+        - stars
+        - \d+(.+)
+      value_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (\d+).+
+      key_attributes:
+        - innerHTML
+        - innerHTML
+        - innerHTML
+        - innerHTML
+        - innerHTML
+        - innerHTML
+        - class
+        - textContent
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - div button[rel-widget-id="cookie_block"]:last-child
+          - li[class="menu-item"][data-menu="3"]

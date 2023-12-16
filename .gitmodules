@@ -1,0 +1,18 @@
+[submodule "_packages/navee_logging"]
+	path = _packages/navee_logging
+	url = ../../packages/navee_logging.git
+[submodule "terraform-modules"]
+	path = terraform-modules
+	url = ../../common/terraform-modules
+[submodule "russian_radarly"]
+	path = russian_radarly
+	url = ../../scrapping/russian-radarly.git
+[submodule "automated_moderation"]
+	path = automated_moderation
+	url = ../../automated-moderation/automated_moderation
+[submodule "_packages/navee_utils"]
+	path = _packages/navee_utils
+	url = ../../packages/navee-utils
+[submodule "eb_infex_worker"]
+	path = eb_infex_worker
+	url = ../../conterfeit-platform/infex-worker

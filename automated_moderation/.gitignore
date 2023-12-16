@@ -1,0 +1,17 @@
+**/*.pyc
+*.db
+*.pem
+*.tar*
+*.zip
+.env*
+!.env.example
+.idea*
+*.ipynb
+.vscode
+.venv*
+
+# Catboost
+catboost_info
+models/*
+!models/production/
+!models/dataframe/

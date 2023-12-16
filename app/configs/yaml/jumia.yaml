@@ -1,0 +1,114 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 2
+    take_screenshots: true
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[data-catalog="true"]>article.c-prd>a'
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[data-catalog="true"]>article.c-prd>a'
+    listing_container_css_selector: '[data-catalog="true"]>article.c-prd'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .name
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .prc
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img.img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: a[aria-label="Page suivante"] , a[aria-label="Next Page"]
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector:
+          - '[aria-labelledby="pop-ttl"]>button.cls'
+          - .banner._pp button.cls
+          - button.cls
+          - button.cls
+        loading_timeout: 2
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    loading_delay: 2
+    take_screenshot: true
+    title_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["mainEntity"]["name"]} {jsons[0]["mainEntity"]["name"]}'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#description~div'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["mainEntity"]["offers"]["price"]} {jsons[0]["mainEntity"]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .col4>.-pts>section>a+div>p
+      attribute_name: textContent
+    stock_retriever_module:
+      name: get_attribute_value
+      css_selector: .-phs p.-i-ctr
+      loading_timeout: 0.1
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .col4>.-pts>section>a
+      attribute_name: href
+    ships_to_retriever_module:
+      name: get_key_value_list
+      key_css_selector: select[name="regionId"]>option:not([disabled])
+      value_css_selector: select[name="regionId"]>option:not([disabled])
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector_1: '#imgs>a'
+      clickable_css_selector: '#pop #imgs-zoom-crsl>div>div.itm'
+      picture_css_selector: '#pop #imgs-zoom>div.itm>img:not([data-lazy-slide="true"])'
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 3
+      escape_popup_on_end: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - '[aria-labelledby="pop-ttl"]>button.cls'
+          - .banner._pp button.cls
+          - button.cls
+          - button.cls
+        loading_timeout: 2
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    loading_delay: 3
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .has-b2top>div[class="row"]>div>div.card h2
+    payload_retriever_module:
+      name: get_key_value_list
+      clickable_css_selector: .has-b2top>div[class="row"]>div>div.card h2+a
+      key_css_selector: .-pvm>div.-plm , .-pvm div.-pvs>div , .-pvm div.-pbm>div
+      value_css_selector: .-pvm>div.-plm , .-pvm div.-pvs>div , .-pvm div.-pbm>div
+      key_regex: '(.+)\:'
+      value_regex: \:(.+)
+      loading_delay: 3
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - '[aria-labelledby="pop-ttl"]>button.cls'
+          - .banner._pp button.cls
+          - button.cls
+          - button.cls
+        loading_timeout: 2

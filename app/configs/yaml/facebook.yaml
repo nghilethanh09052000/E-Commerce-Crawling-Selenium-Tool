@@ -1,0 +1,106 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    load_images: true
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.facebook.com/hashtag/{}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[class="xu06os2 x1ok221b"] [dir="auto"] a[aria-label]
+      regex: facebook.com\/(.*)$
+      post_url_cleaning_module:
+        query_string_to_keep:
+          - id
+          - story_fbid
+          - fbid
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: 'div[role="main"]>div.xh8yej3>div>div[class="x1n2onr6 x1ja2u2z"]
+        [dir="auto"] a[href*="/posts/"] , div>div>div[class="xu06os2 x1ok221b"] [dir="auto"]
+        a[href*="/posts/"]'
+      regex: facebook.com\/(.*)$
+      load_more_results_module:
+        name: load_more_by_scrolling_one_scroll_at_a_time
+        scroll_pause_time: 1
+        scroll_range: 10
+    load_more_results_module:
+      name: load_more_by_scrolling_module
+      scroll_pause_time: 2
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://facebook.com/{}
+    loading_delay: 3
+    take_screenshot: true
+    description_retriever_module:
+      name: get_attribute_value
+      # for single photos there's no message, so we fallback to the account name to have at least some text
+      css_selector: div[data-testid="post_message"], div[data-ad-preview="message"], h5>span>span>a, h2>span>span>a, h2>span>strong>span>a, h2>span>a
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: h5>span>span>a, h2>span>span>a, h2>span>strong>span>a, h2>span>a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: h5>span>span>a, h2>span>span>a, h2>span>strong>span>a, h2>span>a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[data-visualcompletion="media-vc-image"], img.scaledImageFitWidth,
+        img.xl1xv1r, img.x1ey2m1c
+      attribute_name: src
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: 'div[aria-label="Allow all cookies"][tabindex="0"]'
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.x1heor9g
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .x1yztbdb div.xieb3on>div>div>div>span , div.x1l90r2v+div.x1jx94hy
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_between_2_attribute
+      css_selector: .x1l90r2v [role="img"]>g>image , a[aria-label*="profile photo"] image , img[data-imgperflogname="profileCoverPhoto"]
+      attribute_name_1: xlink:href
+      attribute_name_2: src
+      loading_timeout: 2
+    followers_count_retriever_module:
+      name: get_attribute_value
+      css_selector: span.xi81zsa>a.x1i10hfl:last-of-type
+      regex: '([\d,]+) follow'
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: span.xi81zsa>a.x1i10hfl , span.xi81zsa>div>div>a
+      value_css_selector: span.xi81zsa>a.x1i10hfl , span.xi81zsa>div>div>a
+      key_regex: '[\d,]+(.+)'
+      value_regex: '([\d,]+)'
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+        - 'div[aria-label="Close"][tabindex="0"]'
+        - 'div[aria-label="Allow all cookies"][tabindex="0"]'
+        loading_timeout: 5
+  poster_url_cleaning_module:
+    query_string_to_keep:
+      - id
+  post_url_cleaning_module:
+    query_string_to_keep:
+      - id
+      - story_fbid
+      - fbid
+  archiving_options:
+    height: 2000
+    width: 1924

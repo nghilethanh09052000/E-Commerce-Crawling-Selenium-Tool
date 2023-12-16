@@ -1,0 +1,25 @@
+include: mediamarkt.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.mediamarkt.at/de/search.html?query={}
+    post_identifiers_retriever_module:
+      regex: mediamarkt.at\/de\/product\/(.+).html
+    action_before_search_pages_browsing_module:
+      - name: switch_to_iframe
+        css_selector: '#challenge-stage iframe'
+        loading_timeout: 8
+      - name: click_action_module
+        css_selector: input[type="checkbox"]
+        before_pause_time: 3
+        after_pause_time: 5
+        stop_css_selector: '[data-test="mms-search-srp-productlist"] div[data-test="mms-product-card"]'
+        loading_timeout: 8
+      - name: switch_out_iframe
+      - name: click_action_module
+        css_selector: 'button[data-test="pwa-consent-layer-accept-all"]'
+        before_pause_time: 2
+        after_pause_time: 4
+  post_information_retriever_module:
+    post_url_template: https://www.mediamarkt.de/de/product/{}.html

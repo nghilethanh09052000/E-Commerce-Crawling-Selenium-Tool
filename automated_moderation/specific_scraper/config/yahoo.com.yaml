@@ -1,0 +1,5 @@
+include: default.yaml
+framework:
+  archiving_options:
+    width: 1924
+    height: 1000

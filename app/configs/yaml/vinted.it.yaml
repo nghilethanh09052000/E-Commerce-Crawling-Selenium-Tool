@@ -1,0 +1,20 @@
+include: vinted.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.vinted.it/vetements?search_text={}&order=newest_first
+    post_identifiers_retriever_module:
+      regex: vinted.it\/(.*)$
+    poster_post_identifiers_retriever_module:
+      regex: vinted.it\/(.*)$
+    price_retriever_module:
+      replace_old: \€
+      replace_new: EUR
+  post_information_retriever_module:
+    post_url_template: https://www.vinted.it/{}
+    location_retriever_module:
+      title_column_name: Posizione
+    price_retriever_module:
+      replace_old: \€
+      replace_new: EUR

@@ -1,0 +1,107 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+    override_user_agent: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    take_screenshots: true
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.takealot.com/all?_sb=1&_r=1&_si=276284a744321a755bf7378b07443909&qsearch={}
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button[class*="cookies-banner-module_dismiss-button"]
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a.product-anchor
+      regex: takealot.com\/(.*)
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a.product-anchor
+      regex: takealot.com\/(.*)
+      load_more_results_module:
+        name: load_more_by_click
+        css_selector: div[class*="load-more-container"] button
+    listing_container_css_selector: .search-product div.product-card
+    load_more_results_module:
+        name: load_more_by_click
+        css_selector: div[class*="load-more-container"] button
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h4.product-title
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="module_price"] li.price span.currency
+      attribute_name: textContent
+      replace_old: R
+      replace_new: ZAR
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .image-box img
+      attribute_name: src
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.takealot.com/{}
+    loading_delay: 2
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button[class*="cookies-banner-module_dismiss-button"]
+      - name: scroll_to_load_element
+        scroll_pause_time: 0.5
+        stop_css_selector: div[data-ref="description-card"]
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: div.product-title h1
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-ref="description-card"]
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: span[data-ref="buybox-price-main"]
+      attribute_name: textContent
+      replace_old: R
+      replace_new: ZAR
+    vendor_retriever_module:
+      name: get_attribute_value
+      clickable_css_selector: '[class*="variant-selector-module_options-more"] .swiper-slide:first-child>div>button'
+      css_selector: .pdp-main-panel .seller-information a
+      attribute_name: textContent
+      loading_timeout: 1
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .pdp-main-panel .seller-information a
+      attribute_name: href
+      post_url_cleaning_module:
+        skip_query_string_cleaning: true
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: '[data-ref="open-gallery"]'
+      clickable_css_selector_2: div[data-ref="gallery"] .swiper-button-next
+      picture_css_selector: div[data-ref="gallery"] .swiper-horizontal div[class*="slide-active"] img
+      attribute_name: src
+      regex: (.+)
+      escape_popup_on_end: true
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: 'https://www.takealot.com/seller/{}'
+    loading_delay: 1
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button[class*="cookies-banner-module_dismiss-button"]
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: div.show-for-large h1[class*="module_title"]
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.show-for-large .context img
+      attribute_name: src

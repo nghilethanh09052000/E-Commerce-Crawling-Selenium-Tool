@@ -1,0 +1,128 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    loading_delay: 2
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - http://gsearch.gmarket.co.kr/Listview/Search?keyword={}&ordertype=NEW
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: .modal_pop11>div>a.l_bl
+        after_pause_time: 8
+    post_identifiers_retriever_module:
+      post_url_cleaning_module:
+        skip_query_string_cleaning: true
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#srplist>tr .item_name>a'
+      regex: goodscode\=(\d+)
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      post_url_cleaning_module:
+        skip_query_string_cleaning: true
+      css_selector: '#minilist>tr .item_name>a'
+      regex: goodscode\=(\d+)
+    listing_container_css_selector: '#srplist>tr , #minilist>tr'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .item_name>a
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .price_cont>li[class="discount_price"]>a
+      replace_old: \￦
+      replace_new: KRW
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .seller>li>a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .seller>li>a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .produt_img>a>img
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: .paging>a.btn_next
+      loading_delay: 5
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: http://global.gmarket.co.kr/item?goodscode={}
+    take_screenshot: true
+    loading_delay: 2
+    action_before_retrieving_post_information_module:
+      - name: switch_to_iframe
+        css_selector: iframe#popLayerIframe1
+      - name: click_action_module
+        css_selector: a#btn_close
+      - name: switch_out_iframe
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: p.text__item-title
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div#vip-tab_detail
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .box__price>p>strong>span.text__price-won
+      regex: '\((.+)\)'
+      replace_old: \￦
+      replace_new: KRW
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .text__store-name>a
+      css_selector_2: a[href*="gmarket.co.kr/Minishop/GlobalMinishop?CustNo="]
+      attribute_name: textContent
+      exclude_children: true
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .text__store-name>a
+      css_selector_2: a[href*="gmarket.co.kr/Minishop/GlobalMinishop?CustNo="]
+      attribute_name: href
+      post_url_cleaning_module:
+        query_string_to_keep:
+          - CustNo
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: .list__thumb>li>button
+      picture_css_selector: .box__thumb--gallery>img
+      attribute_name: src
+      regex: (.+)
+  post_saving_module:
+    name: classic_post_saving_module
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: .modal_pop11>div>a.l_bl
+        after_pause_time: 8
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .shop_logo>a
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .shop_logo>a
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      clickable_css_selector: a#seller_open
+      key_css_selector: '#seller_info>div>dl>dt'
+      value_css_selector: '#seller_info>div>dl>dd'
+  poster_saving_module:
+    name: classic_poster_saving_module

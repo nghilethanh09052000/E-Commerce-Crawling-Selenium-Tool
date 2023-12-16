@@ -1,0 +1,108 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 2
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://olist.ng/filter?keyword={}
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a.item
+      regex: olist.ng/(.+)
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a.item
+      regex: olist.ng/(.+)\.html
+    listing_container_css_selector: a.item
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: h2.title
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: b.price
+      replace_old: \xe2\x82\xa6
+      replace_new: NGN
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: div.regionMessage
+      attribute_name: textContent
+      regex: '(.+?)\ '
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.photos>img
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: .pagination span:last-of-type
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://olist.ng/{}.html
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.title
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .description_box
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .price_container
+      replace_old: \xe2\x82\xa6
+      replace_new: NGN
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .seller_name_container div
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .seller_name_container a
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .place_container_right p:nth-of-type(1)
+      value_css_selector: .place_container_right p:nth-of-type(1)
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace
+      css_selector: .swiper_bottom img
+      attribute_name: src
+      replace_old: /thumbnail210
+      replace_new: ''
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .seller-content-info-title
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .seller-content-about
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .seller-content-img img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - .seller-content-info-region
+        - .seller-content-info-came
+      value_css_selectors:
+        - .seller-content-info-region span
+        - .seller-content-info-came span
+      key_regex:
+        - region
+        - came
+      value_regex:
+        - (.+)
+        - (.+)
+      key_attributes:
+        - class
+        - class
+      value_attributes:
+        - textContent
+        - textContent

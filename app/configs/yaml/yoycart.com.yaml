@@ -1,0 +1,59 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.yoycart.com/Search?SearchText={}&catId=0&catId=0
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: ul#result-products li.product a.pro-thumb
+      regex: yoycart.com\/Product\/(.*)
+    listing_container_css_selector: ul#result-products li.product
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: div#content-main>div.pagination-wrap:last-child a.current + a
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: span.pro-name
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: span.price:not([style*="line-through"]) > ins
+      replace_old: \$
+      replace_new: 'USD '
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: a.pro-thumb>img
+      attribute_name: src
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.yoycart.com/Product/{}/
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.productName
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div#prodDescTab
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: span#txtPrice
+      attribute_name: textContent
+      replace_old: .+
+      replace_new: \g<0> USD
+    stock_retriever_module:
+      name: get_attribute_value
+      css_selector: span#txtStock
+      attribute_name: textContent
+      regex: \d+
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: li.image-nav-item img
+      picture_css_selector: img#activeImage
+      regex: (.+)
+      attribute_name: src

@@ -1,0 +1,87 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    headless: False
+    xvfb: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    loading_delay: 5
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.extra.com.br/{}/b
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[data-cy="divGridProducts"] div[data-cy="divProduct"] div:first-of-type>a'
+      regex: extra.com.br\/(.+)
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[data-cy="divGridProducts"] div[data-cy="divProduct"] div:first-of-type>a'
+      regex: extra.com.br\/(.+)
+    listing_container_css_selector: '[data-cy="divGridProducts"] div[data-cy="divProduct"]'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .product-card__title
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .product-card__highlight-price
+      regex: (R\$.+)
+      replace_old: R\$
+      replace_new: BRL
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img.product-card__image
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: a[aria-label="Próxima página"]
+      undetected_click: true
+      loading_delay: 12
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.extra.com.br/{}
+    take_screenshot: true
+    loading_delay: 2
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.dsvia-heading
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div#product-description
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '#product-price'
+      replace_old: R\$
+      replace_new: BRL
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="sold-by"]>span:first-child>a'
+      attribute_name: aria-label
+    poster_link_retriever_module:
+      name: get_attribute_url
+      clickable_css_selector: '[data-testid="sold-by"]>span:first-child>a'
+      css_selector: .ReactModalPortal a[data-testid="see-more-products-seller"]
+      attribute_name: href
+      loading_delay: 2
+      close_button_css_selector: button[data-testid="close-modal"]
+      loading_timeout: 6
+      post_url_cleaning_module:
+        skip_query_string_cleaning: true
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: '#gallery>div>.magnify-container'
+      clickable_css_selector_2: '#photoswipe button.pswp__button--arrow--right'
+      picture_css_selector: '#photoswipe .pswp__item>div>img'
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 1
+      escape_popup_on_end: true
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true

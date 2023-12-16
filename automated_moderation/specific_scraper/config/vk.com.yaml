@@ -1,0 +1,7 @@
+include: default.yaml
+framework:
+  archiving_options:
+    height: 1000
+    remove_elements:
+      - '#box_layer_wrap'
+      - '#box_layer_bg'

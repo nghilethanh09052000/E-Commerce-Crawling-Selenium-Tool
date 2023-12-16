@@ -1,0 +1,13 @@
+services:
+  scraping-worker:
+    restart: unless-stopped
+    command: gunicorn -b 0.0.0.0:8000 --timeout 3000 --max-requests 10 --workers 17 eb_scraping_worker.main:app
+    image: 068631914562.dkr.ecr.eu-west-1.amazonaws.com/specific-scraper-production:latest
+    ports:
+    - 80:8000
+    cap_add:
+    - SYS_PTRACE
+    ulimits:
+      core: 0
+    environment:
+      - DBUS_SESSION_BUS_ADDRESS=/dev/null

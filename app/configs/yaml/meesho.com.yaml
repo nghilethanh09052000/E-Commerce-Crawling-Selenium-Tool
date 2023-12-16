@@ -1,0 +1,123 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 3
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.meesho.com/search?q={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .products>div>a
+      regex: meesho.com\/(.+)$
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .products>div>a
+      regex: meesho.com\/(.+)$
+    listing_container_css_selector: .products>div
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: '[class*="StyledDesktopProductTitle"]'
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: '[class*="PriceRow"]>h5'
+      replace_old: \₹
+      replace_new: INR
+      trim_text: true
+      exclude_children: true
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .products>div [class*="ProductImage"]>img
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: '[class*="Pagination__PaginationStyled"]>button#next'
+      loading_delay: 5
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.meesho.com/{}
+    take_screenshot: true
+    loading_delay: 2
+    title_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["name"]}'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="ProductDescription__DetailsCardStyled"]'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["price"]} {jsons[0]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: span[class*="ShopName"]
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: click_then_get_attribute
+      button_css_selector: button[class*="ViewShopActionDesktop"]
+      css_selector: '#__next-route-announcer__'
+      attribute_name: textContent
+      regex: (.+)\?
+      replace_old: (.+)
+      replace_new: https://www.meesho.com\g<1>
+      loading_delay: 4
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: '[class*="StyledCarousel"]>div>div>div>img'
+      picture_css_selector: '[class*="ProductDesktopImage__ImageWrapperDesktop"]>img'
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 3
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    loading_delay: 1
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="ShopCardstyled__TopSectionDesktop"] h4'
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[class*="ShopCardstyled__TopSectionDesktop"] img[alt="shop icon"]'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - '[class*="ShopCardstyled__BottomSection"]>div[class*="ShopCardstyled__ValuePropCard"]>[class*="ShopCardstyled__RatingPill"]'
+        - '[class*="ShopCardstyled__BottomSection"]>div[class*="ShopCardstyled__ValuePropCard"]:nth-of-type(1)>p'
+        - '[class*="ShopCardstyled__BottomSection"]>div[class*="ShopCardstyled__ValuePropCard"]:nth-of-type(3)>p'
+        - '[class*="ShopCardstyled__BottomSection"]>div[class*="ShopCardstyled__ValuePropCard"]:nth-of-type(5)>p'
+      value_css_selectors:
+        - '[class*="ShopCardstyled__BottomSection"]>div[class*="ShopCardstyled__ValuePropCard"]>[class*="ShopCardstyled__RatingPill"]'
+        - '[class*="ShopCardstyled__BottomSection"]>div[class*="ShopCardstyled__ValuePropCard"]:nth-of-type(1)>p'
+        - '[class*="ShopCardstyled__BottomSection"]>div[class*="ShopCardstyled__ValuePropCard"]:nth-of-type(3)>h6'
+        - '[class*="ShopCardstyled__BottomSection"]>div[class*="ShopCardstyled__ValuePropCard"]:nth-of-type(5)>h6'
+      key_regex:
+        - Rating
+        - Ratings
+        - (.+)
+        - (.+)
+      value_regex:
+        - (.+)
+        - (.+) Ratings
+        - (.+)
+        - (.+)
+      key_attributes:
+        - class
+        - textContent
+        - textContent
+        - textContent
+      value_attributes:
+        - label
+        - textContent
+        - textContent
+        - textContent

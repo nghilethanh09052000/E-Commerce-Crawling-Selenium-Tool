@@ -1,0 +1,99 @@
+framework:
+  proxies:
+    - name: proxyrack
+    - name: iproyal/us
+    - name: iproyal/lithuania
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.onbuy.com/gb/search/?query={}&page=1
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .product-list .product>a
+      regex: onbuy.com\/gb\/(.+)$
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .product-list .product>a
+      regex: onbuy.com\/gb\/(.+)$
+    listing_container_css_selector: .product-list .product
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .name
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .price .value
+      regex: (\£.+)
+      replace_old: \£
+      replace_new: GBP
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .image>picture>img
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: .pagination>li.next>a
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://onbuy.com/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .product-wrapper .product-name
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#product-description'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .product-wrapper .price
+      replace_old: \£
+      replace_new: GBP
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .product-wrapper .seller>a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .product-wrapper .seller>a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: '#image-gallery>a'
+      picture_css_selector: .zoomWindowContainer>div
+      attribute_name: style
+      regex: url\(\"(.+)\"\)
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '#shop-info>h1.heading'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#shop-info>.reviews+p'
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .info-image img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: '#shop-info .star-rating-static'
+      value_css_selector: '#shop-info .star-rating-static'
+      key_css_selector_attribute_name: class
+      value_css_selector_attribute_name: title
+      key_regex: star-rating
+      value_regex: .+

@@ -1,0 +1,9 @@
+__pycache__
+.flake8
+.vscode
+antoine-navee.pem
+venv
+profiles/chromeprofile/
+.gitignore
+README.md
+utils

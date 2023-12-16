@@ -1,0 +1,9 @@
+services:
+  infex_worker:
+    restart: unless-stopped
+    command: gunicorn -b 0.0.0.0:8000 --timeout 600 --preload --worker-connections 4 --workers 4  --max-requests 10 eb_infex_worker.tasks:app
+    image: 749745849812.dkr.ecr.eu-west-1.amazonaws.com/counterfeit-worker-infex:latest
+    tmpfs:
+    - /tmp:size=4G
+    ports:
+    - 80:8000

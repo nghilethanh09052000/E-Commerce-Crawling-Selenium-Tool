@@ -1,0 +1,156 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+    - name: iproyal/us
+    - name: iproyal/lithuania
+    - name: 123proxy
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.olx.kz/list/q-{}/?search%5Border%5D=created_at%3Adesc
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[data-cy="l-card"] a
+      regex: (?<=obyavlenie\/)(.*)(\.html)
+      listing_container_css_selector: 'div[data-cy="l-card"]'
+      title_retriever_module:
+        name: get_attribute_value
+        css_selector: a > div > div[type="list"] > div:nth-of-type(2) > div > p
+      price_retriever_module:
+        name: get_attribute_value
+        css_selector: a > div > div[type="list"] > div:nth-of-type(2) > div > p:nth-of-type(2) > span:nth-of-type(2)
+        replace_old: \xd1\x82\xd0\xb3.
+        replace_new: KZT
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: 'img[alt]'
+        attribute_name: src
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[data-cy="l-card"] a
+      regex: (?<=obyavlenie\/)(.*)(\.html)
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: a[data-cy="page-link-next"], a[data-testid="pagination-forward"],
+        li[data-testid="pagination-list-item"] ~ a
+    listing_container_css_selector: 'div[data-cy="l-card"]'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h6
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: p[data-testid="ad-price"]
+      exclude_children: true
+      replace_old: \xd1\x82\xd0\xb3.
+      replace_new: KZT
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: 'img[alt]'
+      attribute_name: src
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button[data-testid="dismiss-cookies-banner"]
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.olx.kz/obyavlenie/{}.html
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[data-cy="ad_title"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-cy="ad_description"] div
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-testid="ad-price-container"] h2
+      replace_old: \xd1\x82\xd0\xb3.
+      replace_new: KZT
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a[name="user_ads"] h4
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[name="user_ads"]
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: img[src*="staticmap"]
+      key_css_selector_attribute_name: alt
+      value_css_selector: img[src*="staticmap"]
+      value_css_selector_attribute_name: alt
+    pictures_retriever_module:
+      name: get_pictures_between_2_attribute
+      css_selector: .swiper-wrapper .swiper-zoom-container img
+      attribute_name_1: src
+      attribute_name_2: data-src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-testid="olx-shop-header-bar"] h2, div[data-testid="normal-seller-header"] h1
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: section[id="about_us"]>div
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[data-testid="user-profile-image"], div[class*="user-photo"] img, img[data-testid="olx-shop-logo"]
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - section[id="contact"] h4
+        - section[id="contact"] ul:nth-child(5) li>small
+        - section[id="contact"] ul:nth-child(6) li>small
+        - '[data-testid="olx-shop-header-bar"] ul>li:first-child'
+        - '[data-testid="olx-shop-header-bar"] ul>li:last-child'
+      value_css_selectors:
+        - section[id="contact"] h4 ~ ul
+        - section[id="contact"] ul:nth-child(5) li
+        - section[id="contact"] ul:nth-child(6) li
+        - '[data-testid="olx-shop-header-bar"] ul>li:first-child'
+        - '[data-testid="olx-shop-header-bar"] ul>li:last-child'
+      key_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+        - ([^\:]+)
+        - ([^\:]+)
+      value_regex:
+        - (.+)
+        - Номер телефона(.+)
+        - Веб-сайт(.+)
+        - \:(.+)
+        - \:(.+)
+      key_atributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+  archiving_options:
+    click_on_elements:
+      - button#onetrust-accept-btn-handler
+    height: 2000
+    width: 1924

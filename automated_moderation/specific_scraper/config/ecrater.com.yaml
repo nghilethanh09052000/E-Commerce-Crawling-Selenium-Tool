@@ -1,0 +1,13 @@
+include: ecrater.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.ecrater.com/filter.php?keywords={}
+    post_identifiers_retriever_module:
+      regex: ecrater.com\/p\/(\d+)
+    poster_post_identifiers_retriever_module:
+      regex: ecrater.com\/p\/(\d+)
+    price_retriever_module:
+      replace_old: \$
+      replace_new: USD

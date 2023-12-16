@@ -1,0 +1,82 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://category.vip.com/suggest.php?keyword={}&ff=235|12|1|1
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .c-goods-list--normal .c-goods-item>a
+      regex: detail.vip.com\/(.*)
+      load_more_results_module:
+        name: go_to_next_page_module
+        css_selector: span.page-select + a
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .c-goods-list--normal .c-goods-item>a
+      regex: detail.vip.com\/(.*)
+    listing_container_css_selector: .c-goods-list--normal .c-goods-item
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: a#J_nextPage_link
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="item__name"]
+    price_retriever_module:
+      name: get_multiple_text_content_and_concatenate
+      css_selectors:
+        - div[class*="sale-price"]
+      replace_old: \¥(\d+)(?:\n(\.\d+))?
+      replace_new: CNY \g<1>\g<2>
+      has_multiple_items_in_same_selector: true
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[class*="item__img"]
+      attribute_name: src
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://detail.vip.com/{}
+    loading_delay: 4
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .pib-title-detail
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: meta[name="description"]
+      attribute_name: content
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .sp-price
+      replace_old: .+
+      replace_new: \g<0> CNY
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .mp-score-hover>a .mp-title-storename
+      attribute_name: textContent
+      loading_delay: 0.1
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .mp-score-hover>a
+      attribute_name: href
+      loading_delay: 0.1
+      post_url_cleaning_module:
+        skip_query_string_cleaning: true
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: div#J-sImgSlide-wrap img.J-mer-smallImg
+      picture_css_selector: div#J-mer-ImgReview div.active-pannel img.slide-mid-pic
+      attribute_name: src
+      regex: (.+)
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="store_name"]

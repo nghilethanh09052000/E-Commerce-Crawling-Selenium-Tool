@@ -1,0 +1,142 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+      country: ES
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    loading_delay: 5
+    take_screenshots: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.miravia.es/keyword/?q={}
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: .cookies~footer .footerBtn>div:first-child
+      - name: click_action_module
+        css_selector: '#g_fragments_menu div[data-direction="right"]'
+        after_pause_time: 4
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[class*="GoodsList"] [class*="GoodsItem-"] a:first-child'
+      regex: miravia.es/p/(.+).html
+      action_before_poster_post_identifiers_module:
+        - name: click_action_module
+          css_selector: .cookies~footer .footerBtn>div:first-child
+        - name: click_action_module
+          css_selector: '[data-spm="d_store_product"]'
+          after_pause_time: 4
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[class*="GoodsList"] [class*="GoodsItem-"] a:first-child'
+      regex: miravia.es/p/(.+).html
+    listing_container_css_selector: '[class*="GoodsList"] [class*="GoodsItem-"]'
+    hover_over_listing_elements: true
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: h2[class*="product-title"]
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.lte-product-price:first-child
+      replace_old: \€
+      replace_new: EUR
+      trim_text: true
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-spm="list"]>h3
+      attribute_name: textContent
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img.lte-product-image
+      attribute_name: src
+      loading_timeout: 4
+    load_more_results_module:
+      name: load_more_by_click
+      css_selector: '[class*="pagination"] ul li[class*="next"]'
+      loading_delay: 5
+      scroll_down_before_click: true
+      scroll_pause_time: 5
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.miravia.es/p/{}.html
+    take_screenshot: true
+    title_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["name"]}'
+    description_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["description"]}'
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["price"]} {jsons[0]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-spm="dtitle"]'
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[data-spm="dvisitstore"]
+      attribute_name: href
+    stock_retriever_module:
+      name: get_attribute_value
+      css_selector: .VyMd1r2zw8 , [data-spm="doos"]
+      attribute_name: textContent
+      regex: (\d+)
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector: '[data-spm="item_gallery"]~div>div .slick-list>div>div[aria-hidden="false"]:not(.slick-current)'
+      clickable_css_selector_1: '[data-spm="item_gallery"]+div>div'
+      clickable_css_selector_2: .iweb-mask:not(.iweb-mask-hidden) button.iweb-imgviewer-arrow-btn-right
+      picture_css_selector: .iweb-mask:not(.iweb-mask-hidden) .iweb-imgviewer-container
+        img.iweb-imgviewer-image
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 3
+      escape_popup_on_end: true
+    videos_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[data-spm="gallery_video"] video'
+      attribute_name: src
+      loading_timeout: 0.5
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: .cookies~footer .footerBtn>div:first-child
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    loading_delay: 1
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: h1
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[alt="storeLogo"]
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      clickable_css_selector: '[data-spm="d_store_profile"]'
+      key_css_selector: .store-profile-info:first-of-type>.block:not(:last-of-type)>.label
+        , .iweb-dialog-body-content>div.info-wrap>.block>.label
+      value_css_selector: .store-profile-info:first-of-type>.block:not(:last-of-type)>.value
+        , .iweb-dialog-body-content>div.info-wrap>.block>.value
+      loading_delay: 2
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: .cookies~footer .footerBtn>div:first-child
+      - name: click_action_module
+        css_selector: a[data-spm="d_store_profile"]
+        after_pause_time: 3

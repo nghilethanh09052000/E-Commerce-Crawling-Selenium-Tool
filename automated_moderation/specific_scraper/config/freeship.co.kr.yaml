@@ -1,0 +1,77 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    loading_delay: 2
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://fashion.freeship.co.kr/goods/search.asp?sword={}
+        - https://fashion2.freeship.co.kr/goods/search.asp?sword={}
+        - https://jewelry.freeship.co.kr/goods/search.asp?sword={}
+        - https://jewelry2.freeship.co.kr/goods/search.asp?sword={}
+        - https://sports.freeship.co.kr/goods/search.asp?sword={}
+        - https://sports2.freeship.co.kr/goods/search.asp?sword={}
+        - https://beauty.freeship.co.kr/goods/search.asp?sword={}
+        - https://beauty2.freeship.co.kr/goods/search.asp?sword={}
+        - https://industry.freeship.co.kr/goods/search.asp?sword={}
+        - https://industry2.freeship.co.kr/goods/search.asp?sword={}
+        - https://office.freeship.co.kr/goods/search.asp?sword={}
+        - https://office2.freeship.co.kr/goods/search.asp?sword={}
+        - https://furniture.freeship.co.kr/goods/search.asp?sword={}
+        - https://furniture2.freeship.co.kr/goods/search.asp?sword={}
+        - https://baby.freeship.co.kr/goods/search.asp?sword={}
+        - https://baby2.freeship.co.kr/goods/search.asp?sword={}
+        - https://electron.freeship.co.kr/goods/search.asp?sword={}
+        - https://electron2.freeship.co.kr/goods/search.asp?sword={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      post_url_cleaning_module:
+        query_string_to_keep:
+          - guid
+      css_selector: ul>li.list-item>.info>h3>a
+    listing_container_css_selector: ul>li.list-item
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .info>h3>a
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .info>.price>.value
+      replace_old: \원
+      replace_new: KRW
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .img a>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: a.ui-pagination-next
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: '{}'
+    title_retriever_module:
+      name: get_attribute_url
+      css_selector: '[name="Frm"]>table:first-of-type strong'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#detailinfo_start+div>div'
+      trim_text: true
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: span.pr-pricing-total-price
+      replace_old: (.+)
+      replace_new: \g<1> KRW
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: .img-section~table td>img
+      picture_css_selector: .img-section .image>img
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 1

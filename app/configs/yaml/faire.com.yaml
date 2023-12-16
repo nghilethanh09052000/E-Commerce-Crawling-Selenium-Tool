@@ -1,0 +1,173 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+    load_images: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    loading_delay: 5
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.faire.com/search?q={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[data-test-id="product-tile"]>span[data-test-id*="product-tile"] a[data-test-id="product-tile-link"]'
+      attribute_name: token
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: div[data-test-id="appSignUpModal"] button[data-test-id="modalCloseButton"]
+    listing_container_css_selector: '[data-test-id="product-tile"]>span[data-test-id*="product-tile"]'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: label[class*="DetailSection__ProductName"]
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: p[data-test-id="retailPrice"]
+      replace_old: MSRP.+\€
+      replace_new: EUR
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a[data-test-id="maker-link"]
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[data-test-id="maker-link"]
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[class*="ProductImageSection__ProductOverlay"]>picture>img'
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: '[data-test-id="pagination-wrapper"]>a:last-of-type'
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.faire.com/product/{}
+    take_screenshot: true
+    loading_delay: 3
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-test-id="product-name"]'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="ProductDescriptionAccordions"] [data-test-id="accordion-text"]'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-test-id="product-price"] h1'
+      attribute_name: textContent
+      regex: (\€\d+.\d+)
+      replace_old: \€
+      replace_new: 'EUR '
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a[variant="tertiary"] p
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[variant="tertiary"]
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - li[class*="ShippingDetailsList__ListItem"]>p
+      value_css_selectors:
+        - li[class*="ShippingDetailsList__ListItem"]>p
+      key_regex:
+        - Ships from (.+)
+      value_regex:
+        - Ships from (.+)
+    pictures_retriever_module:
+      name: get_pictures_from_popup
+      clickable_css_selector: '[data-test-id="image-section"]>div:first-child>picture>img'
+      picture_css_selector: '[class*="PDPImprovementsImageGallery__ScrollColumn"]>img'
+      attribute_name: src
+      regex: (.+)\?
+      loading_delay: 1
+      escape_popup_on_end: true
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 3
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="BrandHeaderDetails"] h4'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      clickable_css_selector: span[class*="BrandHeaderDetails"]>button
+      css_selector: '[data-test-id="about-section"] p.gehEOW'
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: img[alt="Avatar"]
+      attribute_name: src
+      replace_old_regex: (\?.*)
+      replace_new: ''
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - a[href*="reviews-section"]
+        - '[data-test-id="left-info-section"]>dl>dt:nth-child(1)'
+        - '[data-test-id="left-info-section"]>dl>dt:nth-child(3)'
+        - '[data-test-id="left-info-section"]>dl>dt:nth-child(5)'
+        - '[data-test-id="left-info-section"]>dl>dt:nth-child(7)'
+        - '[data-test-id="left-info-section"]>dl>dt:nth-child(9)'
+        - '[data-test-id="left-info-section"]>dl>dt:nth-child(11)'
+        - '[data-test-id="left-info-section"]>dl>dt:nth-child(13)'
+      value_css_selectors:
+        - a[href*="reviews-section"]
+        - '[data-test-id="left-info-section"]>dl>dd:nth-child(2)'
+        - '[data-test-id="left-info-section"]>dl>dd:nth-child(4)'
+        - '[data-test-id="left-info-section"]>dl>dd:nth-child(6)'
+        - '[data-test-id="left-info-section"]>dl>dd:nth-child(8)'
+        - '[data-test-id="left-info-section"]>dl>dd:nth-child(10)'
+        - '[data-test-id="left-info-section"]>dl>dd:nth-child(12)'
+        - '[data-test-id="left-info-section"]>dl>dd:nth-child(14)'
+      key_regex:
+        - reviews
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+      value_regex:
+        - \d+
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+      key_attributes:
+        - href
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '[class*="BrandHeader__BrandStoryColumn"] button:first-of-type.iPvmmp'

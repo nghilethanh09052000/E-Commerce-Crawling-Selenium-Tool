@@ -1,0 +1,12 @@
+include: mercadolibre.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://listado.mercadolibre.com.pa/{}
+    price_retriever_module:
+      replace_old: B/.
+      replace_new: PAB
+  post_information_retriever_module:
+    vendor_retriever_module:
+      regex: .+[\.l][ep][\"a][/>]([^\"<]+)

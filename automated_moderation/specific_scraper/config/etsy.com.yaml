@@ -1,0 +1,163 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    loading_delay: 1
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.etsy.com/search?q={}&explicit=1&order=date_desc&locale=USD
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[data-results-grid-container]>li:not([style*="display: none"]) a.listing-link[href*="/listing/"]'
+      regex: etsy.com.*\/listing\/(.*)$
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[data-listings-container] div.v2-listing-card>a.listing-link
+      regex: etsy.com.*\/listing\/(.*)$
+      load_more_results_module:
+        name: go_to_next_page_module
+        css_selector: nav[aria-label="Pagination of listings"]>ul>li:last-child>a
+    listing_container_css_selector: '[data-results-grid-container]>li:not([style*="display: none"]) , div[data-listings-container] div.v2-listing-card'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div>h3
+    price_retriever_module:
+      name: get_multiple_text_content_and_concatenate
+      css_selectors:
+        - div>div p.lc-price span.currency-symbol
+        - div>div p.lc-price span.currency-value
+      replace_old: \$\n
+      replace_new: USD
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '.streamline-seller-shop-name__line-height>p:not(:has(*))'
+      attribute_name: textContent
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div img[data-listing-card-listing-image]
+      attribute_name: src
+    videos_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div video[aria-label="Product video"]>source
+      attribute_name: src
+      loading_timeout: 0.1
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: div[data-appears-component-name="search_pagination"] li:last-child a
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button[data-gdpr-single-choice-accept="true"]
+        loading_timeout: 5
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.etsy.com/listing/{}?locale=USD
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button[data-gdpr-single-choice-accept="true"]
+        loading_timeout: 5
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '#listing-page-cart h1'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-id="description-text"]
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: 'div[data-buy-box-region="price"] [data-selector="price-only"]>p'
+      replace_old: \$
+      replace_new: USD
+      attribute_name: textContent
+      exclude_children: true
+    stock_retriever_module:
+      name: get_attribute_value
+      css_selector: '#listing-page-quantity-select>option:last-child'
+      attribute_name: value
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '#listing-page-cart a[href*="etsy.com/shop/"]'
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: '#listing-page-cart a[href*="etsy.com/shop/"]'
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: ul.carousel-pane-list>li>img[fetchpriority="high"]
+      clickable_css_selector_2: div.image-overlay button[aria-label="next"]
+      picture_css_selector: div.image-overlay .image-overlay-list>li:not(.wt-display-none)>img
+      attribute_name: src
+      regex: (.+)
+      skip_video: true
+      escape_popup_on_end: true
+    videos_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: ul.carousel-pane-list>li video>source
+      attribute_name: src
+      loading_timeout: 0.1
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: 'https://www.etsy.com/shop/{}?locale=USD'
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module_and_scroll
+        css_selector: button[data-gdpr-single-choice-accept="true"]
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="shop-name"]>h1'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="shop-name"]>p'
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .shop-icon>img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - span[data-key="user_location"]
+        - a[href*="/sold"]
+        - input[name="rating"]
+        - input[name="rating"] ~ span
+        - a[href*="favoriters"]
+      value_css_selectors:
+        - span[data-key="user_location"]
+        - a[href*="/sold"]
+        - input[name="rating"]
+        - input[name="rating"] ~ span
+        - a[href*="favoriters"]
+      key_regex:
+        - user_location
+        - sold
+        - rating
+        - star
+        - favoriters
+      value_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+      key_attributes:
+        - data-key
+        - href
+        - name
+        - textContent
+        - href
+      value_attributes:
+        - textContent
+        - textContent
+        - value
+        - textContent
+        - textContent

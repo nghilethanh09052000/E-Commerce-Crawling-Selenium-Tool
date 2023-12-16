@@ -1,0 +1,102 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    loading_delay: 2
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.cel.ro/cauta/{}
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .productlisting>.product_data a.product_name
+      regex: cel.ro\/(.+)
+      action_before_poster_post_identifiers_module:
+        - name: click_action_module
+          css_selector: .market-wrapper .menu>li:last-child
+          after_pause_time: 2
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .productlisting>.product_data a.product_name
+      regex: cel.ro\/(.+)
+    listing_container_css_selector: .productlisting>.product_data
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: a.product_name
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.price_part
+      replace_old: lei
+      replace_new: RON
+      trim_text: true
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .productListing-poza>a>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .pageresults>a.last
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: .gdprNotice a.main.accept
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.cel.ro/{}
+    take_screenshot: true
+    loading_delay: 3
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '#product-name'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#descriptionData'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '.info-section #product-price'
+      replace_old: (.+)
+      replace_new: \g<1> RON
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .product_info .vandutDe span>a
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .product_info .vandutDe span>a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace
+      css_selector: '.slider #scroll_poze>li img'
+      attribute_name: src
+      replace_old: mari
+      replace_new: Products
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: .gdprNotice a.main.accept
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '.slider>.scroll_poze>#scroll_poze>li>a>img'
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: title
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .market-wrapper .info
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '#sellerLogo'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .market-wrapper .section:first-of-type div[style="font-weight:bold;"]~div
+      value_css_selector: .market-wrapper .section:first-of-type div[style="font-weight:bold;"]~div
+      key_regex: '(.+?)\:'
+      value_regex: '\:(.+)'

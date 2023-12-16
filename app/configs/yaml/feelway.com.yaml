@@ -1,0 +1,111 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    loading_delay: 4
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.feelway.com/list.php?f_key_goods={}&order_method=goodsno
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: ul.goodsList>li>a
+      regex: feelway.com\/view_goods.php\?(.+)$
+      post_url_cleaning_module:
+        query_string_to_keep:
+          - g_no
+    listing_container_css_selector: ul.goodsList>li
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .goodsTitle
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .goodsPrice>.priceNum
+      replace_old: (.+)
+      replace_new: \g<1> KRW
+    vendor_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .sellerIconGrade
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .imgArea>div>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .realtime-products~div>a:last-child
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: ul.goodsList>li>a
+      regex: feelway.com\/view_goods.php\?(.+)$
+      post_url_cleaning_module:
+        query_string_to_keep:
+          - g_no
+      action_before_poster_post_identifiers_module:
+        - name: click_action_module
+          css_selector: button[onclick*="square_type"]
+          after_pause_time: 3
+      load_more_results_module:
+        name: click_on_next_page_module
+        css_selector: .goodsListWrap~table td.no>input
+        loading_delay: 4
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.feelway.com/view_goods.php?{}
+    loading_delay: 3
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .prd_detail_basic p.title
+    description_retriever_module:
+      name: get_attribute_value
+      iframe_css_selector: '#detail-info>iframe'
+      css_selector: body
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["price"]} KRW'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .kbo-seller-shop-top>dl>dt>span>a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .kbo-seller-shop-top>dl>dt>span>a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .main_image>img
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 3
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: body title
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .kbo-seller-shop-top>.kbo-thum img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - .kbo-seller-shop-top>dl>dd>dfn
+        - .kbo-seller-shop-dashboard>div>dl>dt
+        - .kbo-seller-shop-dashboard>div>div>dl:first-of-type>dt
+        - .kbo-seller-shop-dashboard>div>div>dl:last-of-type>dt
+      value_css_selectors:
+        - .kbo-seller-shop-top>dl>dd>dfn+span
+        - .kbo-seller-shop-dashboard>div>dl>dd>em
+        - .kbo-seller-shop-dashboard>div>div>dl:first-of-type>dd
+        - .kbo-seller-shop-dashboard>div>div>dl:last-of-type>dd
+      clickable_css_is_always_present: true

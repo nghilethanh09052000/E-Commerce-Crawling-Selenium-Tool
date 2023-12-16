@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package Logpage;
+
+message Logpage {
+    /* How is the log data value saved as (to help in decoding) */
+    enum LogDataType{
+       ScrapingResult = 0;
+    }
+    LogDataType data_type = 1;
+    bytes data = 2;
+}

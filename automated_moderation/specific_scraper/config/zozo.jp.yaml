@@ -1,0 +1,102 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: iproyal/us
+    - name: iproyal/lithuania
+    - name: horcon
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    max_posts_to_browse: 3000
+    loading_delay: 4
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://zozo.jp/search/?p_keyv={}&dord=21
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#searchResultList>li a.c-catalog-header__link'
+      regex: zozo.jp\/shop\/(.+)$
+      post_url_cleaning_module:
+        query_string_to_keep:
+          - did
+    listing_container_css_selector: '#searchResultList>li'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: img[class*="thumbnail"]
+      attribute_name: alt
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: '[class*="c-catalog-body__price"]'
+      replace_old: \¥
+      replace_new: JPY
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[class*="thumbnail"]
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: a.c-pager__next
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#searchResultList>li a.c-catalog-header__link'
+      regex: zozo.jp\/shop\/(.+)$
+      post_url_cleaning_module:
+        query_string_to_keep:
+          - did
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://zozo.jp/shop/{}
+    loading_delay: 2
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '#goodMainArea h1'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .p-goods-information-note
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="p-goods-information__price"]
+      exclude_children: true
+      replace_old: \¥
+      replace_new: JPY
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .p-goods-information-shop>a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .p-goods-information-shop>a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_2: '#photoGallery #btnNext>button'
+      picture_css_selector: '#photoMain>img'
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 2.5
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: .p-shop-header-card-body__link>div>a
+        after_pause_time: 3
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .p-shopdetail-hero-visual-heading__title
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .p-shopdetail-hero-description__text
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img.p-shopdetail-hero-visual-image
+      attribute_name: src

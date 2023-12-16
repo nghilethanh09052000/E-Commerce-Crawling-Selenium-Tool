@@ -1,0 +1,119 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://zakupka.com/all/poisk/?poisk={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .goods__item>a
+      regex: zakupka.com\/uk\/p\/(.*)$
+    listing_container_css_selector: div.goods__item
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: a.goods__name
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: span.price>span:first-child
+      replace_old: \xe2\x82\xb4
+      replace_new: UAH
+      trim_text: true
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: a img.goods__img
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_scrolling_one_scroll_at_a_time
+      scroll_pause_time: 4
+      scroll_range: 4
+      loading_delay: 10
+      css_selector: .items-more-loader>button
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://zakupka.com/uk/p/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .app__page-title
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .app__product-secondary-wrap
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .goods-card__info .price__value
+      replace_old: \xe2\x82\xb4
+      replace_new: ' UAH'
+      trim_text: true
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: span[class*="goods-card__minisite-link"]
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: span[itemprop="seller"] > link
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: meta[itemprop="addressLocality"]
+      key_css_selector_attribute_name: content
+      value_css_selector: meta[itemprop="addressLocality"]
+      value_css_selector_attribute_name: content
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_one_picture_only_case
+      css_selector_1: .image-gallery-thumbnail>span
+      attribute_name_1: style
+      regex_1: 'background-image: url\(\"\/\/(.+)\"'
+      replace_old_1: _100x100.webp
+      replace_new_1: _1024x3000.webp
+      css_selector_2: div.goods-card__one-img-wrap>img
+      attribute_name_2: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.app__page-title
+      attribute_name: textContent
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      clickable_css_selectors:
+        - button.phone__hidden
+      loading_delay: 3
+      key_css_selectors:
+        - .phone__item_phone-first>div
+        - .phone__item.phone__item_area>span
+        - .firm-info__site>a
+      value_css_selectors:
+        - .phone__item_phone-first>div
+        - .phone__item.phone__item_area>span
+        - .firm-info__site>a
+      key_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+      value_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+      key_attributes:
+        - class
+        - data-title
+        - textContent
+      value_attributes:
+        - textContent
+        - textContent
+        - href

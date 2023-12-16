@@ -1,0 +1,61 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    scroll_down_after_get_new_page: true
+    loading_delay: 1
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.bedbathandbeyond.ca/{},/k,/results.html
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[data-testid="search-result-container"]>a[data-testid*="product"]'
+      regex: bedbathandbeyond.ca\/(.+)
+    listing_container_css_selector: '[data-testid="search-result-container"]>a[data-testid*="product"]'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: title
+      css_selector: '[data-testid="product-name"]'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="product-price-container"]'
+      regex: (CAD.+)
+      replace_old: \$
+      replace_new: ''
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[data-testid="product-image-image"]
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: 'a[data-testid="pagination-next-button"]'
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.bedbathandbeyond.ca/{}
+    take_screenshot: true
+    loading_delay: 2
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="product-selection-container"] [data-testid="product-name"]'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="accordion-title-product-details"]~div [data-testid="side-by-side-container-left-content"]'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="product-selection-container"] [data-testid="product-price-container"]'
+      regex: (CAD.+)
+      replace_old: \$
+      replace_new: ''
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_2: 'div[data-testid="product-image-carousel-button-navigation-right"]'
+      picture_css_selector: '[data-testid="product-image-carousel-desktop"]>li>span>img[src*="/products/"]'
+      attribute_name: src
+      loading_delay: 1
+      regex: (.+)

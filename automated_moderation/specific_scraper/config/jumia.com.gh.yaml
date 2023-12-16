@@ -1,0 +1,15 @@
+include: jumia.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.jumia.com.gh/catalog/?q={}
+    poster_post_identifiers_retriever_module:
+      regex: jumia.com.gh\/(.+).html
+    post_identifiers_retriever_module:
+      regex: jumia.com.gh\/(.+).html
+    price_retriever_module:
+      replace_old: \₵
+      replace_new: S
+  post_information_retriever_module:
+    post_url_template: https://www.jumia.com.gh/{}.html

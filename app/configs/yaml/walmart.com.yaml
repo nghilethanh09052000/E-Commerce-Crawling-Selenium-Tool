@@ -1,0 +1,83 @@
+include: walmart.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.walmart.com/search?q={}&sort=best_match&affinityOverride=default
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: section div[data-item-id] a[link-identifier]
+      attribute_name: link-identifier
+    price_retriever_module:
+      regex: \$.+
+      replace_old: \$
+      replace_new: 'USD '
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.walmart.com/ip/{}
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div[data-testid="sold-and-shipped-by"] a[data-testid="view-seller-info-link"]
+      attribute_name: href
+      regex: walmart.com/seller/([^\?]+)
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: div[data-testid="product-aisle-location"] span
+      value_css_selector: div[data-testid="product-aisle-location"] span
+    price_retriever_module:
+      regex: \$.+
+      replace_old: \$
+      replace_new: 'USD '
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: 'https://www.walmart.com/seller/{}'
+    take_screenshot: true
+    loading_delay: 3
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-testid="desktop-container"] h1
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#AboutSeller'
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div[data-testid="desktop-container"] img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - div[data-testid="desktop-container"] section
+        - div[data-testid="desktop-container"] section ~ div
+        - i.ld-Store
+        - i.ld-Phone
+        - i.ld-Location
+      value_css_selectors:
+        - div[data-testid="desktop-container"] section
+        - div[data-testid="desktop-container"] section ~ div
+        - i.ld-Store ~ div
+        - i.ld-Phone ~ span
+        - i.ld-Location ~ div
+      key_regex:
+        - reviews
+        - stars
+        - Store
+        - Phone
+        - Location
+      value_regex:
+        - \d+
+        - (.+)stars
+        - (.+)
+        - (.+)
+        - (.+)
+      key_attributes:
+        - textContent
+        - textContent
+        - class
+        - class
+        - class
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent

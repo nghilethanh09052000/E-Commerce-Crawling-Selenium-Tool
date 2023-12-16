@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+import "google/protobuf/struct.proto";
+
+package Webpage;
+
+message Image {
+    string s3_url = 1;
+    string image_url = 2;
+    bytes sha256sum = 3;
+    string alt_text = 4;
+}
+
+message StructuredPostData {
+    string title = 1;
+    string description = 2;
+    string price = 3;
+    repeated Image images = 4;
+    string poster_name = 6;
+    string poster_link = 7;
+    google.protobuf.Struct payload = 8;
+
+}
+
+message StructuredPosterData {
+    string name = 1;
+    string description = 2;
+    string translated_description = 3;
+    Image profile_pic_url = 4;
+    google.protobuf.Struct payload = 5;
+}
+
+message LinkContext {
+    repeated Image images = 1;
+    repeated Image adjacent_images = 2;
+    string link_text = 3;
+    string adjacent_text = 4;
+    google.protobuf.Struct payload = 5;
+}
+
+message IncomingLink {
+    string from_url = 1;
+    LinkContext context = 2;
+    string from_title = 3;
+}
+
+message OutgoingLink {
+    string to_url = 1;
+    LinkContext context = 2;
+}
+
+message Webpage {
+    string url = 1;
+    string s3_content_url = 2;
+    string s3_archive_url = 3;
+    repeated IncomingLink incoming_links = 4;
+    repeated OutgoingLink outgoing_links = 5;
+    repeated Image images = 6;
+    string title = 7;
+    string translated_title = 8;
+    string description = 9;
+    string translated_description = 10;
+    string source_language =11;
+    string creation_date_timestamp= 12;
+    string main_post_id = 13;
+    string main_poster_id = 14;
+    repeated StructuredPostData post = 15;
+    repeated StructuredPosterData poster = 16;
+}
+
+message Webhost {
+    string fqdn = 1;
+    uint32 port = 2;
+}
+
+message WebhostInfo {
+    Webhost webshot = 1;
+    google.protobuf.Struct who_is = 2;
+    google.protobuf.Struct web_stack = 3;
+}
+
+message ScrapingResult {
+    repeated Webpage pages = 1;
+    repeated WebhostInfo hosts = 2;
+    repeated string errors = 3;
+    bool successful = 4;
+}

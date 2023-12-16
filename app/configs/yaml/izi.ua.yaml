@@ -1,0 +1,103 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    loading_delay: 5
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://izi.ua/search?search_text={}&sort=-updated_at
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: li.b-catalog__item .b-product__card-title>a.ek-link
+      regex: izi.ua\/(.*)$
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: span.b-product__card-title>a
+      regex: izi.ua\/(.*)$
+      load_more_results_module:
+        name: load_more_by_click
+        css_selector: a.ek-button_theme_secondary,[data-bazooka="ProductsList"] ul>li:last-child>a
+    listing_container_css_selector: li.b-catalog__item
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: title
+      css_selector: .b-product__card-title>a.ek-link
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: data-ga4analytics-item
+      css_selector: .b-product__card-title>a.ek-link
+      replace_old: '.+price.+\: (.+)\}'
+      replace_new: \g<1> UAH
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.ek-grid__item picture>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .ek-box_margin-top_xl ul>li:last-child>a
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://izi.ua/{}
+    loading_delay: 6
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.ek-text
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="UserContent__root"]'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["price"]} {jsons[0]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a[data-qaid=seller_name]
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[data-qaid=seller_name]
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .ek-box span
+      key_regex: 
+        \xd0\x9c\xd0\xb5\xd1\x81\xd1\x82\xd0\xbe\xd0\xbf\xd0\xbe\xd0\xbb\xd0\xbe\xd0\xb6\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb5\:(.+)
+      value_css_selector: .ek-box span
+      value_regex: 
+        \xd0\x9c\xd0\xb5\xd1\x81\xd1\x82\xd0\xbe\xd0\xbf\xd0\xbe\xd0\xbb\xd0\xbe\xd0\xb6\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb5\:(.+)
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[class*="ProductPhotoGalery"] [class*="PhotoGalery__photo"] source'
+      attribute_name: srcset
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-bazooka="SellerPage"] h1'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.b-user-content
+      clickable_css_selector: .b-tabs>ul>li>a[href*="/about"]
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[data-bazooka="SellerPage"] img[src*="avatars"]'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .ek-grid__item [class*="SellerStats__statsItem"]
+      value_css_selector: .ek-grid__item [class*="SellerStats__statsItem"]
+      key_regex: '(.+):'
+      value_regex: :(.+)

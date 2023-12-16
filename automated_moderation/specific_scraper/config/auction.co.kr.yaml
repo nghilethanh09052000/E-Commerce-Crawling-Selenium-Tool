@@ -1,0 +1,116 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    max_posts_to_browse: 3000
+    loading_delay: 2
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://browse.auction.co.kr/search?keyword={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.component--item_card a[class="link--itemcard"][href*="auction.co.kr/DetailView.aspx?itemno="]
+      regex: auction.co.kr\/DetailView.aspx\?itemno\=(.+)
+      post_url_cleaning_module:
+        skip_query_string_cleaning: true
+    listing_container_css_selector: div.component--item_card
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: a.link--itemcard>.text--title
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .price_seller strong
+      replace_old: .+
+      replace_new: '\g<0> KRW'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a.link--shop
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a.link--shop
+      attribute_name: href
+    item_sold_retriever_module:
+      name: get_attribute_value
+      css_selector: .text--buycnt
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img.image--itemcard
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: a.link--next_page
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .prod_list>ul>li>p>a
+      regex: auction.co.kr\/DetailView.aspx\?itemno\=(.+)
+      post_url_cleaning_module:
+        skip_query_string_cleaning: true
+      action_before_poster_post_identifiers_module:
+        - name: click_action_module
+          css_selector: .allList_view>a
+          after_pause_time: 3
+      listing_container_css_selector: .prod_list>ul>li
+      title_retriever_module:
+        name: get_attribute_value
+        css_selector: .prd_name
+      price_retriever_module:
+        name: get_attribute_value
+        css_selector: .prd_price strong
+        replace_old: \원
+        replace_new: ' KRW'
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: .prd_img>a>img
+        attribute_name: src
+      load_more_results_module:
+        name: go_to_next_page_module
+        css_selector: .next>a
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: http://itempage3.auction.co.kr/DetailView.aspx?itemno={}
+    loading_delay: 2
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .item-topinfo .itemtit
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .price .price_real
+      attribute_name: textContent
+      replace_old: \원
+      replace_new: ' KRW'
+    stock_retriever_module:
+      name: get_attribute_value
+      css_selector: .prod_info .remainder
+      regex: (\d+.+\d+)
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a.link__seller
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a.link__seller
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .thumb-gallery .viewer>li>a>img
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 3
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .shop_title
+      attribute_name: textContent
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .seller_info>div>dl>dt
+      value_css_selector: .seller_info>div>dl>dd

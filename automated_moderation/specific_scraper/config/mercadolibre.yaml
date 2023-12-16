@@ -1,0 +1,166 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    loading_delay: 10
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[data-testid="recommendations-container"] .slick-list>div>div
+        a , div.ui-search-result__image>a
+      regex: (.*)$
+      load_more_results_module:
+        name: go_to_next_page_module
+        css_selector: div[data-testid="recommendations-container"]+span>a , .andes-pagination__button--next>a
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .ui-search-results ol>li a[class="ui-search-link"]
+      regex: (.*)$
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .andes-pagination__button--next>a
+    listing_container_css_selector: ol>li.ui-search-layout__item
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: h2.ui-search-item__title
+    price_retriever_module:
+      name: get_multiple_text_content_and_concatenate
+      attribute_name: textContent
+      css_selectors:
+        - div.ui-search-price--size-medium>div>span.ui-search-price__part>span:not(.andes-visually-hidden)
+      has_multiple_items_in_same_selector: true
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: span.ui-search-item__location
+      attribute_name: textContent
+      loading_timeout: 0.05
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.ui-search-result__image img.shops__image-element
+      attribute_name: src
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector:
+          - button[data-testid*="understood-button"]
+          - a.publications__subtitle, a[class*="carousel-link"]
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: '{}'
+    loading_delay: 6
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .ui-pdp-title
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .ui-pdp-description__content
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_json_value
+      loading_delay: 3
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["price"]} {jsons[0]["offers"]["priceCurrency"]}'
+    stock_retriever_module:
+      name: get_attribute_value
+      css_selector: span[class*="_quantity__available"]
+      attribute_name: textContent
+      regex: (\d+)
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="seller__header__title"], .ui-seller-info ~ a
+      attribute_name: outerHTML
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .ui-seller-info+a
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: figure[class*="seller-info"][class*="GRAY"] ~ div>p:last-child
+      value_css_selector: figure[class*="seller-info"][class*="GRAY"] ~ div>p:last-child
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .ui-pdp-gallery__figure>img
+      attribute_name: data-zoom
+  poster_information_retriever_module:
+    poster_url_template: '{}'
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '#store-info__name,h3#brand'
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .store-brand-info img
+      attribute_name: src
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="store-info__subtitle"]'
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - .seller-info__title
+        - h3.location-title
+        - div[class*="leader-status"]
+        - .data-level__wrapper p:nth-child(1)>span
+        - .data-level__wrapper p:nth-child(2)>span
+        - .data-level__wrapper p:nth-child(4)>span
+        - a[class*="bar--positive"]
+        - a[class*="bar--neutral"]
+        - a[class*="bar--negative"]
+      value_css_selectors:
+        - .seller-info__subtitle-sales
+        - p.location-subtitle
+        - div[class*="leader-status"] p
+        - .data-level__wrapper p:nth-child(1)>span>span
+        - .data-level__wrapper p:nth-child(2)>span>span
+        - .data-level__wrapper p:nth-child(4)>span>span
+        - a[class*="bar--positive"] span[id="feedback_good"]
+        - a[class*="bar--neutral"] span[id="feedback_good"]
+        - a[class*="bar--negative"] span[id="feedback_good"]
+      key_regex:
+        - (.+)
+        - (.+)
+        - leader-status
+        - recomiendan
+        - ventas
+        - vendiendo en Mercado Libre
+        - positive
+        - neutral
+        - negative
+      value_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+        - (\d+)
+        - (\d+)
+        - (\d+)
+        - (\d+)
+        - (\d+)
+        - (\d+)
+      key_attributes:
+        - textContent
+        - textContent
+        - class
+        - textContent
+        - textContent
+        - textContent
+        - class
+        - class
+        - class
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent

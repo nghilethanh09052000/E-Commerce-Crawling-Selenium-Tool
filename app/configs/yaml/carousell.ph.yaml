@@ -1,0 +1,15 @@
+include: carousell.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.carousell.ph/search/{}?sort_by=3
+        - https://www.carousell.ph/search/{}
+    post_identifiers_retriever_module:
+      regex: www\.carousell\.ph\/p\/(.+)
+    poster_post_identifiers_retriever_module:
+      regex: carousell\.ph\/p\/(.+)
+  post_information_retriever_module:
+    post_url_template: https://www.carousell.ph/p/{}
+    vendor_retriever_module:
+      regex: https://www\.carousell\.ph/u/(.+)/$

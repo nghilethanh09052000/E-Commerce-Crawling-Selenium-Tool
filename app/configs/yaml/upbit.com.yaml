@@ -1,0 +1,109 @@
+framework:
+  name: api_selenium_framework
+  driver_initialization_module:
+    name: classic_api_initialization_module
+  search_pages_browsing_module:
+    name: search_only_browsing_module
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://ccx.upbit.com/nx/v2/keyword-products??contractEditionType=ALL&searchKeyword={SEARCH_QUERY}&size=MAX_POSTS_TO_BROWSE
+    api_request_params:
+      method_type: GET
+      api_headers: "{\"authority\": \"ccx.upbit.com\",\"accept\": \"application/json\"\
+        ,\"accept-language\": \"ko-KR, ko;q=1, ko-KR;q=0.1\",\"origin\": \"https://upbit.com\"\
+        ,\"referer\": \"https://upbit.com/\",\"sec-ch-ua\": \"'Chromium';v='116',
+        'Not)A;Brand';v='24', 'Google Chrome';v='116'\",\"sec-ch-ua-mobile\": \"?0\"\
+        ,\"sec-ch-ua-platform\": \"'Linux'\",\"sec-fetch-dest\": \"empty\",\"sec-fetch-mode\"\
+        : \"cors\",\"sec-fetch-site\": \"same-site\",\"user-agent\": \"Mozilla/5.0
+        (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0
+        Safari/537.36\"}"
+    listing_retriever_module:
+      name: get_json_obj
+      attribute_names:
+        - items
+    post_identifiers_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - representativeEdition.uuid
+    title_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - title
+    price_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - representativeEdition.price
+        - quoteUnit
+    vendor_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - creator.title
+    poster_link_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - creator.uuid
+      replace_old: (.+)
+      replace_new: https://upbit.com/nft/creators/\g<1>
+      is_regex_replace: true
+    pictures_retriever_module:
+      name: get_json_pictures
+      attribute_names:
+        - content.squareUrl
+      return_list: true
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://upbit.com/nft/marketplace/edition/{}
+    take_screenshot: true
+    loading_delay: 3
+    driver_initialization_module:
+      name: classic_selenium_initialization_module
+      headless: false
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: p.chakra-text.css-y1mhlj
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.css-1s5idl8>div.css-1xaekgw
+      clickable_css_selector: button.css-elon6o
+      loading_timeout: 1
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: p.css-14mi2vu
+      regex: (\d.+)
+      trim_text: true
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div.css-1i2bp3g>div:last-of-type>button
+    poster_link_retriever_module:
+      name: get_attribute_value
+      css_selector: div.css-147v1r a[href*="nft/creators/"]
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_between_2_attribute
+      css_selector: .css-szc2m3 picture>source:first-child , .css-1yjhsbj video>source
+        , .css-1hlkkbr>div>img
+      attribute_name_1: srcset
+      attribute_name_2: src
+      loading_timeout: 3
+    videos_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .css-1yjhsbj video>source
+      attribute_name: src
+      loading_timeout: 0.1
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 3
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: div.css-a7rvz4>div>div>p
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .css-j7qwjs>div.css-0
+      clickable_css_selector: button.css-elon6o
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.css-a7rvz4>div>img.chakra-image
+      attribute_name: src

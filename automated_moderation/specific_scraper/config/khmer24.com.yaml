@@ -1,0 +1,100 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+    - name: iproyal/us
+    - name: iproyal/lithuania
+    - name: 123proxy
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+    undetected_driver: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    max_posts_to_browse: 3000
+    loading_delay: 4
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.khmer24.com/en/search?q={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: ul.list-items>li.item:not(.item-sponsors)>a.post
+      regex: khmer24.com\/en\/(.+).html
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: ul.list-items>li.item:not(.item-sponsors)>a.post
+      regex: khmer24.com\/en\/(.+).html
+    listing_container_css_selector: ul.list-items>li.item:not(.item-sponsors)
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .item-title
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: span.price
+      replace_old: \$
+      replace_new: USD
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: ul.summary>li:first-child
+      attribute_name: textContent
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector:  div.item-image>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: ul.pagination>li>a[rel="next"]
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.khmer24.com/{}.html
+    take_screenshot: true
+    loading_delay: 3
+    title_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["name"]}'
+    description_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["description"]}'
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["price"]} {jsons[0]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["seller"]["name"]}'
+    poster_link_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["seller"]["url"]}'
+    location_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["seller"]["address"]["addressRegion"]} {jsons[0]["offers"]["seller"]["address"]["addressCountry"]}'
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div#slide-box>div.imglist div.owl-item a
+      attribute_name: href
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    loading_delay: 2
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: div.user-info>h1.name
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.profile>div>a>img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      clickable_css_selector: div#menu>ul>li>a[href*="/contact"]
+      key_css_selector: div.user-content tbody>tr>td:first-child
+      value_css_selector: div.user-content tbody>tr>td:last-child

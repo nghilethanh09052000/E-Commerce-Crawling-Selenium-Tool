@@ -1,0 +1,97 @@
+framework:
+  name: api_selenium_framework
+  driver_initialization_module:
+    name: classic_api_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://thor.weidian.com/decorate/shopDetail.tab.getItemList/1.0?param=%7B%22shopId%22:%22{SEARCH_QUERY}%22,%22tabId%22:0,%22sortOrder%22:%22desc%22,%22offset%22:0,%22limit%22:20,%22from%22:%22h5%22,%22showItemTag%22:true
+    api_request_params:
+      method_type: GET
+      api_headers: "{\"sec-ch-ua\": \"'Chromium';v='116', 'Not)A;Brand';v='24', 'Google Chrome';v='116'\",\"Accept\": \"application/json, text/plain, */*\",\"Referer\": \"https://v.weidian.com/\",\"sec-ch-ua-mobile\": \"?0\",\"User-Agent\": \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36\",\"sec-ch-ua-platform\": \"'Linux'\"}"
+    load_more_results_module:
+      name: load_more_by_adding_page
+      value: ',%22offset%22:{PAGE_NUMBER}%7D'
+      page_multiplier: 20
+    listing_retriever_module:
+      name: get_json_obj
+      attribute_names:
+        - result.itemList
+    post_identifiers_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - itemId
+    title_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - itemName
+    price_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - price
+      append_text: CNY
+    item_sold_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - sold
+    pictures_retriever_module:
+      name: get_json_pictures
+      attribute_names:
+        - itemImg
+      return_list: true
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://weidian.com/item.html?itemID={}
+    take_screenshot: true
+    driver_initialization_module:
+      name: classic_selenium_initialization_module
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: div.item-title-content
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.d-content
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '.item-container span.cur-price'
+      exclude_children: true
+      replace_old: (.+)
+      replace_new: '\g<1> CNY'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .item-container div.shop-name
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .shop-info-head>a
+      attribute_name: href
+      post_url_cleaning_module:
+        skip_query_string_cleaning: true
+    stock_retriever_module:
+      name: get_attribute_value
+      css_selector: .sku-wrap p.counter-stock
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .item-imgs .wd-swipe-item>img
+      regex: (.+)\?
+      attribute_name: data-src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: 'https://weidian.com/?userid={}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: p.shop-name
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: a.avatar img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: div.more-info>div.txt
+      value_css_selector: div.more-info>div.txt
+      key_regex: '(.+?)\ '
+      value_regex: '\ (.+)'

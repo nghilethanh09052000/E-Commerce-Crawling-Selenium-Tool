@@ -1,0 +1,15 @@
+*.pyc
+*.swp
+*.cprof
+*.lprof
+*.mypy_cache
+*.pyc
+*.swp
+*.swo
+*.o
+*.so
+__pycache__
+.idea
+*log*
+*out*
+venv

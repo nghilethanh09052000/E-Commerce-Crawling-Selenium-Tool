@@ -1,0 +1,99 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+    load_images: true
+    xvfb: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    loading_delay: 10
+    # Keyword search not availble for this domain
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - dummy
+    listing_container_css_selector: div.album__categories-box>div>a
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.album__title
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img.album__img
+      attribute_name: src
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a.album__main
+      post_url_cleaning_module:
+        query_string_to_keep:
+          - uid
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.album__categories-box>div>a
+      post_url_cleaning_module:
+        query_string_to_keep:
+          - uid
+      listing_container_css_selector: div.album__categories-box>div
+      title_retriever_module:
+        name: get_attribute_value
+        attribute_name: textContent
+        css_selector: div.album__title
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: img.album__img
+        attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: a[title="next page"]
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    take_screenshot: true
+    post_url_template: '{}'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .showalbumheader__gallerydec>h2>span:first-of-type
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.showalbumheader__gallerysubtitle
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.showheader__nickname
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div.showheader__menus>a:first-of-type
+      attribute_name: href
+      regex: (.+)\/album
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      escape_popup_on_end: true
+      clickable_css_selector_1: .showalbum__imagecardwrap>div>div:first-child>div:first-child
+      clickable_css_selector_2: span.viewer__next
+      picture_css_selector: .viewer__imgwrap>img
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 10
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    poster_url_replace_old_regex: ^((?!categories).)*$
+    poster_url_replace_new: /categories
+    take_screenshot: true
+    loading_delay: 6
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.showheader__nickname
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      clickable_css_selector: .showheader__menus>a[href*="contact"]
+      loading_delay: 5
+      css_selector: main.usercontact__main
+  archiving_options:
+    height: 2000
+    width: 1924

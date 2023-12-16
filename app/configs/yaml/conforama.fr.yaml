@@ -1,0 +1,108 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack 
+    - name: proxys.io/mobile/shared/us 
+    - name: 123proxy 
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    loading_delay: 4
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.conforama.fr/recherche-conforama/{}
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[class*="boxProducts"]>.box-product .c-r_product_name>a'
+      regex: conforama.fr\/(.+)
+      load_more_results_module:
+        name: go_to_next_page_module
+        css_selector: '#c-r_pagination .ctrl-nextend>a'
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[class*="boxProducts"]>.box-product .c-r_product_name>a'
+      regex: conforama.fr\/(.+)
+    listing_container_css_selector: '[class*="boxProducts"]>.box-product'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .c-r_product_name>a
+    price_retriever_module:
+      name: get_multiple_text_content_and_concatenate
+      attribute_name: textContent
+      css_selectors:
+        - .wrapper-price_int
+        - .wrapper-price_cent
+      replace_old: (\d+)\n\€(\d+).*
+      replace_new: EUR \g<1>.\g<2>
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .image-product>.imageProductRef img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: '#c-r_pagination .ctrl-next>a'
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler
+  post_information_retriever_module:
+    name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+    post_url_template: https://www.conforama.fr/{}
+    take_screenshot: true
+    loading_delay: 1
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .productTitle h1
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .desc-content>p
+      loading_timeout: 0.1
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div.currentPrice
+      replace_old: (\d+)\€(\d+)
+      replace_new: EUR \g<1>.\g<2>
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .mc-delivTop>*
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .mc-delivTop>a
+      attribute_name: href
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: div.productPics>a>img
+      clickable_css_selector_2: '#cboxWrapper .menuMoreProducts>ul>li.current+li'
+      picture_css_selector: '#cboxWrapper .warpImg>img'
+      attribute_name: src
+      regex: (.+)
+      escape_popup_on_end: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 3
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '#marchand-name'
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '#sellerLogo'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .marchand_info>div>div:not(.marchand_info-avis)>span:first-of-type
+      value_css_selector: .marchand_info>div>div:not(.marchand_info-avis)>span:last-of-type
+      key_replace_old: '\:'
+      key_replace_new: ''

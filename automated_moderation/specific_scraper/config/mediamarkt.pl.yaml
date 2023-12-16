@@ -1,0 +1,92 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    scroll_down_after_get_new_page: true
+    loading_delay: 3
+    take_screenshots: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://mediamarkt.pl/search?query%5Bquerystring%5D={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .offers.is-list>.offer .offer-header>.info>a
+      regex: mediamarkt.pl\/(.+)
+    listing_container_css_selector: .offers.is-list>.offer
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .offer-header>.info>a
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .pricing .price-box .main-price
+      trim_text: true
+      replace_old: (.+)
+      replace_new: \g<1> PLN
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '.image img'
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .more-offers>a
+      loading_delay: 4
+    action_before_search_pages_browsing_module:
+      - name: switch_to_iframe
+        css_selector: '#challenge-stage iframe'
+        loading_timeout: 8
+      - name: click_action_module
+        css_selector: input[type="checkbox"]
+        before_pause_time: 3
+        after_pause_time: 5
+        stop_css_selector: .offers.is-list>.offer
+        loading_timeout: 8
+      - name: switch_out_iframe
+      - name: click_action_module
+        css_selector: .cookie-box .close-icon
+        before_pause_time: 2
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.mediamarkt.pl/{}
+    loading_delay: 3
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: switch_to_iframe
+        css_selector: '#challenge-stage iframe'
+        loading_timeout: 8
+      - name: click_action_module
+        css_selector: input[type="checkbox"]
+        before_pause_time: 3
+        after_pause_time: 5
+        stop_css_selector: .product-gallery-slider
+        loading_timeout: 8
+      - name: switch_out_iframe
+      - name: click_action_module
+        css_selector: .cookie-box .close-icon
+        before_pause_time: 2
+    title_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[1]["name"]}'
+    description_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[1]["description"]}'
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[1]["offers"]["price"]} {jsons[1]["offers"]["priceCurrency"]}'
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: '.product-gallery-slider .spark-slide.is-loaded'
+      clickable_css_selector_2: '.modal-content .product-gallery-slider button.arrow-right'
+      picture_css_selector: '.modal-content .product-gallery-slider .spark-slide.is-loaded>div[active="true"] img.is-loaded'
+      attribute_name: src
+      regex: (.+)
+      escape_popup_on_end: true
+      loading_delay: 3

@@ -1,0 +1,106 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: iproyal/us
+    - name: iproyal/lithuania
+    - name: horcon
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+    override_user_agent: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: a[class*="BoothBtn__entryBtn__"]
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://tw.buy.yahoo.com/search/product?p={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[class*="ResultList_resultList_"]>ul>a'
+      regex: tw.buy.yahoo.com\/gdsale\/(.+)
+      post_url_cleaning_module:
+        skip_query_string_cleaning: true
+    listing_container_css_selector: '[class*="ResultList_resultList_"]>ul>a , [class*="BoothProductList__main__"]>ul>li>a'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: :scope>div>div>span
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: :scope>div>div>span+div>span:first-child
+      replace_old: \$
+      replace_new: TWD
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div>div>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: a[class*="Pagination__highlight__"]+a
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[class*="BoothProductList__main__"]>ul>li>a'
+      regex: tw.buy.yahoo.com\/gdsale\/(.+)
+      post_url_cleaning_module:
+        skip_query_string_cleaning: true
+      load_more_results_module:
+        name: go_to_next_page_module
+        css_selector: a[class*="Pagination__highlight__"]+a
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://tw.buy.yahoo.com/gdsale/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[class*="HeroInfo__title__"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="ProductHtmlDetail__detail__"]'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="ProductMainInfo__productMainInfo__"] [class*="HeroInfo__mainPrice__"]'
+      replace_old: \$
+      replace_new: TWD
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[class*="SellerInfo__storeName__"] , div[class*="HeroInfo__storeInfoYahooWrap__"]>div
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div[class*="SellerInfo__mod__"]>a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: '[class*="ImageHover__thumbnail__"]:last-of-type'
+      clickable_css_selector_2: div[class*="LightBox__mainContainer__"]>button[class*="right"]
+      picture_css_selector: div[class*="LightBox__mainContainer__"] div[style*="translate(0px,
+        0px)"]>img[class*="LightBox__largeImg__"]
+      attribute_name: src
+      regex: (.+)
+      escape_popup_on_end: true
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[class*="SellerInfo__storeName__"]
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div[class*="SellerInfo__storeLogo__"]
+      attribute_name: style
+      regex: \/(https[^\"\)]+)
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#COMPANY_INFO >div'
+      clickable_css_selector: '[class*="SellerInfo__storeDetailMenu__"]>ul>li:first-child>a'
+      attribute_name: textContent

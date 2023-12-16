@@ -1,0 +1,114 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+    cloudflare_bypass: true
+    headless: False
+    xvfb: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    max_posts_to_browse: 3000
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector:
+          - button#didomi-notice-agree-button
+          - .mat-dialog-container header>a
+        after_pause_time: 1
+        loading_timeout: 5
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://aukro.cz/vysledky-vyhledavani?text={}
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: auk-list-card>a
+      regex: aukro.cz\/(.+)$
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: auk-list-card>a
+      regex: aukro.cz\/(.+)$
+    listing_container_css_selector: 'auk-list-card>a'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .product-header
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .buy-price
+      replace_old: K\č
+      replace_new: CZK
+      exclude_children: true
+      loading_timeout: 0.1
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div.main-info>a.small-user-name
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div.main-info>a.small-user-name
+      attribute_name: href
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: .product-delivery>span>.mat-tooltip-trigger:first-child
+      attribute_name: textContent
+      exclude_children: true
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .product-img>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: a.page-number.next
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://aukro.cz/{}
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - button#didomi-notice-agree-button
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: 'div.tw-items-baseline h1'
+      exclude_children: true
+    description_retriever_module:
+      name: get_attribute_value
+      shadow_host_css_selector: '[tabid="DESCRIPTION"] auk-item-detail-description'
+      css_selector: div#user-field
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: auk-item-detail-main-item-panel-price .tw-items-center>span.tw-font-bold
+      replace_old: K\č
+      replace_new: CZK
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a.small-user-name
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a.small-user-name
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: auk-item-detail-current-media>img
+      clickable_css_selector_2: 'auk-media-gallery auk-button [source="arrow_forward_ios"]'
+      picture_css_selector: auk-media-gallery img.current-image
+      attribute_name: src
+      regex: (.+)
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: 'https://aukro.cz/uzivatel/{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: div.main-info>.big-user-name
+    payload_retriever_module:
+      name: get_key_value_list
+      clickable_css_selector: .c-user-profile__user-tabs a[routerlink="o-prodejci"]
+      key_css_selector: .c-user-profile__seller-info .block>div.block-name
+      value_css_selector: .c-user-profile__seller-info .block>div.info
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - button#didomi-notice-agree-button

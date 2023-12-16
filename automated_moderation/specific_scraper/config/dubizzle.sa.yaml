@@ -1,0 +1,106 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+    - name: iproyal/us
+    - name: iproyal/lithuania
+    - name: 123proxy
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.dubizzle.sa/ads/q-{}/?search%5Border%5D=created_at%3Adesc
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[href*="/ad/"]
+      regex: dubizzle.sa/ad/(.+).html
+      load_more_results_module:
+        name: load_more_by_click
+        css_selector: div#body-wrapper header ~ div button[type="submit"]
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: li[aria-label="Listing"] a[href*="/ad/"]
+      regex: dubizzle.sa/ad/(.+).html
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: div[role="navigation"] ul li:last-child a div
+    listing_container_css_selector: '[aria-label="Listing"]'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[aria-label="Title"]'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[aria-label="Price"]>span'
+      replace_old: \xd8\xb1.\xd8\xb3
+      replace_new: SAR
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[aria-label="Cover photo"]'
+      attribute_name: src
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.dubizzle.sa/ad/{}.html
+    take_screenshot: true
+    title_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["name"]}'
+    description_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["description"]}'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div[aria-label="Overview"] span
+      replace_old: \xd8\xb1.\xd8\xb3
+      replace_new: SAR
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a[href*="/profile/"] div div:nth-of-type(2) span
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: '[aria-label="Overview"] [aria-label="Location"]'
+      value_css_selector: '[aria-label="Overview"] [aria-label="Location"]'
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[href*="/profile/"]
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.image-gallery-slide source
+      attribute_name: srcset
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[aria-label="Seller name"]'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[aria-label="Seller description"]'
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: 'img[src*="Profile"], [aria-label="User photo"]'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - span[class="_34a7409b"]
+      value_css_selectors:
+        - span[class="_34a7409b"]
+      key_regex:
+        - ([^\d]+)
+      value_regex:
+        - \d+
+  archiving_options:
+    click_on_elements:
+      - button#onetrust-accept-btn-handler
+    height: 2000
+    width: 1924

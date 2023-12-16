@@ -1,0 +1,134 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    undetected_driver: true
+    headless: false
+    xvfb: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 2
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.elo7.com.br/lista/{}?sortBy=1
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: '#okCookies'
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#product-list li.product h2>a'
+      regex: elo7.com.br\/(.+)
+    listing_container_css_selector: li.product
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: h2>a>span
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: span.price
+      replace_old: R\$
+      replace_new: BRL
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a.link-store
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a.link-store
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: figure>span>a>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .pagination a[rel="next"]
+      restart_driver: true
+      loading_delay: 5
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .product-list>li.product h2>a
+      regex: elo7.com.br\/(.+)
+      load_more_results_module:
+        name: load_more_by_scrolling_module
+        css_selector: a.infinite-paginator
+        scroll_range: 3
+        scroll_pause_time: 5
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.elo7.com.br/{}
+    loading_delay: 3
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '#okCookies'
+    title_retriever_module:
+      name: get_attribute_url
+      css_selector: .product-info>h1
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.details
+    price_retriever_module:
+      css_selector: .product-info .price-quantity>.price
+      name: get_attribute_value
+      replace_old: R\$
+      replace_new: BRL
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '#store-info .name>a'
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: '#store-info .name>a'
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: ul.thumbnails>li.thumb>figure>a
+      picture_css_selector: .gallery>.picture>a>img
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 2
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 2
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '#okCookies'
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .details h1.name
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      clickable_css_selector: .details .about>a
+      css_selector: .details .about
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .social-profile >.photo>a>img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      loading_delay: 3
+      clickable_css_selectors:
+        - a[data-nym-trigger-event="show-policies"]
+        - '#social-profile .page-modal [data-nym-trigger-event="show-about"]'
+        - ''
+      key_css_selectors:
+        - '#social-profile .page-modal .policies'
+        - '#social-profile .page-modal .since'
+        - '#social-profile .page-modal .location'
+      value_css_selectors:
+        - '#social-profile .page-modal .policies+p'
+        - '#social-profile .page-modal .since'
+        - '#social-profile .page-modal .location'
+      key_attributes:
+        - textContent
+        - class
+        - class
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent

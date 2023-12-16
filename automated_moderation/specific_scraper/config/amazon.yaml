@@ -1,0 +1,71 @@
+framework:
+  name: api_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    mobile_driver: true
+    override_user_agent: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    api_request_params:
+      method_type: 'GET'
+    load_more_results_module:
+      name: load_more_by_adding_page
+      value: '&page={PAGE_NUMBER}'
+    listing_retriever_module:
+      name: get_json_obj
+      attribute_names:
+        - search_results
+    title_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - title
+    price_retriever_module:
+      name: get_json_value
+      attribute_names:
+          - price.currency
+          - price.value
+    pictures_retriever_module:
+      name: get_json_pictures
+      attribute_names:
+        - image
+      return_list: true
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    api_request_params:
+      method_type: 'GET'
+    title_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - product.title
+    description_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - product.description
+        - product.keywords
+    price_retriever_module:
+      name: get_json_value
+      attribute_names:
+          - product.buybox_winner.price.currency
+          - product.buybox_winner.price.value
+    # stock_retriever_module:
+    #   name: get_json_value
+    #   attribute_name: buybox_winner["maximum_order_quantity"]
+    vendor_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - product.sub_title.text
+    poster_link_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - product.sub_title.link
+    videos_retriever_module:
+      name: get_json_pictures
+      attribute_names:
+        - product.videos..link
+      return_list: true
+    pictures_retriever_module:
+      name: get_json_pictures
+      attribute_names:
+        - product.images..link
+      return_list: true

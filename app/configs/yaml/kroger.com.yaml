@@ -1,0 +1,72 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+    load_images: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 3
+    take_screenshots: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.kroger.com/search?query={}&searchType=default_search
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .AutoGrid .ProductCard  a.ProductDescription-truncated
+      regex: kroger.com\/p\/(.+)
+    listing_container_css_selector: .AutoGrid .ProductCard
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: a>[data-qa="cart-page-item-description"]
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: '[data-qa="cart-page-item-unit-price"]>mark'
+      replace_old: \$
+      replace_new: USD
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[data-qa="cart-page-item-image-loaded"]
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_click
+      css_selector: button[class*="load-more-button"]
+      force_javascript_click: true
+      loading_delay: 5
+      scroll_pause_time: 0
+      scroll_down_before_click: true
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: .kds-Modal-overlay button[aria-label="Close pop-up"]
+  post_information_retriever_module:
+    name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+    post_url_template: https://www.kroger.com/p/{}
+    take_screenshot: true
+    loading_delay: 4
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.ProductDetails-header
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .RomanceDescription
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .ProductDetails>div:first-of-type [data-qa="cart-page-item-unit-price"]>mark
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .ProductDetails>div:first-of-type span>button.WebBuyLinkButton
+      attribute_name: textContent
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .ProductImages .ProductImages-image
+      attribute_name: src
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: .kds-Modal-overlay button[aria-label="Close pop-up"]

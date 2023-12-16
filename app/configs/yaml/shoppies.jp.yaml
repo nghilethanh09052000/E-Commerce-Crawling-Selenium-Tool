@@ -1,0 +1,137 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 4
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://shoppies.jp/index_pc.php?jb=user-item_list&word={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#item-list a'
+      regex: shoppies\.jp/user-item/(.+)
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[href*="/user-item/"]
+      regex: shoppies\.jp/user-item/(.+)
+    listing_container_css_selector: '#item-list div.item'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.item-details>p:first-child
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.item-details>p.price
+      replace_old: \xe5\x86\x86
+      replace_new: JPY
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: a>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: li[class="next"] a
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://shoppies.jp/user-item/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[class="item-title"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .descWord
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .item-desc span[class="price"]
+      replace_old: \xc2\xa5
+      replace_new: JPY
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .shop-info p[class="name"]
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .shop-info a
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .item-settingList
+      key_css_selector_attribute_name: innerHTML
+      value_css_selector: .item-settingList
+      value_css_selector_attribute_name: innerHTML
+      key_regex: <span class="head">\xe5\x87\xba\xe5\x93\x81\xe5\x9c\xb0\xe5\x9f\x9f</span><span
+        class="info">([^<]+)</span>
+      value_regex: <span class="head">\xe5\x87\xba\xe5\x93\x81\xe5\x9c\xb0\xe5\x9f\x9f</span><span
+        class="info">([^<]+)</span>
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .bxslider img
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[class="shopName"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: click_then_get_attribute
+      button_css_selector: a[class="btn-toShopInfo"]
+      css_selector: .shopInfoText
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[src*="/profile/"]
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - p[class="nickName"]
+        - div[class="likeCntShop"]
+        - p[class="good"]
+        - p[class="normal"]
+        - p[class="bad"]
+        - p[class="deal_cnt"]
+      value_css_selectors:
+        - p[class="nickName"]
+        - div[class="likeCntShop"]
+        - p[class="good"] ~ p[class="evaluations_cnt"]
+        - p[class="normal"] ~ p[class="evaluations_cnt"]
+        - p[class="bad"] ~ p[class="evaluations_cnt"]
+        - p[class="deal_cnt"]
+      key_regex:
+        - nickName
+        - likeCntShop
+        - good
+        - normal
+        - bad
+        - ([^\d]+)
+      value_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - \d+
+      key_attributes:
+        - class
+        - class
+        - class
+        - class
+        - class
+        - textContent
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent

@@ -1,0 +1,89 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    take_screenshots: true
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.dba.dk/soeg/?soeg={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .search-result .dbaListing .listingLink
+      regex: dba.dk\/(.*)
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[class*="ListingList"] a[data-e2e="listing"]
+      regex: dba.dk\/(.*)
+      load_more_results_module:
+        name: click_on_next_page_module
+        css_selector: ul[class*="Pagination"] li:last-of-type
+        loading_delay: 1
+    listing_container_css_selector: .search-result .dbaListing
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: div.pagination > ul li:last-of-type
+    title_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["name"]}'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: span.price
+      attribute_name: textContent
+      replace_old: kr.
+      replace_new: DKK
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img.image-thumbnail
+      attribute_name: src
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.dba.dk/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '#content .vip-heading h1'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#content .vip-additional-text'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '#content .price-tag'
+      attribute_name: textContent
+      replace_old: kr.
+      replace_new: DKK
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '#business-card div[class*="contact__info"] a[class*="profile-link"]'
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: '#business-card div[class*="contact__info"] a[class*="profile-link"]'
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .vip-picture-gallery>a:not(.picture-browser-link)
+      attribute_name: style
+      regex: \(\"(.+)\"\)
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="profile-title"] h1
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="profile-description"]
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .card-profile div[class*="profile-avatar"]
+      attribute_name: style
+      regex: \(\"(.+)\"\)

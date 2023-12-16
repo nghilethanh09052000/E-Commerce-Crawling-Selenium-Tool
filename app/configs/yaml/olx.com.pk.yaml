@@ -1,0 +1,114 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: iproyal/us
+    - name: iproyal/lithuania
+    - name: horcon
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    load_images: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 20
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.olx.com.pk/items/q-{}
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: li > article > div > a
+      regex: (?<=\/item\/)(.*)
+      load_more_results_module:
+        name: load_more_by_click
+        css_selector: button[type="submit"]
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: li > article > div > a
+      regex: (?<=\/item\/)(.*)
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: a[href*="items"][href*="page"]
+    listing_container_css_selector: '[aria-label="Listing"]'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[aria-label="Title"]'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[aria-label="Price"]>span'
+      replace_old: Rs
+      replace_new: PKR
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[aria-label="Cover photo"]'
+      attribute_name: src
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.olx.com.pk/item/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: ._0f86855a
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: ._56dab877
+      replace_old: Rs
+      replace_new: PKR
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a[href*="/profile/"] div div:nth-of-type(2) span
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[href*="/profile/"]
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: '[aria-label="Overview"] [aria-label="Location"]'
+      value_css_selector: '[aria-label="Overview"] [aria-label="Location"]'
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .image-gallery-slide img
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: title
+      regex: '([^\|]+) '
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: span[class*="ded21b9c"]
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[aria-label="User photo"]'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - span[class="_34a7409b"]
+      value_css_selectors:
+        - span[class="_34a7409b"]
+      key_regex:
+        - Member since
+      value_regex:
+        - Member since (.+)
+      key_attributes:
+        - textContent
+      value_attributes:
+        - textContent
+  archiving_options:
+    click_on_elements:
+      - button#onetrust-accept-btn-handler
+    height: 2000
+    width: 1924

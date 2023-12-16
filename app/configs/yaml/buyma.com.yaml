@@ -1,0 +1,160 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 3
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.buyma.com/r/-O2/{}/
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#n_ResultList a[href*="/item/"]'
+      regex: www\.buyma\.com\/item\/(.+)
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#rank_item li p.item_name a,div.product_name a'
+      regex: www\.buyma\.com\/item\/(.+)
+      load_more_results_module:
+        name: go_to_next_page_module
+        css_selector: '#rank_item>a.more_check,div>div>a[rel="next"]'
+    listing_container_css_selector: '#n_ResultList>ul>li'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.product_name>a
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.product_price>span.Price_Txt
+      replace_old: \xc2\xa5
+      replace_new: JPY
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div.product_Buyer>a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div.product_Buyer>a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.product_img>a>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: a[rel="next"]
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: .js-announce-global__list-item-flag:has(img[src*="jpn.png"])
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.buyma.com/item/{}/
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: .js-announce-global__list-item-flag:has(img[src*="jpn.png"])
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '#item_h1 > span:nth-child(1)'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#item_h2+p'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '#abtest_display_pc'
+      replace_old: \xc2\xa5
+      replace_new: JPY
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .side_buyer_link
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .side_buyer_link
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace
+      css_selector: '[class="thumbimg item_sumb_img_default"]'
+      attribute_name: src
+      replace_old: 090.jpg
+      replace_new: org.jpg
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '#buyer_name a'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .profile_introduction
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute_with_replace
+      css_selector: .profimg_icon
+      attribute_name: style
+      replace_old: 'background-image: url('
+      replace_new: ''
+      replace_tail: )
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      loading_delay: 3
+      key_css_selectors:
+        - '#buyer_eva_total p'
+        - '#buyer_data .fan_text'
+        - '#buyer_data .syohin_text'
+        - .profile_txt dt:nth-child(1)
+        - .profile_txt dt:nth-child(3)
+        - .profile_txt dt:nth-child(5)
+        - .profile_txt dt:nth-child(7)
+        - .profile_txt dt:nth-child(9)
+        - .profile_txt dt:nth-child(11)
+        - .profile_txt dt:nth-child(13)
+        - .profile_txt dt:nth-child(15)
+      value_css_selectors:
+        - '#buyer_eva_total span :last-child'
+        - '#buyer_data .fan_cnt'
+        - '#buyer_data .syohin_cnt_text'
+        - .profile_txt dd:nth-child(2)
+        - .profile_txt dd:nth-child(4)
+        - .profile_txt dd:nth-child(6)
+        - .profile_txt dd:nth-child(8)
+        - .profile_txt dd:nth-child(10)
+        - .profile_txt dd:nth-child(12)
+        - .profile_txt dd:nth-child(14)
+        - .profile_txt dd:nth-child(16)
+      key_regex:
+        - (.+)
+        - フォロワー
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+      value_regex:
+        - (.+)
+        - (.+)
+        - (.+) 出品数
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+  archiving_options:
+    click_on_elements:
+      - .fab-cp-modal__close

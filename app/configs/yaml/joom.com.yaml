@@ -1,0 +1,127 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.joom.com/lv/search/s.age.asc/q.{}
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: div[class*="leftSection_"] div[class*="Item"]:nth-of-type(2)
+      - name: click_action_module
+        css_selector: div[class*="leftSection_"] div[class*="item_"] button
+        elem_text_contains: 'EUR'
+        after_pause_time: 2     
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[href*="/products/"]
+      regex: joom.com/[\w]+/products/(.+)
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[href*="/products/"]
+      regex: joom.com/[\w]+/products/(.+)
+    load_more_results_module:
+      name: load_more_by_click
+      css_selector: '[class*="loadingContent_"]'
+    listing_container_css_selector: div[class*="product_"]
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="name_"]
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="price_"]>span:not([class])
+      replace_old: \xe2\x82\xac
+      replace_new: EUR 
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div[class*="imageWrap_"] img
+      attribute_name: src
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.joom.com/en/products/{}
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: div[class*="leftSection_"] div[class*="Item"]:nth-of-type(2)
+        stop_css_selector: div[class*="leftSection_"] div[class*="Item"]:nth-of-type(2) button
+        stop_value: EUR
+      - name: click_action_module
+        css_selector: div[class*="leftSection_"] div[class*="item_"] button
+        elem_text_contains: 'EUR'
+        stop_css_selector: div[class*="leftSection_"] div[class*="Item"]:nth-of-type(2) button
+        stop_value: EUR
+        after_pause_time: 2
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="nameRow"] [class*="root_"]'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="description_"]'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="pricesRow"] [class*="price_"]>span:not([class])'
+      replace_old: \€
+      replace_new: 'EUR '
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="store_"] [class*="nameText"]'
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: '[class*="store_"] > a'
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[class*="gallery_"] ul[class*="items_"] li img'
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: https://www.joom.com/en/stores/{}/s.age.asc
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="storeSummary_"] [class*="name_"]'
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: meta[property="og:image"]
+      attribute_name: content
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - '[class*="storeSummary_"] [class*="location_"]'
+        - '[class*="storeSummary_"] [class*="stats_"] [class*="statItem"]:nth-of-type(1)'
+        - '[class*="storeSummary_"] [class*="stats_"] [class*="statItem"]:nth-of-type(2)'
+        - '[class*="storeSummary_"] [class*="stats_"] [class*="statItem"]:nth-of-type(3)'
+      value_css_selectors:
+        - '[class*="storeSummary_"] [class*="location_"]'
+        - '[class*="storeSummary_"] [class*="stats_"] [class*="statItem"]:nth-of-type(1)
+          [class*="statValue"]'
+        - '[class*="storeSummary_"] [class*="stats_"] [class*="statItem"]:nth-of-type(2)
+          [class*="statValue"]'
+        - '[class*="storeSummary_"] [class*="stats_"] [class*="statItem"]:nth-of-type(3)
+          [class*="statValue"]'
+      key_regex:
+        - location
+        - '[^>]+$'
+        - '[^>]+$'
+        - '[^>]+$'
+      value_regex:
+        - .+
+        - .+
+        - .+
+        - .+
+      key_attributes:
+        - class
+        - innerHTML
+        - innerHTML
+        - innerHTML
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent

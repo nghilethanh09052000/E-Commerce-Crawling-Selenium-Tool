@@ -1,0 +1,121 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+    xvfb: true
+    cloudflare_bypass: true
+  proxies:
+    - name: proxyrack
+      country: FR
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 8
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.carrefour.fr/s?q={}
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .product-grid>.product-grid-item:has(a) a[data-testid="product-card-title"]
+      regex: carrefour.fr\/p\/(.+)
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .product-grid>.product-grid-item:has(a) a[data-testid="product-card-title"]
+      regex: carrefour.fr\/p\/(.+)
+    listing_container_css_selector: .product-grid>.product-grid-item:has(a)
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: a[data-testid="product-card-title"]
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div[data-testid="product-price__amount--main"]
+      replace_old: \€
+      replace_new: EUR
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div.product-marketplace-seller>p>*:first-child
+      loading_timeout: 0.1
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div.product-marketplace-seller>p>a
+      attribute_name: href
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: a.product-card-image>img
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_click
+      css_selector: .pagination button[aria-label="Afficher les produits suivants"]
+      loading_delay: 6
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.carrefour.fr/p/{}
+    take_screenshot: true
+    loading_delay: 3
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .main-details .pdp-card__title
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="product-characteristics-description"]'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '.pdp__main [data-testid="product-price__amount--main"]'
+      replace_old: \€
+      replace_new: EUR
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .multi-offers-wrapper__content [data-testid="offerDetailsSeller"]>p>*:first-child
+      loading_timeout: 0.1
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .multi-offers-wrapper__content [data-testid="offerDetailsSeller"]>p>*:first-child
+      attribute_name: href
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: '#data-produit-image div.pdp-hero__image>img:not(.image--hidden)'
+      clickable_css_selector_2: .product-zoom--open button.ds-carousel-refonte__arrow--right
+      picture_css_selector: .product-zoom--open .product-zoom__img-container>img
+      attribute_name: src
+      regex: (.+media.+)
+      loading_delay: 1
+      close_button_css_selector: .product-zoom--open>.product-zoom__cross
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: https://www.carrefour.fr/v/{}
+    take_screenshot: true
+    loading_delay: 3
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="plp-banner-marketplace-name"]'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="plp-banner-marketplace-description"]'
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.plp-banner-marketplace__logo>img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      clickable_css_selector: .plp-banner-marketplace__wrap>a.plp-banner-marketplace__link
+      key_css_selector: 
+        .marketplace-seller-page__block:last-of-type>div>p.marketplace-seller-page__content
+      value_css_selector: 
+        .marketplace-seller-page__block:last-of-type>div>p.marketplace-seller-page__content
+      key_regex: '(.+)\:'
+      value_regex: \:(.+)
+      loading_delay: 2
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler

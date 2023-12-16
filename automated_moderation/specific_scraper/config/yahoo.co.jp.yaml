@@ -1,0 +1,138 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+    - name: iproyal/us
+    - name: iproyal/lithuania
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    max_posts_to_browse: 3000
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://shopping.yahoo.co.jp/search?p={}&view=grid
+    action_before_search_pages_browsing_module:
+    - name: click_action_module
+      css_selector: '#incmdl button[class*="closeButton"]'
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#searchResults [data-result-type="items"]>ul>li>div>div>a[href*="shopping.yahoo.co.jp"]'
+      regex: store.shopping.yahoo.co.jp\/(.+).html
+    listing_container_css_selector: '#searchResults [data-result-type="items"]>ul>li'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: '[class*="detailsContainer"]>a'
+    price_retriever_module:
+      name: get_multiple_text_content_and_concatenate
+      css_selectors:
+        - '[class*="SearchResultItemPrice__value_"]'
+        - '[class*="SearchResultItemPrice__unit_"]'
+      replace_old: \n\円
+      replace_new: JPY
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="storeRow"]>a'
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: '[class*="storeRow"]>a'
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: 'a[class*="SearchResultItemImageLink"] img:not([class*="LazyImage__skeleton"]'
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_scrolling_module
+      scroll_pause_time: 0.5
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .mdSearchResult li.elItem .elName>a
+      regex: store.shopping.yahoo.co.jp\/(.+).html
+      action_before_poster_post_identifiers_module:
+        - name: click_action_module
+          css_selector: '[class*="sideCategoryMenu"]>a[class*="allCategory"]'
+          after_pause_time: 4
+          before_pause_time: 1
+      listing_container_css_selector: .mdSearchResult li.elItem
+      title_retriever_module:
+        name: get_attribute_value
+        css_selector: .elName>a
+      price_retriever_module:
+        name: get_attribute_value
+        css_selector: .elPriceValue
+        replace_old: \円
+        replace_new: JPY
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: .elImage>a>img
+        attribute_name: src
+      load_more_results_module:
+        name: go_to_next_page_module
+        css_selector: '#pglist li.elNext>a'
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://store.shopping.yahoo.co.jp/{}.html
+    action_before_retrieving_post_information_module:
+    - name: click_action_module
+      css_selector: '#incmdl button[class*="closeButton"]'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .mdItemName>.elName
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .mdItemDescription
+      trim_text: true
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .elPriceArea
+      replace_old: \円
+      replace_new: JPY
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .mdStoreSummary .isName>a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .mdStoreSummary .isName>a
+      attribute_name: href
+    ships_to_retriever_module:
+      name: get_key_value_list
+      clickable_css_is_always_present: true
+      clickable_css_selector: .mdDeliveryInformation .elText>a
+      key_css_selector: .elShow .mdDeliveryDialog [data-id="delivery-modal-select"]>option
+      value_css_selector: .elShow .mdDeliveryDialog [data-id="delivery-modal-select"]>option
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector_1: .mdItemImage img.elPanelImage
+      clickable_css_selector: .mdImageGallery .elShow .elThumbnailCarouselStage>ul>li
+      picture_css_selector: '.elShow .mdImageGallery .elMain>ul>li>.uiImage>a[style="outline: none;"]+img'
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 2
+      escape_popup_on_end: true
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 2
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '#shpMain .mdStoreSignboard .elInfoMain>p>a'
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .mdPmallStoreSignBoard a>img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .mdInformationTable ul>li>div.elRowHeading
+      value_css_selector: .mdInformationTable ul>li>div.elRowContent
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '[class*="infoSub"]>a[class*="infoItem"]'

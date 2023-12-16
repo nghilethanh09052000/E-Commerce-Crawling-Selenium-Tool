@@ -1,0 +1,135 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 300
+    search_page_urls_builder_module:
+      name: search_page_urls_builder_from_multiple_url_templates_module
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .result-heading a
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .result-heading a
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: a.button.next
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: '{}'
+    loading_delay: 2
+    title_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[1]["name"]}'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#postingbody'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[1]["offers"]["price"]} {jsons[1]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: p.attrgroup:first-of-type
+      regex: manufacturer\:.\<b\>(.+)\<.b\>
+      attribute_name: outerHTML
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .otherpostings a
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - '#map'
+        - '#map'
+      value_css_selectors:
+        - '#map'
+        - '#map'
+      key_attributes:
+        - outerHTML
+        - outerHTML
+      value_attributes:
+        - data-latitude
+        - data-longitude
+      key_regex:
+        - latitude
+        - longitude
+      value_regex:
+        - (.+)
+        - (.+)
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace
+      css_selector: '#thumbs img'
+      attribute_name: src
+      loading_delay: 3
+      replace_old: 50x50c
+      replace_new: 1200x900
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: .b-cookie-hint__button
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    loading_delay: 1
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .b-seller-info__name
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute_with_replace
+      css_selector: .b-seller-info-header__avatar
+      attribute_name: style
+      replace_old: 'background-image: url("'
+      replace_new: ''
+      replace_tail: '");'
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - .b-seller-info__location
+        - .b-seller-info-rl>div:first-child>p:last-child
+        - .b-seller-info-rl>div:last-child>p:last-child
+        - '[class*="feedback-stats__value--positive"]'
+        - '[class*="feedback-stats__value--neutral"]'
+        - '[class*="feedback-stats__value--negative"]'
+      value_css_selectors:
+        - .b-seller-info__location
+        - .b-seller-info-rl>div:first-child>p:first-child
+        - .b-seller-info-rl>div:last-child>p:first-child
+        - '[class*="feedback-stats__value--positive"]'
+        - '[class*="feedback-stats__value--neutral"]'
+        - '[class*="feedback-stats__value--negative"]'
+      key_regex:
+        - location
+        - (.+)
+        - (.+)
+        - positive
+        - neutral
+        - negative
+      value_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+      key_attributes:
+        - class
+        - textContent
+        - textContent
+        - class
+        - class
+        - class
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent

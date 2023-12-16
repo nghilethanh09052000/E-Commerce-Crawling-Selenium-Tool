@@ -1,0 +1,68 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    take_screenshots: true
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.otto.nl/zoeken/?qc=&q={}
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: '#cookie-optin .accept > button'
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.product-box a.product-link
+      regex: otto.nl\/(.*)
+    listing_container_css_selector: div.product-box
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: div.pagination:first-of-type > div[class="next pull-right"] >
+        a
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: div.product-name
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div.product-box div.price-info > div > span.price-bold
+      attribute_name: textContent
+      replace_old: \€
+      replace_new: EUR
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .image-slide img
+      attribute_name: src
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.otto.nl/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="page-title"] h1 > span
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_key_value_list
+      key_css_selector: div[id="art-info"] .oocv-tables td.left > div > span
+      value_css_selector: div[id="art-info"] .oocv-tables td:not(.left)
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div.right-col div.price-block .innerPrice
+      attribute_name: textContent
+      trim_text: true
+      regex: \€.+
+      replace_old: \€
+      replace_new: 'EUR '
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: .gallery-thumb:not(.swiper-slide-duplicate) .thumbnail
+        img
+      picture_css_selector: '#js-swipe-container .swiper-slide-active>a source'
+      attribute_name: srcset
+      regex: (.+)
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '#cookie-optin .accept > button'

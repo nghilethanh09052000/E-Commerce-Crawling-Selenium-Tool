@@ -1,0 +1,149 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+    page_load_strategy: eager
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    loading_delay: 12
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.alibaba.com/trade/search?fsb=y&IndexArea=product_en&CatId=&SearchText={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[data-spm="normal_offer"] a[data-spm="d_title"]
+      regex: www\.alibaba\.com\/(.*)\.html$
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[class*="product-list"] .product-item a.title-link
+      regex: www\.alibaba\.com\/(.*)\.html$
+      load_more_results_module:
+        name: click_on_next_page_module
+        css_selector: button[class*="item next"]
+      listing_container_css_selector: div[class*="product-list"] .product-item
+      title_retriever_module:
+        name: get_attribute_value
+        css_selector: a.title-link
+      price_retriever_module:
+        name: get_attribute_value
+        css_selector: div.price>span.num
+        replace_old: US\$
+        replace_new: 'USD '
+      pictures_retriever_module:
+        name: get_pictures_from_attribute_with_replace_regex
+        css_selector: a.product-image img
+        attribute_name: src
+        replace_old_regex: .jpg.+
+        replace_new: .jpg
+        loading_delay: 0.1
+      action_before_poster_post_identifiers_module:
+        - name: click_action_module
+          after_pause_time: 2
+          css_selector:
+            - span[class="nav-title"][title="Products"]
+        - name: refresh_page
+          before_pause_time: 2
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: a[data-params*="floorName=next"]
+    listing_container_css_selector: div[data-spm="normal_offer"]
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: a[data-spm="d_title"]
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: a[data-spm="d_price"] div[class*="price-main"]
+      replace_old: US\$
+      replace_new: 'USD '
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[href*="company_profile.html"]
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: a[data-spm="d_image"]>img
+      attribute_name: src
+      replace_old_regex: .jpg.+
+      replace_new: .jpg
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        after_pause_time: 2
+        css_selector:
+          - .gdpr-close
+  post_information_retriever_module:
+    name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+    post_url_template: https://www.alibaba.com/{}.html
+    take_screenshot: true
+    loading_delay: 12
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '.product-title h1 , #module_title h1'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_multiple_text_content_and_concatenate
+      css_selectors:
+        - .do-entry-list
+        - '#module_product_specification table'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '.product-price .price , #module_price span span'
+      replace_old: \$
+      replace_new: 'USD '
+      has_multiple_items_in_same_selector: true
+    stock_retriever_module:
+      name: get_attribute_value
+      css_selector: .lead-list tr:first-of-type>td:last-of-type
+      attribute_name: textContent
+      regex: \d+
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .company-head>.company-item>a , a[data-aui="company-name"]
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .company-head>.company-item>a , a[data-aui="company-name"]
+      attribute_name: href
+    ships_to_retriever_module:
+      name: get_key_value_list
+      key_css_selector: div[data-role="select-country"] li[data-role="select-item"]
+      value_css_selector: div[data-role="select-country"] li[data-role="select-item"]
+    pictures_retriever_module:
+      name: get_pictures_from_popup
+      clickable_css_selector: .main-link
+      picture_css_selector: .slider-item img
+      attribute_name: src
+      regex: (.+)_[^_]+$
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: .gdpr-close
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: meta[property="og:title"]
+      attribute_name: content
+      replace_old: 'Company Overview - '
+      replace_new: ' '
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .company-card-desc
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: meta[property="og:image"]
+      attribute_name: content
+    payload_retriever_module:
+      name: get_key_value_list
+      loading_delay: 3
+      key_css_selector: .company-basicInfo .field-title
+      value_css_selector: .company-basicInfo .field-content-wrap
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: '[title="Profile"]'

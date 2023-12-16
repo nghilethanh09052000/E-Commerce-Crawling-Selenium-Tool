@@ -1,0 +1,20 @@
+include: shopee.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://shopee.co.id/search?keyword={}&sortBy=ctime
+    poster_post_identifiers_retriever_module:
+      regex: shopee.co.id\/(.*)$
+    post_identifiers_retriever_module:
+      regex: shopee.co.id\/(.*)$
+    price_retriever_module:
+      replace_old: Rp
+      replace_new: IDR
+  post_information_retriever_module:
+    post_url_template: https://shopee.co.id/{}
+    vendor_retriever_module:
+      regex: .+id/(.+)\?.+
+    price_retriever_module:
+      replace_old: Rp
+      replace_new: IDR

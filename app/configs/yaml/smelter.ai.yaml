@@ -1,0 +1,43 @@
+framework:
+  name: api_framework
+  driver_initialization_module:
+    name: classic_api_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://api.smelter.ai/v1/mentions/Navee/aa25a31a
+    api_request_params:
+      method_type: GET
+      api_headers: '{"Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ1c2VybmFtZSI6ImFsZXhleS5zYWxtaW4iLCJ2ZXJzaW9uIjoxLCJleHAiOjE3MTg2MjU2NjIsImlzcyI6InNtZWx0ZXIifQ.CQhVIyrSHWoqEpai2nmaD5iVPrD5xBfzePoAAcgF3sR0SEmRdWlGgozpt4R4jE11RuzPgGU2SDn_c5qN3taf3WTXWJU7zltxGyGdNUJljcuPtpZEEEMeZAwUPCaclNaXZdyl9A6mQG0SiuyO80KVVUzT8xsQmhHjd0UdZg-SFPL9Wot73MYh4I-C-_NbmtfFZg-6X3PAvGE-F7j5SEXLxhxJsXWtb5jdO6s0hMcLiqkSJ9cShEsEzBQzvjj4zxXuDGNCKVAFumQtz4yq4lb_5xUA9KTHsbMDNMsE35r-vV-DizVBXfiJOLUDbFQYe3uzTTd9GIRKPAgy8pUiwbSWPVFwdWwxpDTuJXhGp3W-07-oxQvdo7-B-GGkq-N80j-2M3Ky6IXEy9S_7EXNIfn7LTr58OzthUXCXjmBr3ZE5Mkj3EW2GaB4Yc_HWhCbkZx1HAmZ1jfBzj7SlAr8VHQG3t5lTBfkLd_Vw9x6b6caQhldGb10vx1vFO-cIib22LnesOiNISBWjIL1hbpB3lWlC1VEYWeOehaCeNk8C8W4EgdTJz9lDrrm4zbaYgG_SkQ8KhqmGveOVlq_Qe6lF6IR2Mxd0weBz_j5piMFyNKm89nJXYpgO8BMk45fX1mZDcrw572-2hPjju0eZVId2dmQ8z1a9fep3oUKU84g-8qarQA", "Cookie": "sessionid=wfoqmyhvs5folj2r2otqfkua4a7hegms; visitor_uuid=1152480679"}'
+    load_more_results_module:
+      name: load_more_by_field_url
+      value: next_page_url
+    listing_retriever_module:
+      name: get_json_obj
+      attribute_names:
+        - data.mentions
+    post_identifiers_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - url
+    title_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - title
+    vendor_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - author
+    poster_link_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - author_url
+    pictures_retriever_module:
+      name: get_json_pictures
+      is_json_obj: true
+      attribute_names:
+        - image_urls
+  post_information_retriever_module:
+    use_light_post_info_only: true

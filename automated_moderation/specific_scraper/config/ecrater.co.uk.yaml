@@ -1,0 +1,13 @@
+include: ecrater.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.ecrater.co.uk/filter.php?keywords={}
+    post_identifiers_retriever_module:
+      regex: ecrater.co.uk\/p\/(\d+)
+    poster_post_identifiers_retriever_module:
+      regex: ecrater.co.+\/p\/(\d+)
+    price_retriever_module:
+      replace_old: \£
+      replace_new: GBP

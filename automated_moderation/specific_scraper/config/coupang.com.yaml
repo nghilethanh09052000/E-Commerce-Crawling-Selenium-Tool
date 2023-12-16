@@ -1,0 +1,91 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: iproyal/us
+    - name: iproyal/lithuania
+    - name: horcon
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+    load_images: true
+    undetected_driver: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    max_posts_to_browse: 3000
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.coupang.com/np/search?q={}&page=1&sorter=latestAsc&listSize=72
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#productList a'
+      regex: coupang\.com/vp/products/(.+)
+    listing_container_css_selector: '#productList a'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .descriptions .name
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .descriptions .price .sale
+      replace_old: \xec\x9b\x90
+      replace_new: KRW
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .image>img
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: .btn-next
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.coupang.com/vp/products/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: meta[property="og:title"]
+      attribute_name: content
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#itemBrief'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: span[class="total-price"] strong
+      replace_old: \xec\x9b\x90
+      replace_new: KRW
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a[class="prod-sale-vendor-name"]
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[class="prod-sale-vendor-name"]
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector:
+        - '#repImageContainer img[src*="thumbnail"]'
+        - '#productDetail img[src*="image/vendor_inventory"]'
+      attribute_name: src
+      replace_old_regex: thumbnails/remote/\d+x\d+ex/
+      replace_new: ''
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .store-title
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute_with_replace
+      css_selector: .store-image
+      attribute_name: style
+      replace_old: 'background-image: url("//'
+      replace_new: ''
+      replace_tail: );

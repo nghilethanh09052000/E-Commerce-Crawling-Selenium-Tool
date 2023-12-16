@@ -1,0 +1,128 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+    xvfb: true
+    headless: false
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 2
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.eprice.it/sa/?qs={}
+    listing_container_css_selector: .ep_box_prodListing a.ep_prodListing
+    hover_over_listing_elements: true
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .row .item a
+      regex: eprice.it\/(.+)
+      load_more_results_module:
+        name: click_on_next_page_module
+        css_selector: .btnAvanti
+      listing_container_css_selector: .row .item
+      title_retriever_module:
+        name: get_attribute_value
+        css_selector: h2.itemName
+      price_retriever_module:
+        name: get_attribute_value
+        css_selector: .itemPrice
+        replace_old: €
+        replace_new: 'EUR '
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: .linkImg img
+        attribute_name: src
+      action_before_poster_post_identifiers_module:
+        - name: click_action_module
+          css_selector: button#onetrust-accept-btn-handler
+        - name: click_action_module
+          css_selector: .arrRight
+          after_pause_time: 2
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .ep_box_prodListing a.ep_prodListing
+      regex: eprice.it\/(.+)
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: p.ep_prodName
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: span.ep_itemPrice
+      replace_old: €
+      replace_new: 'EUR '
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .ep_prodImg img
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: '.ep_Paginator li:nth-last-of-type(2)'
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: '#onetrust-accept-btn-handler'
+
+
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.eprice.it/{}
+    take_screenshot: true
+    loading_delay: 3
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: h1[itemprop="name"]
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: content
+      css_selector: '[itemprop="price"]'
+      replace_old: (.+)
+      replace_new: \g<0> EUR
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .infoSeller a strong
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: 'p[itemprop="description"]'
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .infoSeller a:last-of-type
+      attribute_name: href
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector_1: 'a.MagicZoom'
+      clickable_css_selector: '#fancybox-wrap .rightSide span'
+      picture_css_selector: '#fancybox-wrap img.zoomImg'
+      attribute_name: src
+      escape_popup_on_end: true
+      regex: (.+)
+      loading_delay: 3
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler
+
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: https://www.eprice.it/schedavenditore/{}
+    take_screenshot: true
+    loading_delay: 4
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .seoDescription
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img.logoSeller
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .box_dati li span
+      value_css_selector: .box_dati li strong
+      loading_delay: 2
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler

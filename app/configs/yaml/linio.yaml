@@ -1,0 +1,77 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    undetected_driver: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 5
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .catalogue-product>a
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .catalogue-product>a:first-of-type
+    listing_container_css_selector: div.catalogue-product
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: content
+      css_selector: a>meta[itemprop="name"]
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .price-section .lowest-price>span
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: a>.image-container img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .pagination-container li:nth-last-child(2) a
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    take_screenshot: true
+    loading_delay: 3
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .product-title h1
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .description-content-section
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .product-price .price-main-md
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .seller-name-rating-section
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .seller-name-rating-section a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: .gallery-container li img
+      attribute_name: src
+      replace_old_regex: \-cart.*$
+      replace_new: -product.jpg
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 10
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .seller-page-title
+      attribute_name: textContent
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .rating-average-tag-container
+      value_css_selector: .rating-average-tag-container>span>span:first-child
+      key_regex: Calificación promedio

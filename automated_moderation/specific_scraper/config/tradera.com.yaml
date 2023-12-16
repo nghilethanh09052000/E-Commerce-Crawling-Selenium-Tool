@@ -1,0 +1,101 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    scroll_down_after_get_new_page: true
+    loading_delay: 2
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector:
+          - '#qc-cmp2-ui button[mode="primary"]'
+          - '[data-testid="dialog-modal"] [class*="header-with-close-button_header"]>button , [data-testid="dialog-modal"] div:first-child>button[class*="button--pUSnX"]'
+        after_pause_time: 4
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.tradera.com/search?q={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .search-results .item-card-inner-wrapper>a
+      regex: tradera.com\/item\/(.+)$
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .search-results-wrapper .item-card-inner-wrapper>a
+      regex: tradera.com\/item\/(.+)$
+    listing_container_css_selector: .search-results .item-card-inner-wrapper , .search-results-wrapper .item-card-inner-wrapper
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: title
+      css_selector: :scope>a
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="price"]'
+      attribute_name: textContent
+      replace_old: kr
+      replace_new: SEK
+      trim_text: true
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: a>picture>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .pagination>div>a.btn[rel="next"]
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.tradera.com/item/{}
+    take_screenshot: true
+    loading_delay: 1
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - '#qc-cmp2-ui button[mode="primary"]'
+          - '[data-testid="dialog-modal"] [class*="header-with-close-button_header"]>button'
+        after_pause_time: 4
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '#view-item-main'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.description
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["price"]} {jsons[0]["offers"]["priceCurrency"]}'
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a[class*="seller-details_seller-profile-link"] .seller-alias
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[class*="seller-details_seller-profile-link"]
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '#view-item-carousel .slick-track>.slick-slide:not(.slick-cloned) .image-gallery-item>img:last-of-type'
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: 'https://www.tradera.com/profile/{}'
+    loading_delay: 1
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - '#qc-cmp2-ui button[mode="primary"]'
+          - '[data-testid="dialog-modal"] [class*="header-with-close-button_header"]>button , [data-testid="dialog-modal"] div:first-child>button[class*="button--pUSnX"]'
+        after_pause_time: 2
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '#site-main h1'
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: 'div[class*="profile-image-"]>img'
+      attribute_name: src

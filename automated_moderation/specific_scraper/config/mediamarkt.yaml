@@ -1,0 +1,95 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    loading_delay: 2
+    take_screenshots: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: li[class*="Listing--list-item"] a[class*="Listing-coverLink"]
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '[data-test="mms-search-srp-productlist"] div[data-test="mms-product-card"] a[data-test*="mms-product-list-item-link"]'
+    listing_container_css_selector: '[data-test="mms-search-srp-productlist"] div[data-test="mms-product-card"]'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: p[data-test="product-title"]
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: '[data-test="product-price"]>div>div>div>span[font-size]'
+      replace_old: .+
+      replace_new: \g<0> EUR
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[data-test="product-image"]>img'
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_scrolling_one_scroll_at_a_time
+      css_selector: button[data-test="mms-search-srp-loadmore"]
+      scroll_range: 5
+      scroll_pause_time: 4
+      loading_delay: 4
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: 'button[data-test="pwa-consent-layer-accept-all"]'
+        after_pause_time: 2
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    loading_delay: 2
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-test="mms-select-details-header"]>h1'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-test="mms-accordion-description"]>[class*="ProductDescription"]'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-test="mms-branded-price"]>div>div[aria-hidden]'
+      replace_old: \€
+      replace_new: EUR
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-test="mms-pdp-offer-selection"] a[data-test="mms-router-link"]'
+      attribute_name: textContent
+      loading_timeout: 0.1
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: '[data-test="mms-pdp-offer-selection"] a[data-test="mms-router-link"]'
+      attribute_name: href
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_popup
+      clickable_css_selector: '[data-test="mms-scroll-snap-slider"] li[aria-hidden="false"]>[class*="ZoomImage__StyledZoomImage"]>picture'
+      picture_css_selector: '[data-testid="lightbox-image-stage"] .lightbox-image-pager img'
+      attribute_name: src
+      regex: (.+)
+      escape_popup_on_end: true
+      loading_delay: 3
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: 'button[data-test="pwa-consent-layer-accept-all"]'
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    loading_delay: 3
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '#main-content h1'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="ProfileTab-styled__ImprintHost"]'
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: 'button[data-test="pwa-consent-layer-accept-all"]'

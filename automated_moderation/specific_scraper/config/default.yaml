@@ -1,0 +1,9 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+    stealth_driver: false
+  archiving_options:
+    scroll_to_bottom: true

@@ -1,0 +1,8 @@
+[flake8]
+exclude =
+  app/models/proto/logpage_pb2.py
+  app/models/proto/webpage_pb2.py
+max-line-length = 120
+ignore = W605, W503, E203, E501, E266, E711, E741, E712, I900, E231
+per-file-ignores =
+    __init__.py:F401, F403, E402, I900

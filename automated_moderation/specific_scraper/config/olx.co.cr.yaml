@@ -1,0 +1,169 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    scroll_down_after_get_new_page: true
+    loading_delay: 4
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button[aria-label="Aceptar"]>p
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.encuentra24.com/costa-rica-es/searchresult/all?sort=f_added&dir=desc&q=keyword.{}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .ann-subcat-listing  a.ann-ad-tile__title
+      regex: (?<=costa-rica-es\/)(.*)
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .ann-subcat-listing  a.ann-ad-tile__title
+      regex: (?<=costa-rica-es\/)(.*)
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: a[rel="next"]
+    listing_container_css_selector: .ann-ad-tile
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: a.ann-ad-tile__title
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="short-description"]
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .ann-ad-tile__price
+      regex: '[^\d]+[\d\.,]+'
+      replace_old: \xe2\x82\xa1
+      replace_new: CRC
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .ann-ad-tile__user
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: img.ann-ad-tile__photo
+      attribute_name: src
+      replace_old_regex: _m/
+      replace_new: _l/
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.encuentra24.com/costa-rica-es/{}
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button[aria-label="Aceptar"]>p
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .product-title
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div > p:nth-child(3)
+      replace_old: \n
+      replace_new: ''
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div.offer-price
+      replace_old: \xe2\x82\xa1
+      replace_new: CRC
+      exclude_children: true
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '#contBox .user-name'
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[href*="/costa-rica-es/"][class*="btn-default"]
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: ol[class="breadcrumb"] li:nth-last-child(2)
+      value_css_selector: ol[class="breadcrumb"] li:nth-last-child(2)
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.gallery-background > div  a
+      attribute_name: href
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button[aria-label="Aceptar"]>p
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .ann-profile-box h2:nth-of-type(2), h1[class="media-heading"]
+        h4, h1[class="media-heading"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: p[class="abouttext"]
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[class="agent-avatar"], .media img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - .ann-profile-box
+        - .rating
+        - div[class*="phones"] li
+        - div[class*="phones"] li:nth-of-type(2)
+        - ul[class="list-with-icons"] li span[class*="location"]
+        - ul[class="list-with-icons"] li:nth-of-type(2) .openinghours
+        - div[class="block about"] p:nth-of-type(1) strong
+        - div[class="block about"] p:nth-of-type(2) strong
+      value_css_selectors:
+        - .ann-profile-box
+        - span[class="percent"]
+        - div[class*="phones"] li .phone
+        - div[class*="phones"] li:nth-of-type(2) .phone
+        - ul[class="list-with-icons"] li
+        - ul[class="list-with-icons"] li:nth-of-type(2) .openinghours
+        - div[class="block about"] p:nth-of-type(1)
+        - div[class="block about"] p:nth-of-type(2)
+      key_regex:
+        - '>([^>]+):<br>'
+        - ([^<]+)
+        - ([^>]+)<div
+        - ([^>]+)<div
+        - (location)
+        - (openinghours)
+        - (.+)
+        - (.+)
+      value_regex:
+        - <br>([^<]+)
+        - (.+)
+        - ([^<]+)
+        - ([^<]+)
+        - (.+)
+        - (.+)
+        - \:(.+)
+        - \:(.+)
+      key_attributes:
+        - innerHTML
+        - innerHTML
+        - innerHTML
+        - innerHTML
+        - class
+        - class
+        - textContent
+        - textContent
+      value_attributes:
+        - innerHTML
+        - textContent
+        - innerHTML
+        - innerHTML
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+  archiving_options:
+    click_on_elements:
+      - button#onetrust-accept-btn-handler
+    height: 2000
+    width: 1924

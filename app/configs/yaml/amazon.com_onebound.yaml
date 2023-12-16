@@ -1,0 +1,73 @@
+framework:
+  name: api_framework
+  driver_initialization_module:
+    name: classic_api_initialization_module
+  search_pages_browsing_module:
+  #   name: classic_page_browsing_module
+  #   search_page_urls_builder_module:
+  #     name: classic_search_page_urls_builder_module
+  #     search_page_url_templates:
+  #       - https://api.rainforestapi.com/request?api_key=1D706656932F48D78E3BA1D1F6E42532&type=search&amazon_domain=amazon.com&search_term={}&sort_by=price_low_to_high&page=0&max_page=4
+  #   post_identifiers_retriever_module:
+  #     name: get_json_list
+  #     data: .opbox-listing article div>h2>a[href*="/oferta/"]
+  #     regex: allegro.pl\/(.*)$
+  #   listing_retriever_module:
+  #     name: get_json_list
+  #     attribute_name: search_results
+  #   title_retriever_module:
+  #     name: get_json_value
+  #     attribute_name: title
+  #   price_retriever_module:
+  #     name: get_json_value
+  #     attribute_name:
+  #       - price["currency"]
+  #       - price["value"]
+  #   pictures_retriever_module:
+  #     name: get_json_value
+  #     css_selector: image
+  #   load_more_results_module:
+  #     name: go_to_next_page_module
+  #     css_selector: '[rel="next"]'
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://api-gw.onebound.cn/amazon/item_get/?key=t_33737592661&secret=20230428&num_iid={}
+    api_request_params:
+      method_type: 'GET'
+    title_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - item.title
+    description_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - item.desc
+    price_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - item.orginal_price
+      append_text: CNY
+    stock_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - item.skus.sku[0].quantity
+    vendor_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - item.seller_info.shop_name
+    poster_link_retriever_module:
+      name: get_json_value
+      attribute_names:
+        - item.seller_info.zhuy
+    videos_retriever_module:
+      name: get_json_pictures
+      attribute_names:
+        - item.video..url
+      return_list: true
+    pictures_retriever_module:
+      name: get_json_pictures
+      attribute_names:
+        - item.item_imgs..url
+      replace_old: '//img.'
+      replace_new: '//img.'
+      return_list: true

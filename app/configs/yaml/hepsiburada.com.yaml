@@ -1,0 +1,125 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 3
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.hepsiburada.com/ara?q={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[class*="ProductCard-"]
+      regex: hepsiburada.com\/(.+)
+      post_url_cleaning_module:
+        extract_url_from_string_parameter:
+          url_parameter: redirect
+          extract_if_match_regex: hepsiburada.com\/event\/api.+redirect
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[class*="ProductCard-"]
+      regex: hepsiburada.com\/(.+)
+      post_url_cleaning_module:
+        extract_url_from_string_parameter:
+          url_parameter: redirect
+          extract_if_match_regex: hepsiburada.com\/event\/api.+redirect
+      action_before_poster_post_identifiers_module:
+        - name: click_action_module
+          css_selector:
+            - '[class*=r-Tabular__Tabular] div:nth-last-of-type(2)'
+            - '[class*=r-Tabular__Tabular] div:nth-last-of-type(2)'
+      load_more_results_module:
+        name: load_more_by_scrolling_module
+        scroll_pause_time: 4
+        fixed_scroll_to: 200
+        css_selector: button[class*="paginatorStyle"]
+    listing_container_css_selector: li[class*="productListContent"]
+    hover_over_listing_elements: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h3[data-test-id="product-card-name"]
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-test-id="price-current-price"]'
+      has_multiple_items_in_same_selector: true
+      trim_text: true
+      replace_old: TL
+      replace_new: ' TRY'
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[data-test-id="product-image-image"] picture>img'
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_scrolling_one_scroll_at_a_time
+      scroll_pause_time: 4
+      loading_delay: 3
+      scroll_range: 1
+      css_selector: button[class*="paginatorStyle"]
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button[id="onetrust-accept-btn-handler"]
+  post_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    loading_delay: 3
+    post_url_template: https://www.hepsiburada.com/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '#product-name'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#productDescriptionContent'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '#originalPrice'
+      attribute_name: textContent
+      replace_old: TL
+      replace_new: ' TRY'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .seller-container .seller a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .seller-container .seller a
+      attribute_name: href
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: '#productThumbnailsCarousel .owl-stage div'
+      picture_css_selector: '#productDetailsCarousel div.active img'
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 1.5
+    action_before_retrieving_post_information_module:
+      - name: click_action_module_and_scroll
+        css_selector: button[id="onetrust-accept-btn-handler"]
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: https://www.hepsiburada.com/{}
+    take_screenshot: true
+    loading_delay: 2
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '#page_title'
+      attribute_name: textContent
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: span[class*="AboutSeller__Label"]
+      value_css_selector: span[class*="AboutSeller__Value"]
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[alt="group-circle"]
+      attribute_name: src
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - .ReactModalPortal svg
+          - button[id="onetrust-accept-btn-handler"]

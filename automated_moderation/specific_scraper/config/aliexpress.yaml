@@ -1,0 +1,189 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    headless: False
+    start_maximized: true
+    xvfb: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    max_posts_to_browse: 3000
+    loading_delay: 4
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+    action_before_search_pages_browsing_module:
+      - name: slider_bypass
+        draggable_css_selector: '#nc_1_n1z'
+        attempts_count: 30
+        slider_box_size: 300
+        slider_bar_size: 0
+        restart_button_css_selector: div[id="`nc_1_refresh1`"]
+        loading_delay: 2
+      - name: refresh_page
+        stop_css_selector: '#card-list'
+        before_pause_time: 2
+        after_pause_time: 2
+      - name: click_action_module
+        after_pause_time: 3
+        css_selector:
+          - button[data-role="gdpr-accept"]
+          - div[class*="law18--left"]
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#card-list a[href*="item"]'
+    listing_container_css_selector: '#card-list a[href*="item"]'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[class*="titleText"]
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="price-sale"]
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a[class*="storeLink"]
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[class*="storeLink"]
+      attribute_name: href
+    item_sold_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="tradeContainer"]>span:first-child
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: img[class*="product-img"]
+      attribute_name: src
+      replace_old_regex: .jpg.+
+      replace_new: .jpg
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: li.next-next
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[class*="pic-rind"][href*="item"]
+      listing_container_css_selector: .items-list>li
+      title_retriever_module:
+        name: get_attribute_value
+        css_selector: .detail>h3
+      price_retriever_module:
+        name: get_attribute_value
+        css_selector: .cost
+        replace_old: €
+        replace_new: EUR
+      item_sold_retriever_module:
+        name: get_attribute_value
+        css_selector: .recent-order
+      pictures_retriever_module:
+        name: get_pictures_from_attribute_with_replace_regex
+        css_selector: .pic img
+        attribute_name: src
+        replace_old_regex: .jpg.+
+        replace_new: .jpg
+      load_more_results_module:
+        name: click_on_next_page_module
+        css_selector: .ui-pagination-navi a:last-child , a.pc-store-nav-Products
+  post_information_retriever_module:
+    name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+    post_url_template: https://www.aliexpress.com/item/{}.html
+    loading_delay: 4
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-pl="product-title"]'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#product-description'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0][0]["offers"]["price"]} {jsons[0][0]["offers"]["priceCurrency"]}'
+    stock_retriever_module:
+      name: get_attribute_value
+      css_selector: .product-info .product-quantity-tip , [class*="quantity--info"]
+      attribute_name: textContent
+      regex: \d+
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-pl="store-header"] a[data-pl="store-name"]'
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: '[data-pl="store-header"] a[data-pl="store-name"]'
+      attribute_name: href
+    # ships_from_retriever_module:
+    #   name: get_key_value_list
+    #   key_css_selector: .dynamic-shipping div:nth-of-type(2)
+    #   value_css_selector: .dynamic-shipping div:nth-of-type(2)
+    #   clickable_css_selector:
+    #     - button[class*="shipping-moreOptions"]
+    #     - button[class="comet-modal-close"]
+    #   key_regex: From (.+) to
+    #   value_regex: From (.+) to
+    ships_to_retriever_module:
+      name: get_key_value_list
+      key_css_selector: '.country-item>.country-name'
+      value_css_selector: '.country-item>.country-name'
+      clickable_css_selector:
+        - '[data-pl="product-delivery"] [class*="delivery--to"]'
+        - .address-select
+        - button.comet-modal-close
+      loading_delay: 1
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: ul[class="images-view-list"] img
+      picture_css_selector: .image-viewer>div>img
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 1
+    action_before_retrieving_post_information_module:
+      - name: slider_bypass
+        draggable_css_selector: '#nc_1_n1z'
+        attempts_count: 30
+        slider_box_size: 300
+        slider_bar_size: 0
+        restart_button_css_selector: div[id="`nc_1_refresh1`"]
+        loading_delay: 2
+      - name: click_action_module
+        before_pause_time: 2
+        after_pause_time: 2
+        css_selector:
+          - button[data-role="gdpr-accept"]
+          - '#product-detail [ae_button_type="tab_specs"]'
+      - name: scroll_to_load_element
+        scroll_pause_time: 0.5
+        stop_css_selector: '#product-description'
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: slider_bypass
+        draggable_css_selector: '#nc_1_n1z'
+        attempts_count: 30
+        slider_box_size: 300
+        slider_bar_size: 0
+        restart_button_css_selector: div[id="`nc_1_refresh1`"]
+      - name: click_action_module
+        css_selector:
+          - button[data-role="gdpr-accept"]
+          - a.pc-store-nav-Feedback
+        after_pause_time: 2
+      - name: switch_to_iframe
+        css_selector: iframe#detail-displayer
+        loading_delay: 4
+    poster_name_retriever_module:
+      name: get_attribute_value
+      loading_delay: 1
+      css_selector: '#feedback-summary td a'
+      attribute_name: textContent
+    payload_retriever_module:
+      name: get_key_value_list
+      loading_delay: 3
+      key_css_selector: '#feedback-summary tr:nth-child(n+2) th , #feedback-dsr tr th'
+      value_css_selector: '#feedback-summary tr:nth-child(n+2) td , #feedback-dsr tr td>span>em'
+  archiving_options:
+    scroll_to_bottom: true

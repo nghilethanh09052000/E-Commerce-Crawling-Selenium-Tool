@@ -1,0 +1,92 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector:
+          - aside div div div button
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.wehkamp.nl/zoeken/?term={}&sortering=nieuwste-collectie
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: li[class*="ProductGrid_item"] a:has(img[class*="UI_Image_image"])
+      regex: wehkamp.nl/(.+)
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: li[class*="ProductGrid_item"] a:has(img[class*="UI_Image_image"])
+      regex: wehkamp.nl/(.+)
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: nav[data-qa-id="pagination"] li:last-of-type a
+    listing_container_css_selector: li[class*="ProductGrid_item"]
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: a[class*="text-primary"] h3:nth-of-type(2)
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: span.type-price
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a[class*="text-primary"] h3:nth-of-type(1)
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img.UI_Image_image
+      attribute_name: src
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.wehkamp.nl/{}
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - aside div div div button
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="ProductTitle"]'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="ProductDescription"]'
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[1]["offers"]["price"]} {jsons[1]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="ProductTitle"] a[href*="/shop/"]'
+    poster_link_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="ProductTitle"] a[href*="/shop/"]'
+      attribute_name: href
+      regex: wehkamp.nl/shop/(.+)
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[class*="fsi-grid-images"] button img[class*="UI_Image_image"]'
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: https://www.wehkamp.nl/shop/{}
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - aside div div div button
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="blaze-column"] h1'
+      replace_old: artikelen.*
+      replace_new: ''
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="blaze-column"] span.area'
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[data-qa-id="topTeaser"] img.UI_Image_image'
+      attribute_name: src

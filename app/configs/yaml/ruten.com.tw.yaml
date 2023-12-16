@@ -1,0 +1,116 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 4
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: search_page_urls_builder_from_multiple_url_templates_module
+      search_page_url_templates:
+        - https://www.ruten.com.tw/find/?q={}&sort=new%2Fdc&user=tw
+        - https://www.ruten.com.tw/find/?q={}&sort=new%2Fdc&user=cn
+    post_identifiers_retriever_module:
+      post_url_cleaning_module:
+        skip_query_string_cleaning: true
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[href*="/item/"]
+      regex: ruten\.com\.tw\/item\/([^#]*)$
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      post_url_cleaning_module:
+        skip_query_string_cleaning: true
+      css_selector: a[href*="/item/"]
+      regex: ruten\.com\.tw\/item\/([^#]*)$
+      load_more_results_module:
+        name: click_on_next_page_module
+        css_selector: li.next
+    listing_container_css_selector: div.product-item
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: p[class*="product-card-name"]
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div[class*="product-card-price-wrap"]
+      replace_old: (.+)
+      replace_new: TWD \g<1>
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[class*="product-card-img"]
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: '#mainPagination button:last-child'
+      loading_delay: 3
+  post_url_cleaning_module:
+    skip_query_string_cleaning: true
+  post_information_retriever_module:
+    name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+    post_url_template: https://www.ruten.com.tw/item/{}
+    loading_delay: 1
+    take_screenshot: true
+    driver_initialization_module:
+      name: classic_selenium_initialization_module
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .item-title
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: meta[property="og:description"]
+      attribute_name: content
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .item-purchase-stack>strong
+      replace_old: \$
+      replace_new: TWD
+      attribute_name: textContent
+    stock_retriever_module:
+      name: get_attribute_value
+      css_selector: div.item-qty>div>span
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      loading_delay: 4
+      css_selector: '[data-ts-log-type="uid"]'
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: '[data-ts-log-type="uid"]'
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: li[class="location"]
+      key_regex: \xef\xbc\x9a\xc2\xa0(.+)
+      value_css_selector: li[class="location"]
+      value_regex: \xef\xbc\x9a\xc2\xa0(.+)
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace
+      css_selector: .item-gallery-thumbnail li img
+      attribute_name: src
+      replace_old: _s
+      replace_new: ''
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .rt-store-name
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .img-cover
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .sidebar-main li:nth-child(4)>a:first-child
+      value_css_selector: .sidebar-main li:nth-child(4)>a:last-child>span:first-child
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .rt-store-intro
+      attribute_name: textContent

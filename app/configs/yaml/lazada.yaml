@@ -1,0 +1,124 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+    undetected_driver: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    loading_delay: 5
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[data-qa-locator="product-item"]>div>div>div:last-child>div>a
+    listing_container_css_selector: div[data-qa-locator="product-item"]
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: title
+      css_selector: div>div>div:nth-of-type(2)>div>a
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: div>div>div:nth-of-type(2)>div._6uN7R>span:last-child
+      attribute_name: textContent
+    item_sold_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div>div>div:nth-of-type(2)>div._6uN7R>span._1cEkb>span:first-child
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: span.ooOxS
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div>div:nth-of-type(1)>div>a img
+      regex: (.+\..+)\_\d+x\d+
+      attribute_name: src
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[href*="/products/"]
+      load_more_results_module:
+        name: click_on_next_page_module
+        css_selector: a[href*="q=All-Products"] div , ul[class="ant-pagination"] li.ant-pagination-next
+          button
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: ul[class="ant-pagination"] li.ant-pagination-item-active+li>a
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: .baxia-dialog-close
+        after_pause_time: 3
+      - name: refresh_page
+        stop_css_selector: div[data-qa-locator="product-item"]>div>div>div:last-child>div>a
+        after_pause_time: 4
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    loading_delay: 5
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '#module_product_title_1'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#module_product_detail'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '#module_product_price_1 span'
+      attribute_name: textContent
+    stock_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="quantity-content-"]'
+      attribute_name: textContent
+      regex: (\d+)
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-spm="seller"] a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div[data-spm="seller"] a
+      attribute_name: href
+      regex: (.+)/\?
+    ships_to_retriever_module:
+      name: get_key_value_list
+      loading_delay: 4
+      clickable_css_selector: a[class*="location-link-change"]
+      key_css_selector: ul[class="location-list"] li
+      value_css_selector: ul[class="location-list"] li
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: div[lazada_pdp_gallery_tpp_track="gallery"] img
+      attribute_name: src
+      replace_old_regex: (.+/[^\.]+\.[^\._]+).*
+      replace_new: \1
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: .baxia-dialog-close
+        after_pause_time: 3
+      - name: refresh_page
+        stop_css_selector: '#module_product_price_1 span'
+        after_pause_time: 5
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 18
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: meta[property="og:title"]
+      attribute_name: content
+      regex: '([^|]+) '
+    picture_retriever_module:
+      name: get_pictures_from_attribute_with_replace
+      css_selector: img[alt="storeLogo"]
+      attribute_name: src
+      replace_old: _.webp
+      replace_new: ''
+    payload_retriever_module:
+      name: get_key_value_list
+      loading_delay: 5
+      clickable_css_selector: a[href*="path=profile.htm"] div
+      key_css_selector: div[style*="239, 240, 245"] div[style*="66, 66, 66"]
+      value_css_selector: div[style*="239, 240, 245"] div[style*="32, 32, 32"]

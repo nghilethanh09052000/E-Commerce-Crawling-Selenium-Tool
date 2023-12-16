@@ -1,0 +1,15 @@
+include: craigslist.yaml
+framework: 
+    search_pages_browsing_module:
+        search_page_urls_builder_module:
+            search_page_url_templates:
+                - 'https://cairo.craigslist.org/search/sss?query={}'
+                - 'https://addisababa.craigslist.org/search/sss?query={}'
+                - 'https://accra.craigslist.org/search/sss?query={}'
+                - 'https://kenya.craigslist.org/search/sss?query={}'
+                - 'https://casablanca.craigslist.org/search/sss?query={}'
+                - 'https://capetown.craigslist.org/search/sss?query={}'
+                - 'https://durban.craigslist.org/search/sss?query={}'
+                - 'https://johannesburg.craigslist.org/search/sss?query={}'
+                - 'https://pretoria.craigslist.org/search/sss?query={}'
+                - 'https://tunis.craigslist.org/search/sss?query={}'

@@ -1,0 +1,18 @@
+include: falabella.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://linio.falabella.com.pe/linio-pe/search?Ntt={}
+    poster_post_identifiers_retriever_module:
+      regex: falabella.com.pe/(.+)$
+    post_identifiers_retriever_module:
+      regex: falabella.com.pe/(.+)$
+    price_retriever_module:
+      replace_old: S/
+      replace_new: PEN
+  post_information_retriever_module:
+    post_url_template: https://www.falabella.com.pe/{}
+    price_retriever_module:
+      replace_old: S/
+      replace_new: PEN

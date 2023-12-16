@@ -1,0 +1,90 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .product-list-wrapper>a[id*="productItemLink"]
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .product-list-wrapper>a[id*="productItemLink"]
+      regex: (?<=cdon.se\/)(.+)$
+    listing_container_css_selector: .product-list-wrapper>a[id*="productItemLink"]
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .p-c__title
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: span.p-c__current-price
+      attribute_name: textContent
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .p-c__image-wrapper>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: '#module-pagination>li>a.pagination__page-link-next'
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    take_screenshot: true
+    loading_delay: 3
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '#product-area>.product-title'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div#productInformationText
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '#product-area #product-price'
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: '#merchant a#merchant-link'
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: '#merchant a#merchant-link'
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_popup
+      clickable_css_selector: .image-slider>#images-container>div:first-child
+      picture_css_selector: '.images-modal #image-carousel>ul>li>img'
+      regex: (.+)
+      loading_delay: 3
+      attribute_name: src
+      escape_popup_on_end: true
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 1
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.merchant-info__merchant-name
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .merchant-info__about-text
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .merchant-info-contact-wrapper>h3
+      value_css_selector: .merchant-info-contact-wrapper
+      value_regex: Kontaktuppgifter(.+)

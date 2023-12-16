@@ -1,0 +1,92 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    scroll_down_after_get_new_page: true
+    loading_delay: 2
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://sidelineswap.com/search?q={}&src=results
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[role="grid"] div.thumbnail a.thumbnail-link
+      regex: sidelineswap.com\/gear\/(.*)
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[role="grid"] div.thumbnail a.thumbnail-link
+      regex: sidelineswap.com\/gear\/(.*)
+    listing_container_css_selector: div[role="grid"] div.thumbnail
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: a[rel="next"] button
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: a.thumbnail-link
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: span.font-semibold
+      replace_old: \$
+      replace_new: 'USD '
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .thumbnail-image div a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .thumbnail-image div a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .thumbnail-image img
+      attribute_name: src
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://sidelineswap.com/gear/{}
+    title_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["name"]}'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: p.dTsdPb
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["price"]} {jsons[0]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["seller"]["name"]}'
+    poster_link_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["seller"]["url"]}'
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: '#item-details .self-start > .flex-wrap > button > img'
+      picture_css_selector: div.react-swipeable-view-container div[aria-hidden="false"] > div > img
+      regex: (.+)
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.font-semibold
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: main.container > section div > img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: main.container .flex-1 > div.grid > div.items-center > div:last-child
+      value_css_selector: main.container .flex-1 > div.grid > div.items-center > div:last-child
+      key_regex: '(.+):'
+      value_regex: ':(.+)'

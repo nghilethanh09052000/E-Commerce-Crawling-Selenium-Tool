@@ -1,0 +1,114 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    scroll_down_after_get_new_page: true
+    loading_delay: 2
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.2dehands.be/q/{}/#sortBy:SORT_INDEX|sortOrder:DECREASING
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: 'ul[class*="list-view"] li a'
+      regex: 2dehands.be\/v\/(.+)
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: 'ul[class*="list-view"] li a'
+      regex: 2dehands.be\/v\/(.+)
+    listing_container_css_selector: li[class*="Listing--list-item"]
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: a h3[class*="Listing-title"]
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: a span[class*="text-price-label"]
+      replace_old: \€
+      replace_new: EUR
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div span[class*="Listing-seller-name"]>a>span
+      attribute_name: textContent
+    location_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="Listing-distance"]'
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: a>figure img
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: nav > a:nth-child(4)
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button[data-sem*="accept-button"]
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.2dehands.be/v/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[class="Listing-title"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-collapse-target="description"]
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .Listing-price
+      replace_old: \xe2\x82\xac
+      replace_new: EUR
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: span[class="SellerInfo-name"]
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: span[class="SellerInfo-name"] a
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: '#seller-sidebar-root div i[class*="IconLocation"] ~ span,
+        #seller-sidebar-root div i[class*="IconLocation"] ~ button'
+      value_css_selector: '#seller-sidebar-root div i[class*="IconLocation"] ~ span,
+        #seller-sidebar-root div i[class*="IconLocation"] ~ button'
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: '#listing-root div div div div div, img[class="HeroImage-image"]'
+      clickable_css_selector_2: .Carousel-navigationContainer:last-child
+      picture_css_selector: img[class*="dialogImage"]
+      attribute_name: src
+      regex: (.+)
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button[data-sem*="accept-button"]
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="TitleWrap-Name"]'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="TitleWrap-Slogan"]'
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[class*="TopSection-image"] img'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: '[class*="SellerHeaderInfo"]'
+      value_css_selector: '[class*="SellerHeaderInfo"]'
+      key_regex: ' actief op 2dehands'
+      value_regex: (.+) actief

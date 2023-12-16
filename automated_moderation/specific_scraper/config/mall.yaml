@@ -1,0 +1,114 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    # headless: false
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    max_posts_to_browse: 3000
+    loading_delay: 2
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .category-products>div.pbcr .pb-brief>a
+      load_more_results_module:
+        name: load_more_by_scrolling_module
+        scroll_range: 3
+        scroll_pause_time: 0.5
+        loading_delay: 2
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .category-products>div.pbcr .pb-brief>a
+    listing_container_css_selector: .category-products>div.pbcr
+    hover_over_listing_elements: true
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .pb-brief>a>span
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-sel="product-box-price"]>span'
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: span.marketplace-partner__wrapper>*
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: span.marketplace-partner__wrapper>a
+      attribute_name: href
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: li.hooper-slide:not(.is-clone) img
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: div.pagination>a.pagination__item--next
+      loading_delay: 2
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector:
+          - span.exponea-close
+          - .legal-consent button.rounded-button--tertiary
+        loading_timeout: 5
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    loading_delay: 3
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .detail__main-data .detail__title
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .detail__main-data>.product-short-description
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .detail__main-data .the-price-section .price__wrap__box__final>span
+      attribute_name: textContent
+      exclude_children: true
+    stock_retriever_module:
+      name: get_attribute_value
+      css_selector: 'div.detail-box-prices-info__last-pieces'
+      regex: (\d+)
+      loading_timeout: 0.1
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .marketplace-partner__wrapper>*
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .marketplace-partner__wrapper>a
+      attribute_name: href
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: .product-gallery__wrapper .hooper-track>li.is-active
+      clickable_css_selector_2: .gallery-modal__wrapper button.gallery-slider__button--next
+      picture_css_selector: .gallery-modal__wrapper .hooper-track>li.is-active img[data-sel="modal-gallery-image"]
+      regex: (.+)
+      attribute_name: src
+      escape_popup_on_end: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        after_pause_time: 2
+        css_selector:
+        - span.exponea-close
+        - .legal-consent button.rounded-button--tertiary
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 2
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .shopInShop-index span[data-sel="page-title"]
+      attribute_name: textContent
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - span.exponea-close
+          - .legal-consent button.rounded-button--tertiary

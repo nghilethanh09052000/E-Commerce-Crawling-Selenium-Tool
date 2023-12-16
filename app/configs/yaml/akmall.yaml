@@ -1,0 +1,11 @@
+framework:
+  name: selenium_framework
+  proxies:
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+    undetected_driver: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 8
+    scroll_down_after_get_new_page: true

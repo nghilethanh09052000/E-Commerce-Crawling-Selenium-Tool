@@ -1,0 +1,67 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    max_posts_to_browse: 3000
+    loading_delay: 1
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://mercari.bg/catalogsearch/result/?q={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .product-items>.product-item>div>a.product
+      regex: mercari.bg\/(.+)
+    listing_container_css_selector: .product-items>.product-item
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .product-item-name
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: '[data-price-type="finalPrice"]>span'
+      replace_old: \л\в.
+      replace_new: BGN
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img.product-image-photo
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_click
+      css_selector: .results button.amscroll-load-button>span
+      loading_delay: 3
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: .v-button.v-accept
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://mercari.bg/{}
+    take_screenshot: true
+    loading_delay: 1
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .page-title>span
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: 'div#description .description'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .product-info-main [data-price-type="finalPrice"]>span
+      replace_old: \л\в.
+      replace_new: BGN
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: .fotorama__stage .fotorama__active
+      clickable_css_selector_2: .fotorama__stage .fotorama__arr--next
+      picture_css_selector: '.fotorama__stage__shaft>.fotorama__stage__frame.fotorama__active>img.fotorama__img--full'
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 1
+      escape_popup_on_end: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: .v-button.v-accept

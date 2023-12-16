@@ -1,0 +1,130 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: proxyrack
+    - name: iproyal/us
+    - name: iproyal/lithuania
+    - name: 123proxy
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    loading_delay: 3
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.darty.com/nav/recherche/{}.html
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#product_display_container li.rr_item a.rr_item_name'
+      regex: darty.com\/nav\/codic\/(.+)
+      action_before_poster_post_identifiers_module:
+        - name: click_action_module
+          css_selector:
+            - button#onetrust-accept-btn-handler
+            - div#onglet-vente
+          after_pause_time: 3
+      listing_container_css_selector: '#product_display_container li.rr_item'
+      title_retriever_module:
+        name: get_attribute_value
+        css_selector: 'a.rr_item_name'
+        attribute_name: textContent
+      price_retriever_module:
+        name: get_attribute_value
+        css_selector: 'div[data-automation-id="product_price"]'
+        replace_old: '\€'
+        replace_new: 'EUR'
+        exclude_children: true
+      vendor_retriever_module:
+        name: get_attribute_value
+        css_selector: .mkp-seller-name
+        attribute_name: textContent
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: .darty_product_img>a>img
+        attribute_name: src
+      load_more_results_module:
+        name: click_on_next_page_module
+        css_selector: .pagination>a:last-child
+        loading_delay: 4
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.main_products_list div.product_detail a[data-automation-id="product_title"]
+      regex: darty.com\/nav\/achat\/ref\/(.+).html
+    listing_container_css_selector: 'div.main_products_list div.product_detail'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: 'a[data-automation-id="product_title"]'
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .product-price>div[class="product-price__price price_ir"]
+      replace_old: '\€'
+      replace_new: 'EUR'
+      exclude_children: true
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .mkp-seller-name
+      attribute_name: textContent
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .picture_container a>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .main_pagination_top>div>a:last-child
+      restart_driver: true
+  post_information_retriever_module:
+    name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+    post_url_template: https://www.darty.com/nav/achat/ref/{}.html
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-automation-id="product_title"]>h1'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: 'div#product_description>.product_bloc_content'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .buybox-container .offer-price>[data-automation-id="product_price"]
+      replace_old: \€
+      replace_new: EUR
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .buybox-container .offer-seller>a>.mkp-seller-name
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .buybox-container .offer-seller>a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_2: '[data-automation-id="product_thumbnails"]>li.selected+li'
+      picture_css_selector: '.darty_product_picture_main_pic_container [data-automation-id="product_main_picture"]:not([style*="none"]) img'
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 2
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: https://www.darty.com/nav/extra/vendeur/{}
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .mkp_fiche_seller_title strong
+      attribute_name: textContent
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: '.mkp_table_seller tr>td:first-child , .mkp_seller_detail_infos>p:has(*) '
+      value_css_selector: '.mkp_table_seller tr>td:last-child , .mkp_seller_detail_infos>p>*'
+      key_regex: '(.+)\:'

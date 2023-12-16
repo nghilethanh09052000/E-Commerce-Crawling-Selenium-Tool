@@ -1,0 +1,184 @@
+framework:
+  name: selenium_framework
+  proxies:
+    - name: iproyal/us
+    - name: iproyal/lithuania
+    - name: 123proxy
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    load_images: true
+    start_maximized: true
+    cloudflare_bypass: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector:
+          - button[class="cookie-consent-compliance"]
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://olx.ba/pretraga?attr=&q={}&sort_by=date&sort_order=desc
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[href*="/artikal/"]
+      regex: olx.ba/artikal/(.+)
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[href*="/artikal/"]
+      regex: olx.ba/artikal/(.+)
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: div:not([class*="up:hidden"])>div.olx-pagination-wrapper>ul>li.active+li
+    listing_container_css_selector: a[href*="/artikal/"]
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .price-wrap>div>span
+      replace_old: KM
+      replace_new: BAM
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .hover-image img
+      attribute_name: src
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://olx.ba/artikal/{}
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button[class="cookie-consent-compliance"]
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[class*="main-title"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .mobile-description
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: span.price-heading
+      replace_old: KM
+      replace_new: BAM
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a.user-info__title
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a.user-info__title
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: div>label.btn-pill:nth-of-type(1):has(svg)
+      value_css_selector: div>label.btn-pill:nth-of-type(1):has(svg)
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_2: div.gallery-top>div[aria-label="Next slide"]
+      picture_css_selector: div.gallery-top div.swiper-slide-active>img
+      regex: (.+)
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .profile-sticky h1, [class*="username"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      clickable_css_selector: a[href*="/onama"]
+      css_selector: .pt-lg
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[src*="/avatars/"], img[src*="/avatari/"]
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      clickable_css_selectors:
+        - a[href*="/dojmovi"]
+      key_css_selectors:
+        - .feedbacks img[src*="svg/good"]
+        - .feedbacks img[src*="svg/neutral"]
+        - .feedbacks img[src*="svg/bad"]
+        - .medals-wrap div div:nth-of-type(1) img
+        - .medals-wrap div div:nth-of-type(2) img
+        - .medals-wrap div div:nth-of-type(3) img
+        - .medals-wrap div div:nth-of-type(4) img
+        - .medals-wrap div div:nth-of-type(5) img
+        - .medals-wrap div div:nth-of-type(6) img
+        - .medals-wrap div div:nth-of-type(7) img
+        - .medals-wrap div div:nth-of-type(8) img
+        - img[src*="location"]
+      value_css_selectors:
+        - .feedbacks img[src*="svg/good"] + b
+        - .feedbacks img[src*="svg/neutral"] + b
+        - .feedbacks img[src*="svg/bad"] + b
+        - .medals-wrap div div:nth-of-type(1) img + span
+        - .medals-wrap div div:nth-of-type(2) img + span
+        - .medals-wrap div div:nth-of-type(3) img + span
+        - .medals-wrap div div:nth-of-type(4) img + span
+        - .medals-wrap div div:nth-of-type(5) img + span
+        - .medals-wrap div div:nth-of-type(6) img + span
+        - .medals-wrap div div:nth-of-type(7) img + span
+        - .medals-wrap div div:nth-of-type(8) img + span
+        - img[src*="location"] ~ span
+      key_regex:
+        - good
+        - neutral
+        - bad
+        - medals/(.+)\.
+        - medals/(.+)\.
+        - medals/(.+)\.
+        - medals/(.+)\.
+        - medals/(.+)\.
+        - medals/(.+)\.
+        - medals/(.+)\.
+        - medals/(.+)\.
+        - location
+      value_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+      key_attributes:
+        - src
+        - src
+        - src
+        - src
+        - src
+        - src
+        - src
+        - src
+        - src
+        - src
+        - src
+        - src
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent

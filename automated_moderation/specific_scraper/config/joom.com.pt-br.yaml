@@ -1,0 +1,22 @@
+include: joom.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.joom.com/pt-br/search/s.age.asc/q.{}
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: div[class*="leftSection_"] div[class*="Item"]:nth-of-type(2)
+      - name: click_action_module
+        css_selector: div[class*="leftSection_"] div[class*="item_"] button
+        elem_text_contains: 'BRL'
+        after_pause_time: 2
+    poster_post_identifiers_retriever_module:
+      regex: joom.com/pt-br/products/(.+)
+    post_identifiers_retriever_module:
+      regex: joom.com/pt-br/products/(.+)
+    price_retriever_module:
+      replace_old: R\$
+      replace_new: BRL
+      regex: ([\S]+[\d\,\.]+)$

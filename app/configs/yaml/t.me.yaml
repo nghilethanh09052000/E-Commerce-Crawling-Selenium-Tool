@@ -1,0 +1,88 @@
+# Telegram.com
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    loading_delay: 4
+    listing_container_css_selector: div.tgme_widget_message_wrap
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: a.tgme_widget_message_date
+      attribute_name: href
+      regex: t.me\/(.+)
+      replace_old: \/
+      replace_new: '- '
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.tgme_widget_message_wrap a.tgme_widget_message_photo_wrap
+      attribute_name: style
+      regex: url\(\"(http.+)\"\)
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.tgme_widget_message_wrap a.tgme_widget_message_date
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div.tgme_widget_message_wrap a.tgme_widget_message_date
+    load_more_results_module:
+      name: load_more_by_scrolling_module
+      scroll_up: True
+      scroll_range: 8
+      scroll_pause_time: 2
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    take_screenshot: true
+    post_url_template: '{}'
+    loading_delay: 2
+    action_before_retrieving_post_information_module:
+      - name: close_xdg_open_prompt
+        after_pause_time: 2
+      - name: switch_to_iframe
+        css_selector: '#widget iframe'
+        loading_delay: 2
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: a.tgme_widget_message_date
+      attribute_name: href
+      regex: t.me\/(.+)
+      replace_old: \/
+      replace_new: '- '
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.tgme_widget_message_text
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div.tgme_widget_message_author>a>span
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div.tgme_widget_message_author>a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .tgme_widget_message a.tgme_widget_message_photo_wrap
+      attribute_name: style
+      regex: url\(\"(http.+)\"\)
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    loading_delay: 2
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: div.tgme_channel_info_header_title
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.tgme_channel_info_description
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.tgme_channel_info .tgme_page_photo_image>img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: div.tgme_channel_info_counter>.counter_type
+      value_css_selector: div.tgme_channel_info_counter>.counter_value

@@ -1,0 +1,181 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+    override_user_agent: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.yaga.co.za/search/{}?order=Uuemad+enne
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[href*="/product/"]
+      regex: yaga.co.za/(.+/product/.+)
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[href*="/product/"]
+      regex: yaga.co.za/(.+/product/.+)
+      listing_container_css_selector: .shop-page .MuiGrid-item
+      price_retriever_module:
+        name: get_attribute_value
+        css_selector: '[class="price"]'
+        replace_old: R
+        replace_new: ZAR
+      pictures_retriever_module:
+        name: get_pictures_from_attribute_with_replace_regex
+        css_selector: picture img
+        attribute_name: src
+        replace_old_regex: \?.+
+        replace_new: ''
+    load_more_results_module:
+      name: load_more_by_scrolling_module
+    listing_container_css_selector: '#search-page .MuiGrid-item'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class="price"]'
+      replace_old: R
+      replace_new: ZAR
+    pictures_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: picture img
+      attribute_name: src
+      replace_old_regex: \?.+
+      replace_new: ''
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.yaga.co.za/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: title
+      regex: \|(.+)\n
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#main-container .description'
+      clickable_css_selector: span.read-more
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class="product-price"]'
+      replace_old: R
+      replace_new: ZAR
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a.product-page-shop [class="shop-name"]
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a.product-page-shop
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .meta-info-container div:nth-of-type(2) .info-element
+      value_css_selector: .meta-info-container div:nth-of-type(2) .info-element
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: .product-images__nav-images div.block-image , .product-images__main-image
+        img
+      picture_css_selector: .product-images__main-image source
+      regex: (.+)
+      attribute_name: srcset
+      loading_delay: 2
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: https://www.yaga.co.za/{}
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class="shop-user-profile__name"]'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class="shop-user-profile__description"]'
+    picture_retriever_module:
+      name: get_pictures_from_attribute_with_replace_regex
+      css_selector: .profile-image img[src*="="]
+      attribute_name: src
+      replace_old_regex: '[\?=].+'
+      replace_new: ''
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - .shop-user-profile__stats div:nth-of-type(1) .shop-user-profile__stat-label
+        - .shop-user-profile__stats div:nth-of-type(2) .shop-user-profile__stat-label
+        - span.shipment-avg-time__text
+        - .shop-user-profile__info>div[class*="shop-user-profile__"]:nth-of-type(2)
+          span[class*="shop-user-profile__"][class*="-text"]
+        - .shop-user-profile__info>div[class*="shop-user-profile__"]:nth-of-type(3)
+          span[class*="shop-user-profile__"][class*="-text"]
+        - .shop-user-profile__info>div[class*="shop-user-profile__"]:nth-of-type(4)
+          span[class*="shop-user-profile__"][class*="-text"]
+        - .shop-user-profile__info>div[class*="shop-user-profile__"]:nth-of-type(5)
+          span[class*="shop-user-profile__"][class*="-text"]
+        - .shop-user-profile__info>div[class*="shop-user-profile__"]:nth-of-type(6)
+          span[class*="shop-user-profile__"][class*="-text"]
+        - .shop-user-profile__info>div[class*="shop-user-profile__"]:nth-of-type(7)
+          span[class*="shop-user-profile__"][class*="-text"]
+        - .shop-user-profile__info>div[class*="shop-user-profile__"]:nth-of-type(8)
+          span[class*="shop-user-profile__"][class*="-text"]
+      value_css_selectors:
+        - .shop-user-profile__stats div:nth-of-type(1) .shop-user-profile__stat-value
+        - .shop-user-profile__stats div:nth-of-type(2) .shop-user-profile__stat-value
+        - span.shipment-avg-time__value
+        - .shop-user-profile__info>div[class*="shop-user-profile__"]:nth-of-type(2)
+          span[class*="shop-user-profile__"][class*="-text"]
+        - .shop-user-profile__info>div[class*="shop-user-profile__"]:nth-of-type(3)
+          span[class*="shop-user-profile__"][class*="-text"]
+        - .shop-user-profile__info>div[class*="shop-user-profile__"]:nth-of-type(4)
+          span[class*="shop-user-profile__"][class*="-text"]
+        - .shop-user-profile__info>div[class*="shop-user-profile__"]:nth-of-type(5)
+          span[class*="shop-user-profile__"][class*="-text"]
+        - .shop-user-profile__info>div[class*="shop-user-profile__"]:nth-of-type(6)
+          span[class*="shop-user-profile__"][class*="-text"]
+        - .shop-user-profile__info>div[class*="shop-user-profile__"]:nth-of-type(7)
+          span[class*="shop-user-profile__"][class*="-text"]
+        - .shop-user-profile__info>div[class*="shop-user-profile__"]:nth-of-type(8)
+          span[class*="shop-user-profile__"][class*="-text"]
+      key_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+        - __(.+)-
+        - __(.+)-
+        - __(.+)-
+        - __(.+)-
+        - __(.+)-
+        - __(.+)-
+        - __(.+)-
+      value_regex:
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+      key_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - class
+        - class
+        - class
+        - class
+        - class
+        - class
+        - class
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent

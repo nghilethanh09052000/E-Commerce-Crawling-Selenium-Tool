@@ -1,0 +1,62 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    loading_delay: 4
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.conforama.lu/shop?search={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#products_grid .oe_product_cart .oe_product_image>a'
+      regex: conforama.lu\/shop\/(.+)
+    listing_container_css_selector: '#products_grid .oe_product_cart'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .o_wsale_products_item_title>a
+    price_retriever_module:
+      name: get_multiple_text_content_and_concatenate
+      attribute_name: textContent
+      css_selectors:
+        - .product_price>span[itemprop="price"]
+        - .product_price>span[itemprop="priceCurrency"]
+      replace_old: \n
+      replace_new: ' '
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .tp-product-image-container img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .products_pager>ul>li:last-child>a
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: a.js_close_popup
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.conforama.lu/shop/{}
+    take_screenshot: true
+    loading_delay: 1
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '#product_details>h3'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#product_full_description'
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '#product_details span.oe_price'
+      replace_old: \€
+      replace_new: EUR
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '#product_detail .carousel-inner>div img.product_detail_img'
+      attribute_name: src
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: a.js_close_popup

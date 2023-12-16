@@ -1,0 +1,3 @@
+from eb_infex_worker.information_extraction.html_similarity.style_similarity import style_similarity
+from eb_infex_worker.information_extraction.html_similarity.structural_similarity import structural_similarity
+from eb_infex_worker.information_extraction.html_similarity.similarity import similarity

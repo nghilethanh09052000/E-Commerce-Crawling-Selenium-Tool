@@ -1,0 +1,119 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+    load_images: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    loading_delay: 8
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://browse.gmarket.co.kr/search?keyword={}
+    post_identifiers_retriever_module:
+      post_url_cleaning_module:
+        skip_query_string_cleaning: true
+      name: classic_post_identifiers_retriever_module
+      css_selector: .box__component-itemcard .box__item-title .link__item
+      regex: item\.gmarket\.co\.kr\/Item\?(.*)$
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      post_url_cleaning_module:
+        skip_query_string_cleaning: true
+      css_selector: .prod_list .prd_name>a
+      regex: item\.gmarket\.co\.kr\/Item\?(.*)$
+      load_more_results_module:
+        name: go_to_next_page_module
+        css_selector: .allList_view a,.paging>.next>a
+    listing_container_css_selector: .box__component-itemcard
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.box__item-title
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.box__item-price>.box__price-seller>strong
+      replace_old: .+
+      replace_new: KRW\g<0>
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div.box__information_seller>a
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div.box__information_seller>a
+      attribute_name: href
+    item_sold_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: li.list-item__pay-count
+      regex: \d+
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div.box__image>a>img
+      attribute_name: src
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: .link__page-next
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: http://item.gmarket.co.kr/Item?{}
+    loading_delay: 6
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.itemtit
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div#vip-tab_detail
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .price_real
+      replace_old: 원
+      replace_new: KRW
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a.link__seller
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a.link__seller
+      attribute_name: href
+    ships_to_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .box__information
+      key_regex: \xeb\xb0\xb0\xec\x86\xa1\xec\x95\x88\xeb\x82\xb4(\D+)
+      value_css_selector: .box__information
+      value_regex: \xeb\xb0\xb0\xec\x86\xa1\xec\x95\x88\xeb\x82\xb4(\D+)
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .viewer img
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    loading_delay: 5
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .shop_title
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: p.shop_intro
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[src*="image.esmplus.com/Minishop"]
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .seller_info_box dt
+      value_css_selector: .seller_info_box dd

@@ -1,0 +1,71 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    headless: false
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    loading_delay: 3
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.carrefour.it/search?q=power
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .product-grid>.product-item a.product-link
+      regex: carrefour.it\/p\/(.+)
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .product-grid>.product-item a.product-link
+      regex: carrefour.it\/p\/(.+)
+    listing_container_css_selector: .product-grid>.product-item
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: a.product-link>.tile-description
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .price .sales>.value
+      replace_old: \€
+      replace_new: EUR
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .image-container img
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_scrolling_module
+      scroll_pause_time: 3
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: 'button#onetrust-accept-btn-handler'
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.carrefour.it/p/{}
+    take_screenshot: true
+    loading_delay: 3
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .product-main-info .product-description
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '[aria-labelledby="tab-descrizione"]>p'
+      loading_timeout: 0.1
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .product-main-info .price .sales>.value
+      replace_old: \€
+      replace_new: EUR
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: '.product-main .product-main-image'
+      clickable_css_selector_2: 'div.zoom-carousel div.swiper-button-next'
+      picture_css_selector: div.zoom-carousel div.swiper-slide-active img
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 1
+      escape_popup_on_end: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler

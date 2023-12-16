@@ -1,0 +1,6 @@
+include: ebay.yaml
+framework:
+  search_pages_browsing_module:
+    search_page_urls_builder_module:
+      search_page_url_templates:
+        - https://www.ebay.ie/sch/i.html?_nkw={}&_ipg=192&_sop=10&LH_BIN=1

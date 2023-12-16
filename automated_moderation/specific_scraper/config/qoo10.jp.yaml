@@ -1,0 +1,134 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    max_posts_to_browse: 3000
+    loading_delay: 2
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.qoo10.jp/s/?keyword={}&sortType=SORT_GD_NO
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      regex: qoo10.jp\/item\/(.+)$
+      css_selector: '#search_result_item_list tr>.td_item a[data-type="goods_url"]'
+    listing_container_css_selector: '#search_result_item_list>tr'
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: '.td_item a[data-type="goods_url"]'
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .prc>strong
+      replace_old: \円
+      replace_new: JPY
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a.lnk_sh
+      attribute_name: textContent
+      exclude_children: true
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a.lnk_sh
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .td_thmb img:not(.sale_badge)
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_scrolling_module
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: '#search_result_item_list>li a.tt'
+      regex: qoo10.jp\/item\/(.+)$
+      action_before_poster_post_identifiers_module:
+      - name: click_action_module
+        css_selector: a#btn_allitem
+        after_pause_time: 3
+      listing_container_css_selector: '#search_result_item_list>li'
+      title_retriever_module:
+        name: get_attribute_value
+        attribute_name: textContent
+        css_selector: a.tt
+      price_retriever_module:
+        name: get_attribute_value
+        attribute_name: textContent
+        css_selector: .prc>strong
+        replace_old: \円
+        replace_new: JPY
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: .thmb>img
+        attribute_name: src
+      load_more_results_module:
+        name: load_more_by_scrolling_module
+        scroll_pause_time: 4
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: 'https://www.qoo10.jp/item/{}'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .goods_detail .text_title
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: '#DetailIteminfo>div.iteminfo_tb'
+      trim_text: true
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '#dl_sell_price>dd>strong'
+      replace_old: \円
+      replace_new: JPY
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .mshop_bar a.name
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: .mshop_bar a.name
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      move_to_element_before_click: true
+      clickable_css_selector_1: '.goods_img .img:not([style="display: none;"])>a>img#GoodsImage , .goods_img #div_Default_Image .thumb_list>.slide>ul>li.selected[img_contents="video"]+li'
+      clickable_css_selector_2: .goods_img .layer_enlarge .slide>ul>li.selected+li
+      picture_css_selector: '.goods_img .layer_enlarge #gei_bigPhoto>img'
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 4
+      close_button_css_selector: .goods_img button.btn_close
+    videos_retriever_module:
+      name: get_pictures_from_carousel_after_click
+      clickable_css_selector: '.goods_img #div_Default_Image .thumb_list>.slide>ul>li[img_contents="video"]'
+      picture_css_selector: .goods_img .video video
+      attribute_name: src
+      loading_delay: 1
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: 'https://www.qoo10.jp/shop/{}'
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: .info_shop>ul>li:first-child>a
+        after_pause_time: 2
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: a.name
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .mshop_dtl .article
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .mshop_bar>a>img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: .mshop_dtl>.seller>div>dl>dt
+      value_css_selector: .mshop_dtl>.seller>div>dl>dd

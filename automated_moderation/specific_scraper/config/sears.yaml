@@ -1,0 +1,121 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    scroll_down_after_get_new_page: true
+    loading_delay: 3
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector:
+          - '#ltkpopup-close-button>.ltkpopup-close'
+          - '#onetrust-accept-btn-handler'
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .product-wrapper-grid .product-box>*>div>a
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: .product-wrapper-grid .product-box>*>div>a
+    listing_container_css_selector: .product-wrapper-grid .product-box
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .product-name
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .seller-info
+      attribute_name: textContent
+      regex: Sold by(.+)
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .sale-or-regular-price-font>span
+      replace_old: \$
+      replace_new: USD
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .image-container>a>img
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_click
+      css_selector: 'button[aria-label="Load more products"]'
+      loading_delay: 3
+      scroll_pause_time: 0
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.sears.com/{}
+    take_screenshot: true
+    loading_delay: 3
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - '#ltkpopup-close-button>.ltkpopup-close'
+          - '#onetrust-accept-btn-handler'
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .product-right h1
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      clickable_css_selector: .view-more-descripton-btn
+      css_selector: '#description'
+      attribute_name: textContent
+      loading_delay: 1
+      loading_timeout: 1
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: .pricing-detail .pricing-sale-ui
+      replace_old: \$
+      replace_new: USD
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .product-right app-mktpl-seller>p>span
+      attribute_name: textContent
+      loading_timeout: 0.1
+    poster_link_retriever_module:
+      name: get_attribute_url
+      clickable_css_selector: .product-right app-mktpl-seller>p>span
+      css_selector: .modal-body a.hyperlink-color[href*="/seller/"]
+      attribute_name: href
+      escape_popup_on_end: true
+      loading_delay: 3
+      loading_timeout: 6
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div:not(.cloned)>#pdp-main-image>img
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: https://www.sears.com/seller/{}
+    loading_delay: 3
+    take_screenshot: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - '#ltkpopup-close-button>.ltkpopup-close'
+          - '#onetrust-accept-btn-handler'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .About-seller+div
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: .sf-storename
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: 'app-seller-storefront>div>div>div>img'
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - .business-address
+      value_css_selectors:
+        - .business-address
+      key_regex:
+        - Business Address
+      value_regex:
+        - Business Address(.+)

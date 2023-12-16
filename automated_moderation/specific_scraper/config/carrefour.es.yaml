@@ -1,0 +1,74 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    loading_delay: 3
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.carrefour.es/?q={}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: article.ebx-grid-item:has(a) a.ebx-result__title-link
+      regex: carrefour.es\/(.+)$
+    listing_container_css_selector: article.ebx-grid-item:has(a)
+    hover_over_listing_elements: true
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: a.ebx-result__title-link
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .ebx-result-price__value
+      replace_old: '\€'
+      replace_new: EUR
+    vendor_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: .ebx-result-descriptions>span.ebx-result-descriptions__item
+      regex: 'Vendido por(.+)'
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .ebx-result__figure>img
+      attribute_name: src
+    load_more_results_module:
+      name: load_more_by_scrolling_module
+      loading_delay: 3
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: 'button#onetrust-accept-btn-handler'
+  post_information_retriever_module:
+    name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+    post_url_template: https://www.carrefour.es/{}
+    take_screenshot: true
+    loading_delay: 3
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: .product-header__name
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .product-details__text
+    price_retriever_module:
+      name: get_json_value
+      css_selector: script[type="application/ld+json"]
+      output_string: '{jsons[0]["offers"]["price"]} {jsons[0]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: .seller-marketplace-info>a
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_1: 'div.main-image__container'
+      clickable_css_selector_2: '.pics-enlarged__modal span.main-image__icon-right'
+      picture_css_selector: .pics-enlarged__modal .zoom-image>img:first-child
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 1
+      escape_popup_on_end: true
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler

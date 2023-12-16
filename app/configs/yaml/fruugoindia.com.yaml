@@ -1,0 +1,19 @@
+include: fruugo.yaml
+framework:
+    search_pages_browsing_module:
+      search_page_urls_builder_module:
+        search_page_url_templates:
+          - https://www.fruugoindia.com/search/?q={}&language=en
+      poster_post_identifiers_retriever_module:
+        regex: fruugoindia.com\/(.+)$
+      post_identifiers_retriever_module:
+        regex: fruugoindia.com\/(.+)$
+      price_retriever_module:
+        replace_old: \₹
+        replace_new: INR
+    post_information_retriever_module:
+      name: classic_post_information_retriever_module
+      post_url_template: https://www.fruugoindia.com/{}?language=en
+      price_retriever_module:
+        replace_old: \₹
+        replace_new: INR

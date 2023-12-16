@@ -1,0 +1,200 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    loading_delay: 4
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[class*="tiles_container"] .item__details a[href*="/listing/"]
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[class*="tiles_container"]>div>div>a[href*="/listing/"]
+      load_more_results_module:
+        name: load_more_by_scrolling_module
+    listing_container_css_selector: div[class*="tiles_container"]>div>div.card
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: a.tile__title
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: div.item__details>div[class=""]>div>span:first-child
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a.tile__creator>span
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a.tile__creator
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: a.tile__covershot picture>source:first-child
+      attribute_name: srcset
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: div[class*="tiles_container__pagination"]>button:last-child
+      loading_delay: 8
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://poshmark.com/listing/{}
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: meta[property*="title"]
+      attribute_name: content
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="listing__description"]
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_json_value
+      loading_delay: 1
+      css_selector: script[data-vmid="ldjson-schema-listing"]
+      output_string: '{jsons[0]["offers"]["price"]} {jsons[0]["offers"]["priceCurrency"]}'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a[data-et-name="seller"]
+      attribute_name: href
+      regex: /([^/]+)$
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[data-et-name="seller"]
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: i[class*="location-pin"] ~ span
+      value_css_selector: i[class*="location-pin"] ~ span
+    pictures_retriever_module:
+      name: get_pictures_by_clicking_thumbnails
+      clickable_css_selector: ul.carousel-vertical__inner>li
+      picture_css_selector: div.slideshow__img .carousel__inner ul>li source[srcset]:first-child
+      attribute_name: srcset
+      regex: (.+)
+      loading_delay: 3
+    videos_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: .listing__video>video
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    loading_delay: 3
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="user-details"] h1
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: i[class*="icon info"] ~ span
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute_with_replace
+      css_selector: img[class*="user-image"]
+      attribute_name: src
+      replace_old: t_
+      replace_new: m_
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - div[class*="user-details"]
+        - i[class*="location-pin"]
+        - ul[data-test="horizontal-list"] li:nth-of-type(1) p
+        - ul[data-test="horizontal-list"] li:nth-of-type(2) p
+        - ul[data-test="horizontal-list"] li:nth-of-type(3) p
+        - ul[data-test="horizontal-list"] li:nth-of-type(4) p
+        - i[class*="icon info"] ~ p
+        - i[class*="icon ship"] ~ p
+        - i[class*="icon clock"] ~ p
+        - i[class*="college"]
+        - a[title*="Pinterest"]
+        - a[title*="Instagram"]
+        - a[title*="Twitter"]
+        - i[class*="badge"] ~ div
+      value_css_selectors:
+        - div[class*="user-details"] h4
+        - i[class*="location-pin"] ~ span
+        - ul[data-test="horizontal-list"] li:nth-of-type(1) a
+        - ul[data-test="horizontal-list"] li:nth-of-type(2) div
+        - ul[data-test="horizontal-list"] li:nth-of-type(3) div
+        - ul[data-test="horizontal-list"] li:nth-of-type(4) div
+        - i[class*="icon info"] ~ p
+        - i[class*="icon ship"] ~ p span
+        - i[class*="icon clock"] ~ p span
+        - i[class*="icon college"] ~ p
+        - a[title*="Pinterest"]
+        - a[title*="Instagram"]
+        - a[title*="Twitter"]
+        - i[class*="badge"] ~ div
+      key_regex:
+        - user
+        - location
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - Posher since
+        - ([^\:]+)
+        - ([^\:]+)
+        - college
+        - Pinterest
+        - Instagram
+        - Twitter
+        - badge
+      value_regex:
+        - (.+)
+        - (.+)
+        - ([^ ]+)
+        - ([^ ]+)
+        - ([^ ]+)
+        - ([^ ]+)
+        - Posher(.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+        - (.+)
+      key_attributes:
+        - class
+        - class
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - class
+        - title
+        - title
+        - title
+        - class
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - href
+        - href
+        - href
+        - textContent
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector:
+          - a[data-et-name="about_me"]

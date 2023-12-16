@@ -1,0 +1,135 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    override_user_agent: true
+    start_maximized: true
+  search_pages_browsing_module:
+    name: search_only_browsing_module
+    max_posts_to_browse: 500
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://superrare.com/search/{}?artwork-options=%257B%2522sortBy%2522%3A%2522prod_artworks_nftDatetimeMintedTimestampUnix_desc%2522%257D
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[data-test="collectible-card-wrapper"] > a
+      regex: https\://superrare.com/(.+)
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[data-test="collectible-card-wrapper"] > a
+      regex: https\://superrare.com/(.+)
+    load_more_results_module:
+      name: load_more_by_scrolling_one_scroll_at_a_time
+      scroll_range: 1
+      scroll_pause_time: 5
+    listing_container_css_selector: div[data-test="collectible-card-wrapper"]
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: a[data-testid="collectibleName"]
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: a[class*="PriceNumberLink"]
+      replace_old: \xce\x9e.+
+      replace_new: ETH
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-testid="cardOwner"] span[data-testid="cardUsername"]
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div[data-testid="cardOwner"] a
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div[class*="Image"] img, div[class*="Image"] video
+      attribute_name: src
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        after_pause_time: 2
+        css_selector: button[class*="accept-all"]
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://superrare.com/{}
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: section h2
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="ArtworkDescripion"]
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="ActionData"] span[class*="Currency"]
+      replace_old: \(.+
+      replace_new: ''
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="UsersContainer"] div:nth-child(2) a:nth-child(2) span[data-testid="cardUsername"]
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: div[class*="UsersContainer"] div:nth-child(2) a:nth-child(2)
+      attribute_name: href
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: '[class*="ImageWrapper"] img'
+      attribute_name: src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: span[class*="Username"] h4
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="Description"]
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div[class*="UserProfilePicture"] img
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selectors:
+        - div[class*="UserSocialsContainer"] > span > svg
+        - section button:nth-child(1) p[class*="SuperRareText"]:nth-child(2)
+        - section button:nth-child(2) p[class*="SuperRareText"]:nth-child(2)
+        - section button:nth-child(3) p[class*="SuperRareText"]:nth-child(2)
+        - span a[class*="UserSocialIconContainer"]:nth-child(1) svg
+        - span a[class*="UserSocialIconContainer"]:nth-child(2) svg
+        - span a[class*="UserSocialIconContainer"]:nth-child(3) svg
+        - span a[class*="UserSocialIconContainer"]:nth-child(4) svg
+        - span a[class*="UserSocialIconContainer"]:nth-child(5) svg
+        - span a[class*="UserSocialIconContainer"]:nth-child(6) svg
+      value_css_selectors:
+        - div[class*="UserSocialsContainer"] > span > p
+        - section button:nth-child(1) p[class*="SuperRareText"]:nth-child(1)
+        - section button:nth-child(2) p[class*="SuperRareText"]:nth-child(1)
+        - section button:nth-child(3) p[class*="SuperRareText"]:nth-child(1)
+        - span a[class*="UserSocialIconContainer"]:nth-child(1)
+        - span a[class*="UserSocialIconContainer"]:nth-child(2)
+        - span a[class*="UserSocialIconContainer"]:nth-child(3)
+        - span a[class*="UserSocialIconContainer"]:nth-child(4)
+        - span a[class*="UserSocialIconContainer"]:nth-child(5)
+        - span a[class*="UserSocialIconContainer"]:nth-child(6)
+      key_attributes:
+        - height
+        - textContent
+        - textContent
+        - textContent
+        - data-icon
+        - data-icon
+        - data-icon
+        - data-icon
+        - data-icon
+        - data-icon
+      value_attributes:
+        - textContent
+        - textContent
+        - textContent
+        - textContent
+        - href
+        - href
+        - href
+        - href
+        - href
+        - href

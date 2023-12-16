@@ -1,0 +1,68 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    loading_delay: 3
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.carrefour.com.ar/{}
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: 
+        div[class*="search-result-0-x-gallery"]>div[class*="search-result-0-x-galleryItem"]>*>a
+      regex: carrefour.com.ar\/(.+)$
+    listing_container_css_selector: 
+      div[class*="search-result-0-x-gallery"]>div[class*="search-result-0-x-galleryItem"]
+    title_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: '[class*="x-productNameContainer"]'
+    price_retriever_module:
+      name: get_attribute_value
+      attribute_name: textContent
+      css_selector: '[class*="x-sellingPriceValue"]'
+      replace_old: \$
+      replace_new: ARS
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: div[class*="x-imageContainer"]>img
+      attribute_name: src
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: :last-of-type[class*="x-paginationButtonChangePage"]>button
+      loading_delay: 4
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler
+  post_information_retriever_module:
+    name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+    post_url_template: https://www.carrefour.com.ar/{}
+    take_screenshot: true
+    loading_delay: 2
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="x-productNameContainer"]'
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[class*="x-productDescriptionText"]
+      loading_timeout: 0.1
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[class*="x-sellingPriceValue"]>span[class*="x-currencyContainer"]'
+      replace_old: \$
+      replace_new: ARS
+    pictures_retriever_module:
+      name: get_pictures_from_popup_with_multi_selectors
+      clickable_css_selector_2: div[class*="x-carouselGaleryThumbs"] div[class*="x-productImagesThumbActive"]+div.swiper-slide
+      picture_css_selector: div[class*="x-productImagesGallerySwiperContainer"] div[class*="swiper-slide-active"]
+        img
+      attribute_name: src
+      regex: (.+)
+      loading_delay: 1
+    action_before_retrieving_post_information_module:
+      - name: click_action_module
+        css_selector: button#onetrust-accept-btn-handler

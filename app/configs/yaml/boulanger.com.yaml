@@ -1,0 +1,124 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+    start_maximized: true
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    max_posts_to_browse: 3000
+    take_screenshots: true
+    scroll_down_after_get_new_page: true
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.boulanger.com/resultats?tr={}
+    action_before_search_pages_browsing_module:
+      - name: switch_to_iframe
+        css_selector: iframe#privacy-iframe
+      - name: click_action_module
+        css_selector: button[id="btnAll-on"]
+      - name: switch_out_iframe
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: div[id="product-list"] li.product-list__item:not(.is--hidden) article a[class*="product-image-link"]
+      regex: boulanger.com\/(.*)
+    listing_container_css_selector: div[id="product-list"] li.product-list__item:not(.is--hidden) article
+    load_more_results_module:
+      name: go_to_next_page_module
+      css_selector: link[rel="next"]
+      attribute_name: href
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h2[class*="product-label"]
+      replace_old: \t
+      replace_new: ''
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: a.product-merchant__name
+      attribute_name: textContent
+      loading_timeout: 0.1
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a.product-merchant__name
+      attribute_name: href
+      loading_timeout: 0.1
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: p.price__amount
+      replace_old: \€
+      replace_new: ' EUR'
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[class*="product-image"]
+      attribute_name: src
+  post_information_retriever_module:
+    name: post_information_retriever_with_creation_of_a_new_driver_for_each_post_module
+    post_url_template: https://www.boulanger.com/{}
+    loading_delay: 3
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1.product__label
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div.product__description-content
+      attribute_name: textContent
+      loading_timeout: 0.1
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: section.product__summary p.price__amount
+      attribute_name: textContent
+      replace_old: \€
+      replace_new: ' EUR'
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: section.product__summary .product-merchant__name
+      attribute_name: textContent
+      loading_timeout: 0.1
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: section.product__summary .product-merchant__name
+      attribute_name: href
+      loading_timeout: 0.1
+    pictures_retriever_module:
+      name: get_pictures_from_json
+      css_selector: .product-viewer>.viewer
+      attribute_name: data
+      json_attribute_name: 'source.full'
+      json_index: 0
+      replace_old: '\&quot\;'
+      replace_new: '"'
+    action_before_retrieving_post_information_module:
+      - name: switch_to_iframe
+        css_selector: iframe#privacy-iframe
+      - name: click_action_module
+        css_selector: button[id="btnAll-on"]
+      - name: switch_out_iframe
+  poster_information_retriever_module:
+    name: classic_post_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_json_value
+      css_selector: div#infos div[class*="separator"]:first-child p:first-of-type
+      exclude_children: true
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: .seller__description
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[class*="seller__logo"]
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list
+      key_css_selector: div#infos p.tabs-content__info
+      value_css_selector: div#infos p.tabs-content__info
+      key_regex: '(.+):'
+      value_regex: ':(.+)'
+    action_before_retrieving_post_information_module:
+      - name: switch_to_iframe
+        css_selector: iframe#privacy-iframe
+      - name: click_action_module
+        css_selector: button[id="btnAll-on"]
+      - name: switch_out_iframe

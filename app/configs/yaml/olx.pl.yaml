@@ -1,0 +1,118 @@
+framework:
+  name: selenium_framework
+  driver_initialization_module:
+    name: classic_selenium_initialization_module
+  search_pages_browsing_module:
+    name: classic_page_browsing_module
+    scroll_down_after_get_new_page: true
+    loading_delay: 10
+    search_page_urls_builder_module:
+      name: classic_search_page_urls_builder_module
+      search_page_url_templates:
+        - https://www.olx.pl/oferty/q-{}/?search%5Border%5D=created_at%3Adesc
+    poster_post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[href*="/d/oferta/"]
+      regex: olx.pl/d/oferta/(.+).html
+      listing_container_css_selector: div[data-cy="l-card"]
+      title_retriever_module:
+        name: get_attribute_value
+        css_selector: div[type="list"] div[type="list"]:nth-of-type(2) > div > p
+      price_retriever_module:
+        name: get_attribute_value
+        css_selector: div[type="list"] div[type="list"]:nth-of-type(2) > div p:nth-of-type(2)
+          span:last-child
+        replace_old: z\xc5\x82
+        replace_new: PLN
+      pictures_retriever_module:
+        name: get_pictures_from_attribute
+        css_selector: img[alt]
+        attribute_name: src
+    post_identifiers_retriever_module:
+      name: classic_post_identifiers_retriever_module
+      css_selector: a[href*="/d/oferta/"]
+      regex: olx.pl/d/oferta/(.+).html
+    load_more_results_module:
+      name: click_on_next_page_module
+      css_selector: a.pageNextPrev[data-cy="page-link-next"], li[data-testid="pagination-list-item"]
+        ~ a
+    listing_container_css_selector: div[data-cy="l-card"]
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h6
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="ad-price"]'
+      replace_old: z\xc5\x82
+      replace_new: PLN
+    pictures_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[alt]
+      attribute_name: src
+    action_before_search_pages_browsing_module:
+      - name: click_action_module
+        css_selector: button[id*="onetrust-accept"]
+  post_information_retriever_module:
+    name: classic_post_information_retriever_module
+    post_url_template: https://www.olx.pl/d/oferta/{}.html
+    take_screenshot: true
+    title_retriever_module:
+      name: get_attribute_value
+      css_selector: h1[data-cy="ad_title"]
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-cy="ad_description"] div
+      attribute_name: textContent
+    price_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-testid="ad-price-container"]>*:first-child
+      replace_old: z\xc5\x82
+      replace_new: PLN
+      attribute_name: textContent
+    vendor_retriever_module:
+      name: get_attribute_value
+      css_selector: div[data-cy="seller_card"] h4
+      attribute_name: textContent
+    poster_link_retriever_module:
+      name: get_attribute_url
+      css_selector: a[name="user_ads"]
+      attribute_name: href
+    ships_from_retriever_module:
+      name: get_key_value_list
+      key_css_selector: img[src*="staticmap"]
+      key_css_selector_attribute_name: alt
+      value_css_selector: img[src*="staticmap"]
+      value_css_selector_attribute_name: alt
+    pictures_retriever_module:
+      name: get_pictures_between_2_attribute
+      css_selector: .swiper-wrapper .swiper-zoom-container img
+      attribute_name_1: src
+      attribute_name_2: data-src
+  poster_information_retriever_module:
+    name: classic_poster_information_retriever_module
+    poster_url_template: '{}'
+    take_screenshot: true
+    poster_name_retriever_module:
+      name: get_attribute_value
+      css_selector: '[data-testid="normal-seller-header"] h1'
+      attribute_name: textContent
+    description_retriever_module:
+      name: get_attribute_value
+      css_selector: section[id="about_us"]
+      attribute_name: textContent
+    picture_retriever_module:
+      name: get_pictures_from_attribute
+      css_selector: img[data-testid="olx-shop-logo"],img[data-testid="user-profile-image"]
+      attribute_name: src
+    payload_retriever_module:
+      name: get_key_value_list_from_different_elements
+      key_css_selector: '[data-testid="olx-shop-header-bar"] div>ul>li'
+      value_css_selector: '[data-testid="olx-shop-header-bar"] div>ul>li'
+      key_regex: :\ (.+)
+      value_regex: '(.+):'
+  archiving_options:
+    click_on_elements:
+      - button#onetrust-accept-btn-handler
+    height: 2000
+    width: 1924
